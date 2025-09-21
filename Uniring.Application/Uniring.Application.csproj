@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Uniring.Domain\Uniring.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
