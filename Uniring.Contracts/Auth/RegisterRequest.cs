@@ -6,5 +6,15 @@ using System.Threading.Tasks;
 
 namespace Uniring.Contracts.Auth
 {
-    public record RegisterRequest(string UserName, string PhoneNumber, string? Email, string Password);
+    /// <summary>
+    /// Registration request:
+    /// - DisplayName is required and used only as display (not for login)
+    /// - PhoneNumber is required and used for login
+    /// - Password is required
+    /// </summary>
+    public record RegisterRequest(
+        string DisplayName,
+        string PhoneNumber,
+        string Password
+        );
 }
