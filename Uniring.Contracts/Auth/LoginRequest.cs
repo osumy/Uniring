@@ -6,5 +6,11 @@ using System.Threading.Tasks;
 
 namespace Uniring.Contracts.Auth
 {
-    public record LoginRequest(string PhoneNumber, string Password);
+    /// <summary>
+    /// Login request: PhoneNumber + Password only.
+    /// </summary>
+    public record LoginRequest(
+        string PhoneNumber,
+        string Password
+        );
 }
