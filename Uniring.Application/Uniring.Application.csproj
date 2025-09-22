@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="libphonenumber-csharp" Version="9.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Uniring.Contracts\Uniring.Contracts.csproj" />
     <ProjectReference Include="..\Uniring.Domain\Uniring.Domain.csproj" />
   </ItemGroup>

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Configurations\" />
+    <Folder Include="Validators\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 
