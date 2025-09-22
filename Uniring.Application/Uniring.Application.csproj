@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Uniring.Contracts\Uniring.Contracts.csproj" />
     <ProjectReference Include="..\Uniring.Domain\Uniring.Domain.csproj" />
   </ItemGroup>
 
