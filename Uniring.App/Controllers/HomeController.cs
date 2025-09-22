@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Uniring.Web.Models;
+using System.Diagnostics;
+using Uniring.App.Models;
 
-namespace Uniring.Web.Controllers
+namespace Uniring.App.Controllers
 {
     public class HomeController : Controller
     {

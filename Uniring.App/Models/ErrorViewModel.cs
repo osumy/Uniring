@@ -1,4 +1,4 @@
-namespace Uniring.Web.Models
+namespace Uniring.App.Models
 {
     public class ErrorViewModel
     {
