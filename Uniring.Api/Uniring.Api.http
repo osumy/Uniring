@@ -1,0 +1,6 @@
+@Uniring.Api_HostAddress = http://localhost:5118
+
+GET {{Uniring.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

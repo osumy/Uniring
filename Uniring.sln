@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uniring.Infrastructure.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uniring.Contracts", "Uniring.Contracts\Uniring.Contracts.csproj", "{DFD0059B-2240-44BE-AEB3-D5AB2DC634DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uniring.Api", "Uniring.Api\Uniring.Api.csproj", "{E04FD09A-E4BC-4F70-915B-BD973DF7BFC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{DFD0059B-2240-44BE-AEB3-D5AB2DC634DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFD0059B-2240-44BE-AEB3-D5AB2DC634DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFD0059B-2240-44BE-AEB3-D5AB2DC634DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E04FD09A-E4BC-4F70-915B-BD973DF7BFC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E04FD09A-E4BC-4F70-915B-BD973DF7BFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E04FD09A-E4BC-4F70-915B-BD973DF7BFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E04FD09A-E4BC-4F70-915B-BD973DF7BFC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +80,7 @@ Global
 		{4BA72A06-A630-437F-A0E6-7DB609938FF2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5828B181-CB95-4CD7-9D02-A78B8F914BC8} = {396B933A-F776-4371-80CA-2AAF04B631D6}
 		{DFD0059B-2240-44BE-AEB3-D5AB2DC634DA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{E04FD09A-E4BC-4F70-915B-BD973DF7BFC3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D311B37E-10EE-4070-92CD-41191F75C37C}
