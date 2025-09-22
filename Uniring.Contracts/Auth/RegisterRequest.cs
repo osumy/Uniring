@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace Uniring.Contracts.Auth
 {
-    internal class RegisterRequest
-    {
-    }
+    public record RegisterRequest(string UserName, string PhoneNumber, string? Email, string Password);
 }
