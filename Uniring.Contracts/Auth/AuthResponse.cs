@@ -6,5 +6,10 @@ using System.Threading.Tasks;
 
 namespace Uniring.Contracts.Auth
 {
-    public record AuthResponse(bool Success, string? Token, DateTime? ExpiresAt, IEnumerable<string>? Errors);
+    public record AuthResponse(
+        bool Success,
+        string? Token,
+        DateTime? ExpiresAt,
+        IEnumerable<string>? Errors
+        );
 }
