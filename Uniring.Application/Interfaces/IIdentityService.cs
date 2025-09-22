@@ -6,9 +6,9 @@ namespace Uniring.Application.Interfaces
     public interface IIdentityService
     {
         Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAsync(RegisterRequest request, string? role = null);
-        Task<(bool Success, string? Token, DateTime? ExpiresAt, IEnumerable<string>? Errors)> LoginAsync(LoginRequest request);
-        Task SignOutAsync(); // for Cookie sign-out in UI
-        Task<bool> ConfirmEmailAsync(string userId, string token);
+        Task<AuthResponse> LoginAsync(LoginRequest request);
+        Task SignOutAsync(); // For cookie signout in UI host
+        Task SetLastPurchaseAsync(string userId, DateTime purchaseTime);
         // ForgotPassword, ResetPassword, GetUserById ...
     }
 
