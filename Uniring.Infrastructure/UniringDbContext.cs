@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uniring.Persistence
+namespace Uniring.Infrastructure
 {
-    internal class UniringServiceRegistration
+    internal class UniringDbContext
     {
     }
 }

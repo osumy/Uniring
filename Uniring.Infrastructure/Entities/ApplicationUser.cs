@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Uniring.Identity.Entities
+namespace Uniring.Infrastructure.Entities
 {
 
     /// <summary>
