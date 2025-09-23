@@ -5,7 +5,7 @@ using Uniring.Infrastructure.Entities;
 
 namespace Uniring.Infrastructure
 {
-    public class UniringDbContext : IdentityDbContext<ApplicationUser>
+    public class UniringDbContext : DbContext//IdentityDbContext<ApplicationUser>
     {
         public UniringDbContext(DbContextOptions<UniringDbContext> options) : base(options) { }
 
@@ -15,11 +15,17 @@ namespace Uniring.Infrastructure
         {
             base.OnModelCreating(builder);
 
-            // Unique index on PhoneNumber to prevent duplicate phone registrations.
-            // Note: ensure phone normalization before storing (E.164).
-            builder.Entity<ApplicationUser>()
-                .HasIndex(u => u.PhoneNumber)
-                .IsUnique();
+            // Seed Data
+            builder.Entity<Ring>().HasData( new Ring
+            {
+                uid = "UID", Name = "انگشتر عقیق", Price = 25, Serial = "R2732874204", Id = Guid.NewGuid()
+            });
+
+            //// Unique index on PhoneNumber to prevent duplicate phone registrations.
+            //// Note: ensure phone normalization before storing (E.164).
+            //builder.Entity<ApplicationUser>()
+            //    .HasIndex(u => u.PhoneNumber)
+            //    .IsUnique();
         }
     }
 }

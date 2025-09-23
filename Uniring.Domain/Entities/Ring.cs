@@ -25,5 +25,6 @@ namespace Uniring.Domain.Entities
         public required int Price { get; set; }
 
         public string? Description { get; set; }
+
     }
 }

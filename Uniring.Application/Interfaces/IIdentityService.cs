@@ -9,7 +9,9 @@ namespace Uniring.Application.Interfaces
         Task<AuthResponse> LoginAsync(LoginRequest request);
         Task SignOutAsync(); // For cookie signout in UI host
         Task SetLastPurchaseAsync(string userId, DateTime purchaseTime);
+
         // ForgotPassword, ResetPassword, GetUserById ...
+
     }
 
 }
