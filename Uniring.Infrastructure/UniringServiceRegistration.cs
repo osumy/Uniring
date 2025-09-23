@@ -11,7 +11,26 @@ namespace Uniring.Infrastructure
 {
     public static class UniringServiceRegistration
     {
-        public static IServiceCollection AddUniringIdentity(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration) 
+        {
+            services.AddUniringDbContext(configuration.GetConnectionString("DefaultConnection"));
+            services.AddUniringIdentity(configuration);
+
+            return services;
+        }
+        
+        private static IServiceCollection AddUniringDbContext(this IServiceCollection services, string? conn)
+        {
+            services.AddDbContext<UniringDbContext> (
+                options =>
+                {
+                    options.UseSqlServer(conn);
+                });
+
+            return services;
+        }
+
+        private static IServiceCollection AddUniringIdentity(this IServiceCollection services, IConfiguration configuration)
         {
             //// Identity options
             //services.AddIdentityCore<ApplicationUser>(options =>
@@ -71,15 +90,5 @@ namespace Uniring.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddUniringDbContext(this IServiceCollection services, string? conn)
-        {
-            services.AddDbContext<UniringDbContext> (
-                options =>
-                {
-                    options.UseSqlServer(conn);
-                });
-
-            return services;
-        }
     }
 }
