@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using Uniring.Infrastructure.Entities;
-using Uniring.Infrastructure;
-
+﻿using Uniring.Infrastructure;
 
 namespace Uniring.Api
 {

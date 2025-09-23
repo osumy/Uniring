@@ -14,7 +14,7 @@ namespace Uniring.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration) 
         {
             services.AddUniringDbContext(configuration.GetConnectionString("DefaultConnection"));
-            services.AddUniringIdentity(configuration);
+            //services.AddUniringIdentity(configuration);
 
             return services;
         }
