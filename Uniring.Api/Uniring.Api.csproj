@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Uniring.Application\Uniring.Application.csproj" />
     <ProjectReference Include="..\Uniring.Contracts\Uniring.Contracts.csproj" />
+    <ProjectReference Include="..\Uniring.Infrastructure\Uniring.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

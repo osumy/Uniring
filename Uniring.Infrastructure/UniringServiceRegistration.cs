@@ -71,7 +71,7 @@ namespace Uniring.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddUniringDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddUniringDbContext(this IServiceCollection services)
         {
             services.AddDbContext<UniringDbContext> (
                 options =>
