@@ -71,12 +71,12 @@ namespace Uniring.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddUniringDbContext(this IServiceCollection services)
+        public static IServiceCollection AddUniringDbContext(this IServiceCollection services, string? conn)
         {
             services.AddDbContext<UniringDbContext> (
                 options =>
                 {
-                    options.UseSqlServer();
+                    options.UseSqlServer(conn);
                 });
 
             return services;
