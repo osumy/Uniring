@@ -2,7 +2,6 @@
 
 namespace Uniring.Application.Interfaces
 {
-
     public interface IIdentityService
     {
         Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAsync(RegisterRequest request, string? role = null);

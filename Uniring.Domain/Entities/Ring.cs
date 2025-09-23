@@ -13,7 +13,7 @@ namespace Uniring.Domain.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public required string uid { get; set; }
+        public required string Uid { get; set; }
 
         [Required]
         public required string Name { get; set; }

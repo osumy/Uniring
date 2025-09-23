@@ -9,7 +9,7 @@ namespace Uniring.Infrastructure
     {
         public UniringDbContext(DbContextOptions<UniringDbContext> options) : base(options) { }
 
-        DbSet<Ring> Rings { get; set; }
+        public DbSet<Ring> Rings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -18,7 +18,7 @@ namespace Uniring.Infrastructure
             // Seed Data
             builder.Entity<Ring>().HasData( new Ring
             {
-                uid = "UID", Name = "انگشتر عقیق", Price = 25, Serial = "R2732874204", Id = Guid.NewGuid()
+                Uid = "UID", Name = "انگشتر عقیق", Price = 25, Serial = "R2732874204", Id = Guid.NewGuid()
             });
 
             //// Unique index on PhoneNumber to prevent duplicate phone registrations.

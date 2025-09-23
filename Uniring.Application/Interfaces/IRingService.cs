@@ -1,7 +1,10 @@
 ﻿
+using Uniring.Domain.Entities;
+
 namespace Uniring.Application.Interfaces
 {
-    internal interface IRingService
+    public interface IRingService
     {
+        public Task<Ring?> GetRingByUid(string uid);
     }
 }
