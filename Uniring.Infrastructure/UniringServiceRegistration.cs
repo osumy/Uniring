@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Uniring.Application.Interfaces;
@@ -67,6 +68,17 @@ namespace Uniring.Infrastructure
             services.AddScoped<IIdentityService, IdentityService>();
 
             // JWT config: if the API will use JWT, register the JwtBearer in the Api host (not here)
+            return services;
+        }
+
+        public static IServiceCollection AddUniringDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<UniringDbContext> (
+                options =>
+                {
+                    options.UseSqlServer();
+                });
+
             return services;
         }
     }
