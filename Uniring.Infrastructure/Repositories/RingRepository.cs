@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Uniring.Application.Interfaces.Repositories;
 
 namespace Uniring.Infrastructure.Repositories
 {
-    internal class RingRepository
+    internal class RingRepository : IRingRepository
     {
     }
 }
