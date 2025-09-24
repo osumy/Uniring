@@ -1,6 +1,8 @@
-﻿using Uniring.Application.Interfaces;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Uniring.Application.Interfaces;
 using Uniring.Application.Interfaces.Repositories;
 using Uniring.Application.Services;
+using Uniring.Domain.Entities.IdentityEntities;
 using Uniring.Infrastructure;
 using Uniring.Infrastructure.Repositories;
 

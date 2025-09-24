@@ -8,7 +8,7 @@ using System.Text;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Utils;
 using Uniring.Contracts.Auth;
-using Uniring.Infrastructure.Entities;
+using Uniring.Domain.Entities.IdentityEntities;
 
 namespace Uniring.Infrastructure.Services
 {
@@ -69,19 +69,20 @@ namespace Uniring.Infrastructure.Services
         // Login: accept phone only
         public async Task<AuthResponse> LoginAsync(LoginRequest request)
         {
-            var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
-            if (string.IsNullOrWhiteSpace(normalizedPhone))
-                return new AuthResponse(false, null, null, new[] { "Phone number is required." });
+            //var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
+            //if (string.IsNullOrWhiteSpace(normalizedPhone))
+            //    return new AuthResponse(false, null, null, new[] { "Phone number is required." });
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
-            if (user == null) return new AuthResponse(false, null, null, new[] { "Invalid credentials." });
+            //var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            //if (user == null) return new AuthResponse(false, null, null, new[] { "Invalid credentials." });
 
-            var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
-            if (!pwdCheck.Succeeded)
-                return new AuthResponse(false, null, null, new[] { "Invalid credentials." });
+            //var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
+            //if (!pwdCheck.Succeeded)
+            //    return new AuthResponse(false, null, null, new[] { "Invalid credentials." });
 
-            var jwtPair = await GenerateJwtTokenAsync(user);
-            return new AuthResponse(true, jwtPair.TokenString, jwtPair.ExpiresAt, null);
+            //var jwtPair = await GenerateJwtTokenAsync(user);
+            //return new AuthResponse(true, jwtPair.TokenString, jwtPair.ExpiresAt, null);
+            return null;
         }
 
 
@@ -106,37 +107,37 @@ namespace Uniring.Infrastructure.Services
             await _userManager.UpdateAsync(user);
         }
 
-        // JWT creation helper
-        private async Task<(string TokenString, DateTime ExpiresAt)> GenerateJwtTokenAsync(ApplicationUser user)
-        {
-            var jwtSection = _configuration.GetSection("Jwt");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSection["ExpiresMinutes"] ?? "60"));
+        //    // JWT creation helper
+        //    private async Task<(string TokenString, DateTime ExpiresAt)> GenerateJwtTokenAsync(ApplicationUser user)
+        //    {
+        //        var jwtSection = _configuration.GetSection("Jwt");
+        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]));
+        //        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        //        var expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSection["ExpiresMinutes"] ?? "60"));
 
-            var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            // Put phone as claim so API consumers can see it
-            new Claim(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty),
-            // Also include display name (username)
-            new Claim("display_name", user.UserName ?? string.Empty)
-        };
+        //        var claims = new List<Claim>
+        //    {
+        //        new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
+        //        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        //        // Put phone as claim so API consumers can see it
+        //        new Claim(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty),
+        //        // Also include display name (username)
+        //        new Claim("display_name", user.UserName ?? string.Empty)
+        //    };
 
-            // Add roles to claims
-            var roles = await _userManager.GetRolesAsync(user);
-            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+        //        // Add roles to claims
+        //        var roles = await _userManager.GetRolesAsync(user);
+        //        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-            var token = new JwtSecurityToken(
-                issuer: jwtSection["Issuer"],
-                audience: jwtSection["Audience"],
-                claims: claims,
-                expires: expires,
-                signingCredentials: creds);
+        //        var token = new JwtSecurityToken(
+        //            issuer: jwtSection["Issuer"],
+        //            audience: jwtSection["Audience"],
+        //            claims: claims,
+        //            expires: expires,
+        //            signingCredentials: creds);
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-            return (tokenString, expires);
-        }
+        //        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        //        return (tokenString, expires);
+        //    }
     }
 }
