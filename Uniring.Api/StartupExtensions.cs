@@ -1,4 +1,8 @@
-﻿using Uniring.Infrastructure;
+﻿using Uniring.Application.Interfaces;
+using Uniring.Application.Interfaces.Repositories;
+using Uniring.Application.Services;
+using Uniring.Infrastructure;
+using Uniring.Infrastructure.Repositories;
 
 namespace Uniring.Api
 {
@@ -28,6 +32,13 @@ namespace Uniring.Api
             //.SetIsOriginAllowed(pol => true)
             //.AllowAnyHeader()
             //.AllowCredentials()));
+
+            // TEMP ---------------------
+
+            builder.Services.AddScoped<IRingRepository, RingRepository>();
+            builder.Services.AddScoped<IRingService, RingService>();
+
+            // --------------------------
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
