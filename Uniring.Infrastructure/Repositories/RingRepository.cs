@@ -13,7 +13,12 @@ namespace Uniring.Infrastructure.Repositories
             _db = db;
         }
 
-        public async Task<Ring?> GetRingByUid(string uid)
+        public async Task<Ring?> GetRingBySerialAsync(string serial)
+        {
+            return await _db.Rings.FirstOrDefaultAsync(r => r.Serial == serial);
+        }
+
+        public async Task<Ring?> GetRingByUidAsync(string uid)
         {
             return await _db.Rings.FirstOrDefaultAsync(r => r.Uid == uid);
         }

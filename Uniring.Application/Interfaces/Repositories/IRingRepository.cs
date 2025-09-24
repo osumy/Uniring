@@ -1,4 +1,5 @@
 ﻿
+using Uniring.Contracts.Ring;
 using Uniring.Domain.Entities;
 
 namespace Uniring.Application.Interfaces.Repositories
@@ -10,6 +11,13 @@ namespace Uniring.Application.Interfaces.Repositories
         /// </summary>
         /// <param name="uid">string NanoId</param>
         /// <returns>Ring</returns>
-        public Task<Ring?> GetRingByUid(string uid);
+        public Task<Ring?> GetRingByUidAsync(string uid);
+
+        /// <summary>
+        /// Returns a Ring object based on given serial
+        /// </summary>
+        /// <param name="serial">string serial</param>
+        /// <returns>Ring</returns>
+        public Task<Ring?> GetRingBySerialAsync(string uid);
     }
 }
