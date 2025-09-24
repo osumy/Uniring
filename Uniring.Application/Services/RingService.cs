@@ -1,5 +1,6 @@
 ﻿using Uniring.Application.Interfaces;
 using Uniring.Application.Interfaces.Repositories;
+using Uniring.Contracts.Ring;
 using Uniring.Domain.Entities;
 
 namespace Uniring.Application.Services
@@ -13,11 +14,35 @@ namespace Uniring.Application.Services
             _ringRepository = ringRepository;
         }
 
-        public async Task<Ring?> GetRingByUid(string uid)
+        public async Task<RingResponse?> GetRingBySerialAsync(string serial)
         {
-            var result = await _ringRepository.GetRingByUid(uid);
+            var result = await _ringRepository.GetRingBySerialAsync(serial);
 
-            return result;
+            RingResponse response = new RingResponse
+            {
+                Uid = result.Uid,
+                Serial = result.Serial,
+                Name = result.Name,
+                Price = result.Price,
+            };
+
+            return response;
         }
+
+        public async Task<RingResponse?> GetRingByUidAsync(string uid)
+        {
+            var result = await _ringRepository.GetRingByUidAsync(uid);
+
+            RingResponse response = new RingResponse 
+            { 
+                Uid = result.Uid,
+                Serial = result.Serial,
+                Name = result.Name,
+                Price = result.Price,
+            };
+
+            return response;
+        }
+
     }
 }
