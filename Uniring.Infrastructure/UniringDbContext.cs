@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Uniring.Domain.Entities;
-using Uniring.Infrastructure.Entities;
+using Uniring.Domain.Entities.IdentityEntities;
 
 namespace Uniring.Infrastructure
 {
-    public class UniringDbContext : IdentityDbContext<ApplicationUse>
+    public class UniringDbContext : 
+        IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public UniringDbContext(DbContextOptions<UniringDbContext> options) : base(options) { }
 
