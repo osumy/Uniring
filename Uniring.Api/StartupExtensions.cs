@@ -67,6 +67,7 @@ namespace Uniring.Api
             }
 
             //app.UseCustomExceptionHandler();
+            app.UseHsts();
 
             app.UseHttpsRedirection();
 
