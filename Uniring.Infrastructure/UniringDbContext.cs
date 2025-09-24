@@ -5,7 +5,7 @@ using Uniring.Infrastructure.Entities;
 
 namespace Uniring.Infrastructure
 {
-    public class UniringDbContext : DbContext//IdentityDbContext<ApplicationUser>
+    public class UniringDbContext : IdentityDbContext<ApplicationUse>
     {
         public UniringDbContext(DbContextOptions<UniringDbContext> options) : base(options) { }
 
