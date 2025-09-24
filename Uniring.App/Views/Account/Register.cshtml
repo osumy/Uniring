@@ -18,14 +18,21 @@
                         <path d="M8 12h16v2H8v-2zm0 4h16v2H8v-2zm0 4h10v2H8v-2z" fill="white" />
                     </svg>
                 </div>
-                <h1>Sign in to Dashboard</h1>
-                <p>Welcome back! Please sign in to continue</p>
+                <h1>Create New Account</h1>
+                <p>Join — just a few details</p>
             </div>
 
             <form class="login-form" id="loginForm" novalidate>
                 <div class="input-group">
                     <input type="email" id="email" name="email" required autocomplete="email" placeholder=" ">
-                    <label for="email">Email address</label>
+                    <label for="email">User Name</label>
+                    <span class="input-border"></span>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="email" name="email" required autocomplete="email" placeholder=" ">
+                    <label for="email">Phone Number</label>
                     <span class="input-border"></span>
                     <span class="error-message" id="emailError"></span>
                 </div>
@@ -36,6 +43,19 @@
                     <label for="password">Password</label>
                     <button type="button" class="password-toggle" id="passwordToggle"
                             aria-label="Toggle password visibility">
+                        <svg class="eye-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 3C4.5 3 1.6 5.6 1 8c.6 2.4 3.5 5 7 5s6.4-2.6 7-5c-.6-2.4-3.5-5-7-5zm0 8.5A3.5 3.5 0 118 4.5a3.5 3.5 0 010 7zm0-5.5a2 2 0 100 4 2 2 0 000-4z"
+                                  fill="currentColor" />
+                        </svg>
+                    </button>
+                    <span class="input-border"></span>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder=" ">
+                    <label for="password">Repeat Password</label>
+                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
                         <svg class="eye-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
                             <path d="M8 3C4.5 3 1.6 5.6 1 8c.6 2.4 3.5 5 7 5s6.4-2.6 7-5c-.6-2.4-3.5-5-7-5zm0 8.5A3.5 3.5 0 118 4.5a3.5 3.5 0 010 7zm0-5.5a2 2 0 100 4 2 2 0 000-4z"
                                   fill="currentColor" />
