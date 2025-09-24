@@ -11,4 +11,8 @@
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Uniring.Contracts\Uniring.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

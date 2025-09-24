@@ -25,7 +25,7 @@ namespace Uniring.Api.Controllers
         [HttpGet("serial/{serial}")]
         public async Task<IActionResult> GetRingBySerialAsync(string serial)
         {
-            var result = await _ringService.GetRingByUidAsync(serial);
+            var result = await _ringService.GetRingBySerialAsync(serial);
 
             return Ok(result);
         }

@@ -1,7 +1,22 @@
+using Uniring.App;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// register named client
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"]);
+    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+    client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"]));
+
+// optional: typed client or a service wrapper
+builder.Services.AddScoped<IApiService, ApiService>();
+
 
 var app = builder.Build();
 
@@ -20,8 +35,6 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.Run();
