@@ -15,13 +15,13 @@ body {
 
 a, a:after {
     text-decoration: none;
-    color:rgb(37, 79, 152);
+    color: rgb(37, 79, 152);
     display: block;
 }
 
-a:hover {
-    color: #a0b7d7;
-}
+    a:hover {
+        color: #a0b7d7;
+    }
 
 .new-btn {
     margin-top: 10px;
@@ -33,7 +33,6 @@ a:hover {
     font-weight: bold;
     padding-left: 5px;
     width: 20%;
-    height: 15;
     float: left;
 }
 
@@ -47,7 +46,7 @@ a:hover {
     height: 100vh;
 }
 
-.voorodak__wrapper-messages>div {
+.voorodak__wrapper-messages > div {
     padding: 15px;
     border-radius: 10px;
     margin-top: 15px;
@@ -56,10 +55,10 @@ a:hover {
     align-items: center
 }
 
-.voorodak__wrapper-messages>div svg {
-    display: inline-block;
-    margin-left: 10px
-}
+    .voorodak__wrapper-messages > div svg {
+        display: inline-block;
+        margin-left: 10px
+    }
 
 .voorodak__wrapper-messages-success {
     background: #f0fdf4;
@@ -90,27 +89,27 @@ a:hover {
     height: 70px
 }
 
-.voorodak__wrapper-main-head a img {
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;
-    height: 70px
-}
+    .voorodak__wrapper-main-head a img {
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+        height: 70px
+    }
 
-.voorodak__wrapper-main-head a {
-    display: block;
-    width: max-content;
-    margin: 0 auto
-}
+    .voorodak__wrapper-main-head a {
+        display: block;
+        width: max-content;
+        margin: 0 auto
+    }
 
-.voorodak__wrapper-main-head svg {
-    cursor: pointer;
-    position: absolute;
-    height: 20px;
-    margin: auto;
-    top: 0;
-    bottom: 0
-}
+    .voorodak__wrapper-main-head svg {
+        cursor: pointer;
+        position: absolute;
+        height: 20px;
+        margin: auto;
+        top: 0;
+        bottom: 0
+    }
 
 .voorodak__wrapper-main-box-title {
     display: block;
@@ -128,9 +127,9 @@ a:hover {
     text-align: justify
 }
 
-.voorodak__wrapper-main-box-description p {
-    margin: 0
-}
+    .voorodak__wrapper-main-box-description p {
+        margin: 0
+    }
 
 .voorodak-default .voorodak__wrapper-main .voorodak__wrapper-main-box {
     background: #fff;
@@ -149,7 +148,7 @@ a:hover {
 @media screen and (max-width:576px) {
 
     .voorodak-digikala .voorodak__wrapper-main,
-    .voorodak-default .voorodak__wrapper-main>div:not(.voorodak__wrapper-main-head) {
+    .voorodak-default .voorodak__wrapper-main > div:not(.voorodak__wrapper-main-head) {
         padding: 25px
     }
 }
@@ -163,20 +162,20 @@ a:hover {
     margin-bottom: 15px
 }
 
-.voorodak__wrapper-main-box-field input[type="password"],
-.voorodak__wrapper-main-box-field input[type="text"] {
-    transition: 0.3s;
-    font-family: inherit;
-    background: #f1f5f9;
-    border-radius: 10px !important;
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    height: 54px;
-    padding: 0 12px;
-    font-size: 16px;
-    border: 1px solid #e2e8f0
-}
+    .voorodak__wrapper-main-box-field input[type="password"],
+    .voorodak__wrapper-main-box-field input[type="text"] {
+        transition: 0.3s;
+        font-family: inherit;
+        background: #f1f5f9;
+        border-radius: 10px !important;
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        height: 54px;
+        padding: 0 12px;
+        font-size: 16px;
+        border: 1px solid #e2e8f0
+    }
 
 .voorodak-digikala .voorodak__wrapper-main-box-field input[type="password"],
 .voorodak-digikala .voorodak__wrapper-main-box-field input[type="text"] {
@@ -195,21 +194,21 @@ a:hover {
     text-align: center
 }
 
-#voorodak__wrapper-main-otp input[name='voorodak__otp']::-moz-placeholder {
-    letter-spacing: normal
-}
+    #voorodak__wrapper-main-otp input[name='voorodak__otp']::-moz-placeholder {
+        letter-spacing: normal
+    }
 
-#voorodak__wrapper-main-otp input[name='voorodak__otp']::placeholder {
-    letter-spacing: normal
-}
+    #voorodak__wrapper-main-otp input[name='voorodak__otp']::placeholder {
+        letter-spacing: normal
+    }
 
-#voorodak__wrapper-main-otp-reset input[name='voorodak__otp-reset']::-moz-placeholder {
-    letter-spacing: normal
-}
+    #voorodak__wrapper-main-otp-reset input[name='voorodak__otp-reset']::-moz-placeholder {
+        letter-spacing: normal
+    }
 
-#voorodak__wrapper-main-otp-reset input[name='voorodak__otp-reset']::placeholder {
-    letter-spacing: normal
-}
+    #voorodak__wrapper-main-otp-reset input[name='voorodak__otp-reset']::placeholder {
+        letter-spacing: normal
+    }
 
 #voorodak__wrapper-main-otp input[name='voorodak__first_name'] {
     float: right;
@@ -255,9 +254,9 @@ a:hover {
     box-sizing: border-box
 }
 
-.voorodak .voorodak__wrapper-main button:hover {
-    background: var(--voorodak-button-color-hover)
-}
+    .voorodak .voorodak__wrapper-main button:hover {
+        background: var(--voorodak-button-color-hover)
+    }
 
 .voorodak__wrapper-main-box-action {
     margin: 15px 0;
@@ -266,29 +265,29 @@ a:hover {
     justify-content: space-between
 }
 
-.voorodak__wrapper-main-box-timer-resend,
-.voorodak__wrapper-main-box-action a {
-    color: var(--voorodak-button-color);
-    font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    margin-bottom: 10px;
-    text-decoration: none;
-    cursor: pointer;
-    width: max-content
-}
+    .voorodak__wrapper-main-box-timer-resend,
+    .voorodak__wrapper-main-box-action a {
+        color: var(--voorodak-button-color);
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        width: max-content
+    }
 
 .voorodak__wrapper-main-box-timer-resend {
     margin-bottom: 0
 }
 
-.voorodak__wrapper-main-box-timer-resend svg,
-.voorodak__wrapper-main-box-action a svg {
-    display: inline-block;
-    margin-right: 4px;
-    position: relative;
-    top: .5px
-}
+    .voorodak__wrapper-main-box-timer-resend svg,
+    .voorodak__wrapper-main-box-action a svg {
+        display: inline-block;
+        margin-right: 4px;
+        position: relative;
+        top: .5px
+    }
 
 .voorodak__wrapper-main-box-action a:hover {
     color: var(--voorodak-button-color)
@@ -298,12 +297,12 @@ a:hover {
     border-color: #ef4444 !important
 }
 
-.voorodak__wrapper-main-box-field-invalid~span {
-    font-size: 13px;
-    color: #ef4444;
-    display: block;
-    margin-top: 7px
-}
+    .voorodak__wrapper-main-box-field-invalid ~ span {
+        font-size: 13px;
+        color: #ef4444;
+        display: block;
+        margin-top: 7px
+    }
 
 .voorodak__wrapper-main-box-timer {
     display: flex;
@@ -317,10 +316,10 @@ a:hover {
     color: #64748b
 }
 
-.voorodak__wrapper-main-box-timer-countdown span {
-    display: inline-block;
-    margin-left: 5px
-}
+    .voorodak__wrapper-main-box-timer-countdown span {
+        display: inline-block;
+        margin-left: 5px
+    }
 
 .lds-ellipsis,
 .lds-ellipsis div {
@@ -337,35 +336,35 @@ a:hover {
     margin: 0 auto
 }
 
-.lds-ellipsis div {
-    position: absolute;
-    top: 19.333px;
-    width: 12.333px;
-    height: 12.333px;
-    border-radius: 50%;
-    background: currentColor;
-    animation-timing-function: cubic-bezier(0, 1, 1, 0)
-}
+    .lds-ellipsis div {
+        position: absolute;
+        top: 19.333px;
+        width: 12.333px;
+        height: 12.333px;
+        border-radius: 50%;
+        background: currentColor;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0)
+    }
 
-.lds-ellipsis div:nth-child(1) {
-    left: 8px;
-    animation: lds-ellipsis1 0.6s infinite
-}
+        .lds-ellipsis div:nth-child(1) {
+            left: 8px;
+            animation: lds-ellipsis1 0.6s infinite
+        }
 
-.lds-ellipsis div:nth-child(2) {
-    left: 8px;
-    animation: lds-ellipsis2 0.6s infinite
-}
+        .lds-ellipsis div:nth-child(2) {
+            left: 8px;
+            animation: lds-ellipsis2 0.6s infinite
+        }
 
-.lds-ellipsis div:nth-child(3) {
-    left: 32px;
-    animation: lds-ellipsis2 0.6s infinite
-}
+        .lds-ellipsis div:nth-child(3) {
+            left: 32px;
+            animation: lds-ellipsis2 0.6s infinite
+        }
 
-.lds-ellipsis div:nth-child(4) {
-    left: 56px;
-    animation: lds-ellipsis3 0.6s infinite
-}
+        .lds-ellipsis div:nth-child(4) {
+            left: 56px;
+            animation: lds-ellipsis3 0.6s infinite
+        }
 
 @keyframes lds-ellipsis1 {
     0% {
@@ -410,17 +409,17 @@ a:hover {
         background: #fff
     }
 
-    .voorodak.voorodak-zarinpal .voorodak__wrapper>div {
-        flex: 1
-    }
+        .voorodak.voorodak-zarinpal .voorodak__wrapper > div {
+            flex: 1
+        }
 
-    .voorodak.voorodak-zarinpal .voorodak__wrapper .voorodak__wrapper-main-right {
-        padding: 30px;
-        box-sizing: border-box;
-        flex: 0 0 450px;
-        max-width: 450px;
-        position: relative
-    }
+        .voorodak.voorodak-zarinpal .voorodak__wrapper .voorodak__wrapper-main-right {
+            padding: 30px;
+            box-sizing: border-box;
+            flex: 0 0 450px;
+            max-width: 450px;
+            position: relative
+        }
 
     .voorodak.voorodak-zarinpal .voorodak__wrapper-main button {
         width: 160px;
@@ -467,5 +466,206 @@ a:hover {
         box-shadow: 0 5px 15px 0 rgba(31, 32, 35, .07);
         background: #fff;
         padding: 25px
+    }
+}
+
+/* ensure body gradient is visible and full height */
+html,
+body {
+    height: 100%;
+    min-height: 100vh;
+}
+
+    /* page background: put your gradient here (same as search page theme) */
+    body.voorodak-page {
+        background: radial-gradient(1200px 600px at 20% 10%, rgba(255, 255, 255, 0.02), transparent 8%), linear-gradient(180deg, #0f2130, #0b1621 60%);
+        background-attachment: fixed;
+    }
+
+/* make .voorodak transparent so underlying body shows through */
+.voorodak {
+    background: transparent !important;
+    /* !important only to override any inline style if you forgot to remove it */
+}
+
+/* keep the inner card glassy (your existing rules may already set this) */
+.voorodak__wrapper-main-box {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(3, 7, 11, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+
+
+/* ---------------- Minimal blue theme override — paste at END of style.css ---------------- */
+:root {
+    --blue-1: #071233;
+    /* deep background */
+    --blue-2: #0b2a57;
+    /* mid background */
+    --card-bg: #ffffff;
+    /* card background (white) */
+    --card-text: #0b1b2a;
+    /* dark text on card */
+    --muted: #556577;
+    /* muted text */
+    --accent: #3a62b9;
+    /* primary button blue */
+    --accent-2: #32549e;
+    /* button darker shade */
+    --radius: 12px;
+    --input-bg: #f7fafc;
+    /* light input background */
+    --input-border: #e6eefc;
+    /* subtle input border */
+}
+
+/* page background (dark blue gradient) */
+body.voorodak-page {
+    background: radial-gradient(900px 420px at 10% 8%, rgba(37, 99, 235, 0.06), transparent 6%), linear-gradient(180deg, var(--blue-1), var(--blue-2) 60%);
+    color: var(--card-text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* make outer container transparent so card stands out */
+.voorodak {
+    background: transparent !important;
+}
+
+/* Card: white, rounded, clean shadow */
+.voorodak-page .voorodak__wrapper-main-box {
+    background: var(--card-bg) !important;
+    color: var(--card-text);
+    border-radius: var(--radius);
+    padding: 28px 30px;
+    box-shadow: 0 10px 30px rgba(6, 15, 30, 0.12);
+    border: 1px solid rgba(11, 25, 40, 0.04);
+}
+
+/* Logo circle: cool blue variant */
+.logo-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #e6f0ff 0%, #cfe0ff 50%, #a9c7ff 100%);
+    margin: 0 auto 12px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(7, 18, 36, 0.08);
+}
+
+    .logo-circle svg {
+        width: 26px;
+        height: 26px;
+        fill: #0b1b2a;
+    }
+
+/* Title & description — dark text, centered */
+.voorodak__wrapper-main-box-title {
+    color: var(--card-text);
+    font-size: 22px;
+    font-weight: 700;
+    margin: 6px 0 8px;
+    text-align: center;
+}
+
+.voorodak__wrapper-main-box-description {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* Inputs: white panels with subtle border */
+.voorodak__wrapper-main-box-field input,
+.voorodak__wrapper-main-box-field input[type=text],
+.voorodak__wrapper-main-box-field input[type=password] {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: 52px;
+    padding: 0 14px;
+    border-radius: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--card-text);
+    font-size: 15px;
+}
+
+    .voorodak__wrapper-main-box-field input::placeholder {
+        color: #94a3b8;
+    }
+
+    .voorodak__wrapper-main-box-field input:focus {
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+        border-color: rgba(37, 99, 235, 0.28);
+        outline: none;
+    }
+
+/* CTA primary button: blue gradient */
+.voorodak .voorodak__wrapper-main button,
+.voorodak .voorodak__wrapper-main .btn {
+    height: 52px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12);
+}
+
+    .voorodak .voorodak__wrapper-main button:hover,
+    .voorodak .voorodak__wrapper-main .btn:hover {
+        transform: translateY(-2px);
+    }
+
+/* secondary links */
+.new-btn a {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.language-button button {
+    background: transparent;
+    border: 1px solid rgba(11, 25, 40, 0.06);
+    color: var(--muted);
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+/* meta row layout spacing */
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-top: 14px;
+}
+
+/* adapt title size on small screens */
+@media (max-width:576px) {
+    .voorodak__wrapper-main-box {
+        padding: 18px;
+    }
+
+    .voorodak__wrapper-main-box-title {
+        font-size: 18px;
+    }
+
+    .logo-circle {
+        width: 56px;
+        height: 56px;
     }
 }

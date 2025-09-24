@@ -12,21 +12,18 @@ namespace Uniring.App.Controllers
         }
 
         [Route("/")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var user = await _api.GetRingByUidAsync("UID");
-            ViewBag.user = user;
-
             return View();
         }
 
-        [Route("/s/{serial}")]
+        [Route("/serial/{serial}")]
         public async Task<IActionResult> Index(string serial)
         {
             var user = await _api.GetRingBySerialAsync(serial);
             ViewBag.user = user;
 
-            return View();
+            return Ok(user);
         }
     }
 }

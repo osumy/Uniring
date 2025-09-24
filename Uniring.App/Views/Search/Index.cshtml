@@ -1,29 +1,127 @@
-﻿<div>
-    <p>
-        @ViewBag.user.Uid
-    </p>
-</div>
+﻿<!doctype html>
+<html lang="fa" dir="rtl">
 
-<div>
-    <p>
-        @ViewBag.user.Name
-    </p>
-</div>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>تأیید اصالت انگشتر</title>
 
-<div>
-    <p>
-        @ViewBag.user.Serial
-    </p>
-</div>
+    <!-- Google fonts for Persian and Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;700&family=Vazirmatn:wght@300;400;600;700&display=swap"
+          rel="stylesheet">
 
-<div>
-    <p>
-        @ViewBag.user.Price
-    </p>
-</div>
+    <link href="~/css/SearchPageStyle.css" rel="stylesheet" />
+</head>
 
-<div>
-    <p>
-        @ViewBag.user.Description
-    </p>
-</div>
+<body>
+    <div class="lang-switch" aria-hidden="false" role="toolbar" aria-label="language switch">
+        <div class="lang-group-right">
+            <button class="lang-btn active" data-lang="fa">فارسی</button>
+            <button class="lang-btn" data-lang="ar">العربية</button>
+        </div>
+
+        <div class="login-group-left">
+            <a href="/login"><button class="login-btn">ورود</button></a>
+        </div>
+    </div>
+
+    <main class="page" id="page">
+        <div class="logo-circle" aria-hidden="true">
+            <!-- magnifier icon -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM10 15a5 5 0 110-10 5 5 0 010 10z" />
+            </svg>
+        </div>
+
+        <h1 id="title">تأیید اصالت انگشتر</h1>
+        <p class="lead" id="subtitle">شماره سریال انگشتر خود را وارد کنید تا اصالت و اطلاعات مالکیت را بررسی کنید</p>
+
+        <section class="card" role="region" aria-labelledby="lookup-label">
+            <div class="badge">
+                <span class="crown" aria-hidden="true">♛</span>
+                <span id="lookup-label">جستجوی شماره سریال</span>
+            </div>
+
+            <form class="search-row" onsubmit="event.preventDefault(); searchSerial();" aria-label="serial lookup form">
+                <input id="serial" class="input" type="text" inputmode="text" autocomplete="off"
+                       placeholder="شماره سریال انگشتر را وارد کنید (مثلاً: RNG-001-2024)"
+                       aria-label="serial number input">
+
+                <button class="btn" type="submit" aria-label="جستجو">
+                    <!-- search icon -->
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z" />
+                    </svg>
+                    <span id="btn-text">جستجو</span>
+                </button>
+            </form>
+
+            <p class="help" id="help">در یافتن انگشتر خود مشکل دارید؟ برای کمک با تیم پشتیبانی تماس بگیرید.</p>
+        </section>
+    </main>
+    <!-- Result: Not Found -->
+    <section id="result-notfound" class="card" style="display:none;" aria-live="polite">
+        <div class="badge">
+            <span class="crown" aria-hidden="true">⚠</span>
+            <span id="nf-title">یافت نشد</span>
+        </div>
+
+        <p id="nf-message" class="lead" style="margin-bottom:22px;">
+            شماره سریال مورد نظر در سیستم ما پیدا نشد. لطفا دوباره بررسی کنید یا با پشتیبانی تماس بگیرید.
+        </p>
+
+        <div style="display:flex;gap:12px;justify-content:center;">
+            <button class="btn" onclick="setLang(document.documentElement.lang === 'ar' ? 'ar' : 'fa');">
+                <!-- back / try again -->
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 19l-7-7 7-7v14zM14 5v14h2V5h-2z" /></svg>
+                <span id="nf-btn">بررسی دوباره</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Result: Product Found -->
+    <section id="result-product" class="card" style="display:none;" aria-live="polite">
+        <div class="badge">
+            <span class="crown" aria-hidden="true">💍</span>
+            <span id="prod-title">اطلاعات انگشتر</span>
+        </div>
+
+        <div class="product-grid" style="gap:22px;align-items:center;margin-top:6px;">
+            <div class="prod-image-wrap">
+                <img id="prod-image" src="" alt="ring image" />
+            </div>
+
+            <div class="prod-info">
+                <h2 id="prod-name" style="margin:0 0 8px;font-size:26px;"></h2>
+                <p id="prod-desc" style="color:var(--muted);margin:0 0 12px;"></p>
+
+                <dl style="text-align:right;margin:12px 0;color:var(--muted);">
+                    <dt id="prod-dt-purchase" style="font-weight:700;">تاریخ خرید</dt>
+                    <dd id="prod-purchase" style="margin:6px 0 10px;"></dd>
+
+                    <dt id="prod-dt-serial" style="font-weight:700;">شماره سریال</dt>
+                    <dd id="prod-serial" style="margin:6px 0 10px;"></dd>
+
+                    <dt id="prod-dt-price" style="font-weight:700;">قیمت</dt>
+                    <dd id="prod-price" style="margin:6px 0 10px;font-weight:700;color:var(--white);"></dd>
+                </dl>
+
+                <p id="prod-verify" style="margin-top:12px;color:#cbe6d9;font-weight:700;">
+                    اصالت این انگشتر توسط فروشگاه تایید می شود.
+                </p>
+
+                <div style="margin-top:18px;">
+                    <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'});">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 19l-7-7 7-7v14zM14 5v14h2V5h-2z" /></svg>
+                        <span id="prod-btn">بازگشت</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="~/js/SearchPageScript.js"></script>
+
+</body>
+
+</html>
