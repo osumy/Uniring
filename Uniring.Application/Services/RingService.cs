@@ -18,6 +18,11 @@ namespace Uniring.Application.Services
         {
             var result = await _ringRepository.GetRingBySerialAsync(serial);
 
+            if (result == null) 
+            {
+                return null;
+            }
+
             RingResponse response = new RingResponse
             {
                 Uid = result.Uid,
@@ -32,6 +37,11 @@ namespace Uniring.Application.Services
         public async Task<RingResponse?> GetRingByUidAsync(string uid)
         {
             var result = await _ringRepository.GetRingByUidAsync(uid);
+
+            if (result == null)
+            {
+                return null;
+            }
 
             RingResponse response = new RingResponse 
             { 
