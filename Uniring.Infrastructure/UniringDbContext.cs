@@ -22,11 +22,11 @@ namespace Uniring.Infrastructure
                 Uid = "UID", Name = "انگشتر عقیق", Price = 25, Serial = "R2732874204", Id = Guid.NewGuid()
             });
 
-            //// Unique index on PhoneNumber to prevent duplicate phone registrations.
-            //// Note: ensure phone normalization before storing (E.164).
-            //builder.Entity<ApplicationUser>()
-            //    .HasIndex(u => u.PhoneNumber)
-            //    .IsUnique();
+            // Unique index on PhoneNumber to prevent duplicate phone registrations.
+            // Note: ensure phone normalization before storing (E.164).
+            builder.Entity<ApplicationUser>()
+                .HasIndex(u => u.PhoneNumber)
+                .IsUnique();
         }
     }
 }
