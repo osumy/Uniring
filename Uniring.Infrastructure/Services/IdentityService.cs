@@ -82,7 +82,7 @@ namespace Uniring.Infrastructure.Services
 
             //var jwtPair = await GenerateJwtTokenAsync(user);
             //return new AuthResponse(true, jwtPair.TokenString, jwtPair.ExpiresAt, null);
-            return null;
+            return null;   
         }
 
 
