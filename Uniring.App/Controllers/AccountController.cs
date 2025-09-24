@@ -4,6 +4,12 @@ namespace Uniring.App.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly IApiService _api;
+
+        public AccountController(IApiService api)
+        {
+            _api = api;
+        }
 
         [Route("login")]
         public IActionResult Login()
