@@ -1,5 +1,65 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!doctype html>
+<html lang="fa">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ثبت‌نام</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="card" role="main" aria-labelledby="regTitle">
+
+            <div class="head">
+                <div class="title" id="regTitle">ثبت‌نام</div>
+                <div class="sep" aria-hidden="true"></div>
+            </div>
+
+            <form class="auth form" data-type="register" novalidate>
+                <div class="field">
+                    <input class="input" name="username" type="text" autocomplete="username" />
+                    <label class="label">نام کاربری</label>
+                </div>
+
+                <div class="field">
+                    <input class="input" name="phone" type="text" inputmode="numeric" />
+                    <label class="label">شماره موبایل</label>
+                    <div class="hint">فرمت: 09xxxxxxxxx</div>
+                </div>
+
+                <div class="field">
+                    <input class="input" name="password" type="password" />
+                    <label class="label">رمز عبور</label>
+                    <div class="toggle-wrap">
+                        <button type="button" class="toggle-pass">🔒</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <input class="input" name="confirm_password" type="password" />
+                    <label class="label">تکرار رمز عبور</label>
+                    <div class="toggle-wrap">
+                        <button type="button" class="toggle-pass">🔒</button>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a class="btn ghost" href="login.html">قبلاً ثبت‌نام کردم</a>
+                    <button class="btn" type="submit">ثبت‌نام</button>
+                </div>
+            </form>
+
+            <div class="footer-row">
+                <div></div>
+                <div></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="~/js/script.js"></script>
+</body>
+
+</html>

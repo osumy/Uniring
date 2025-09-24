@@ -1,5 +1,51 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!doctype html>
+<html lang="fa">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ورود</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="card" role="main" aria-labelledby="loginTitle">
+
+            <div class="head">
+                <div class="title" id="loginTitle">ورود</div>
+                <div class="sep" aria-hidden="true"></div>
+            </div>
+
+            <form class="auth form" data-type="login" novalidate>
+                <div class="field">
+                    <input class="input" name="email" type="email" autocomplete="username" />
+                    <label class="label">ایمیل یا شماره موبایل</label>
+                </div>
+
+                <div class="field">
+                    <input class="input" name="password" type="password" />
+                    <label class="label">رمز عبور</label>
+                    <div class="toggle-wrap">
+                        <button type="button" class="toggle-pass">🔒</button>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a class="btn ghost" href="register.html">ثبت‌نام</a>
+                    <button class="btn" type="submit">ورود</button>
+                </div>
+            </form>
+
+            <div class="footer-row">
+                <div></div>
+                <div></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="~/js/script.js"></script>
+</body>
+
+</html>
