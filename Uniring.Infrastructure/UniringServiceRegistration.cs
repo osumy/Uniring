@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Uniring.Application.Interfaces;
-using Uniring.Infrastructure.Entities;
+using Uniring.Domain.Entities.IdentityEntities;
 using Uniring.Infrastructure.Services;
 using Uniring.Infrastructure.Validators;
 
@@ -14,7 +15,7 @@ namespace Uniring.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration) 
         {
             services.AddUniringDbContext(configuration.GetConnectionString("DefaultConnection"));
-            //services.AddUniringIdentity(configuration);
+            services.AddUniringIdentity(configuration);
 
             return services;
         }
@@ -32,28 +33,7 @@ namespace Uniring.Infrastructure
 
         private static IServiceCollection AddUniringIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-            //// Identity options
-            //services.AddIdentityCore<ApplicationUser>(options =>
-            //{
-            //    // Do not force email usage
-            //    options.User.RequireUniqueEmail = false;
-            //    // Password policy
-            //    options.Password.RequireDigit = true;
-            //    options.Password.RequiredLength = 6;
-            //    options.Password.RequireNonAlphanumeric = false;
-            //    options.Password.RequireUppercase = false;
-            //    options.Password.RequireLowercase = false;
-            //    // SignIn options
-            //    options.SignIn.RequireConfirmedEmail = false; // we don't rely on email
-            //                                                  // We won't use AllowedUserNameCharacters (we'll register a validator below)
-            //})
-            //.AddRoles<IdentityRole>()
-            //.AddEntityFrameworkStores<UniringDbContext>()
-            //.AddSignInManager()
-            //.AddDefaultTokenProviders();
-
-            // Register full Identity (includes SignInManager, UserManager, RoleManager, cookie defaults, etc.)
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 // Do not force email usage
                 options.User.RequireUniqueEmail = false;
@@ -69,7 +49,11 @@ namespace Uniring.Infrastructure
                 options.SignIn.RequireConfirmedEmail = false;
             })
             .AddEntityFrameworkStores<UniringDbContext>()
+            .AddUserStore<UserStore<ApplicationUser, ApplicationRole,
+            UniringDbContext, Guid>>()
+            .AddRoleStore<RoleStore<ApplicationRole, UniringDbContext, Guid>>()
             .AddDefaultTokenProviders();
+
 
             // Replace username validator with our own to allow Unicode names
             services.AddScoped<IUserValidator<ApplicationUser>, AnyCharsUserValidator<ApplicationUser>>();
