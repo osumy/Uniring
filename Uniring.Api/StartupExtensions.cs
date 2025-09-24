@@ -70,6 +70,8 @@ namespace Uniring.Api
 
             app.UseHttpsRedirection();
 
+            app.UseCors("DevCors"); // <-- IMPORTANT: enable cors before MapControllers
+
             app.UseAuthorization();
 
             app.MapControllers();
