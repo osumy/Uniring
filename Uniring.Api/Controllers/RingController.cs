@@ -14,10 +14,18 @@ namespace Uniring.Api.Controllers
             _ringService = ringService;
         }
 
-        [HttpGet("{uid}")]
-        public async Task<IActionResult> SearchRing(string uid)
+        [HttpGet("uid/{uid}")]
+        public async Task<IActionResult> GetRingByUidAsync(string uid)
         {
-            var result = await _ringService.GetRingByUid(uid);
+            var result = await _ringService.GetRingByUidAsync(uid);
+
+            return Ok(result);
+        }
+
+        [HttpGet("serial/{serial}")]
+        public async Task<IActionResult> GetRingBySerialAsync(string serial)
+        {
+            var result = await _ringService.GetRingByUidAsync(serial);
 
             return Ok(result);
         }
