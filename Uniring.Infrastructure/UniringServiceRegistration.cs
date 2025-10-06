@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Uniring.Application.Interfaces;
+using Uniring.Application.Interfaces.Repositories;
 using Uniring.Domain.Entities.IdentityEntities;
+using Uniring.Infrastructure.Repositories;
 using Uniring.Infrastructure.Services;
 using Uniring.Infrastructure.Validators;
 
@@ -14,12 +16,20 @@ namespace Uniring.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration) 
         {
+            services.AddRepositories();
             services.AddUniringDbContext(configuration.GetConnectionString("DefaultConnection"));
             services.AddUniringIdentity(configuration);
 
             return services;
         }
-        
+
+        private static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IRingRepository, RingRepository>();
+
+            return services;
+        }
+
         private static IServiceCollection AddUniringDbContext(this IServiceCollection services, string? conn)
         {
             services.AddDbContext<UniringDbContext> (

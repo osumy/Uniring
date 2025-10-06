@@ -37,12 +37,11 @@ namespace Uniring.Api
 
             // TEMP ---------------------
 
-            builder.Services.AddScoped<IRingRepository, RingRepository>();
             builder.Services.AddScoped<IRingService, RingService>();
 
             // --------------------------
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -61,7 +60,7 @@ namespace Uniring.Api
 
             //app.UseCors("open");
 
-            // Configure the HTTP request pipeline.
+            // Swagger
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
