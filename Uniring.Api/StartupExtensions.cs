@@ -22,13 +22,12 @@ namespace Uniring.Api
             // CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("DevCors", policy =>
+                options.AddPolicy("FrontendPolicy", policy =>
                 {
-                    policy.WithOrigins("https://localhost:5011") // App origin (use https port from launchSettings)
+                    policy.WithOrigins("https://localhost:7208") // allowed origin
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowCredentials()
-                          .SetIsOriginAllowed(pol => true);
+                          .AllowCredentials();
                 });
             });
 
@@ -63,7 +62,7 @@ namespace Uniring.Api
 
             app.UseHttpsRedirection();
 
-            app.UseCors("DevCors"); // <-- IMPORTANT: enable cors before MapControllers
+            app.UseCors("FrontendPolicy");            // <-- IMPORTANT: enable cors before MapControllers
 
             app.UseAuthentication(); 
             app.UseAuthorization();

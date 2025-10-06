@@ -15,7 +15,7 @@ namespace Uniring.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest req)
         {
-            var (succeeded, errors) = await _identity.RegisterAsync(req, role: "User");
+            var (succeeded, errors) = await _identity.RegisterUserAsync(req);
             if (!succeeded) return BadRequest(new { errors });
             return Ok();
         }
