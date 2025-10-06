@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Uniring.Application.Interfaces;
 using Uniring.Contracts.Auth;
+using Uniring.Domain.Entities;
 
 namespace Uniring.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AccountController : ControllerBase
+
+    public class AccountController : ApiControllerBase
     {
         private readonly IIdentityService _identity;
 

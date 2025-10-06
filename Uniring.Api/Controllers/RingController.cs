@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Uniring.Application.Interfaces;
+using Uniring.Domain.Entities;
 
 namespace Uniring.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RingController : ControllerBase
+    
+    public class RingController : ApiControllerBase
     {
         private readonly IRingService _ringService;
 
@@ -30,4 +30,5 @@ namespace Uniring.Api.Controllers
             return Ok(result);
         }
     }
+
 }
