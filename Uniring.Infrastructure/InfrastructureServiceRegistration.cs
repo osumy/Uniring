@@ -12,7 +12,7 @@ using Uniring.Infrastructure.Validators;
 
 namespace Uniring.Infrastructure
 {
-    public static class UniringServiceRegistration
+    public static class InfrastructureServiceRegistration
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration) 
         {

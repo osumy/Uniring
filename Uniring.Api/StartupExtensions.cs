@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Uniring.Application.Interfaces;
-using Uniring.Application.Interfaces.Repositories;
-using Uniring.Application.Services;
-using Uniring.Domain.Entities.IdentityEntities;
+﻿using Uniring.Application;
 using Uniring.Infrastructure;
-using Uniring.Infrastructure.Repositories;
 
 namespace Uniring.Api
 {
@@ -13,33 +8,29 @@ namespace Uniring.Api
         public static WebApplication ConfigureServices(
             this WebApplicationBuilder builder)
         {
-            // Add services to the container.
+            // Add services to the container
+
             builder.Services.AddControllers();
 
-            //builder.Services.AddApplicationServices();
+            builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
-            //builder.Services.AddPersistenceServices(builder.Configuration);
-            //builder.Services.AddIdentityServices(builder.Configuration);
 
             //builder.Services.AddScoped<ILoggedInUserService, LoggedInUserService>();
 
             //builder.Services.AddHttpContextAccessor();
 
-            //builder.Services.AddCors(
-            //    options => options.AddPolicy(
-            //        "open",
-            //        policy => policy.WithOrigins([builder.Configuration["ApiUrl"] ?? "https://localhost:7081",
-            //            builder.Configuration["BlazorUrl"] ?? "https://localhost:7080"])
-            //.AllowAnyMethod()
-            //.SetIsOriginAllowed(pol => true)
-            //.AllowAnyHeader()
-            //.AllowCredentials()));
-
-            // TEMP ---------------------
-
-            builder.Services.AddScoped<IRingService, RingService>();
-
-            // --------------------------
+            // CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("DevCors", policy =>
+                {
+                    policy.WithOrigins("https://localhost:5011") // App origin (use https port from launchSettings)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()
+                          .SetIsOriginAllowed(pol => true);
+                });
+            });
 
             // Swagger
             builder.Services.AddEndpointsApiExplorer();
