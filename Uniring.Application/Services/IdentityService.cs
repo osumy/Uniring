@@ -1,16 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Utils;
 using Uniring.Contracts.Auth;
 using Uniring.Domain.Entities.IdentityEntities;
 
-namespace Uniring.Infrastructure.Services
+namespace Uniring.Application.Services
 {
 
     /// <summary>
@@ -36,7 +32,7 @@ namespace Uniring.Infrastructure.Services
         }
 
         // Register: use DisplayName -> UserName, require phone
-        public async Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAsync(RegisterRequest request, string? role = null)
+        public async Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterUserAsync(RegisterRequest request)
         {
             // normalize phone
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
@@ -57,13 +53,18 @@ namespace Uniring.Infrastructure.Services
                 Email = null
             };
 
-            var createResult = await _userManager.CreateAsync(user, request.Password);
-            if (!createResult.Succeeded)
-                return (false, createResult.Errors.Select(e => e.Description));
+            var res = await _userManager.CreateAsync(user, request.Password);
+            if (!res.Succeeded)
+                return (false, res.Errors.Select(e => e.Description));
 
-            if (!string.IsNullOrEmpty(role)) await _userManager.AddToRoleAsync(user, role);
+            await _userManager.AddToRoleAsync(user, "user");
 
             return (true, null);
+        }
+
+        public Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAdminAsync(RegisterRequest request)
+        {
+            throw new NotImplementedException();
         }
 
         // Login: accept phone only
@@ -88,7 +89,7 @@ namespace Uniring.Infrastructure.Services
 
         public async Task SignOutAsync()
         {
-            await _signInManager.SignOutAsync();
+            //await _signInManager.SignOutAsync();
         }
 
         public async Task<bool> ConfirmPhoneAsync(string userId, string token)

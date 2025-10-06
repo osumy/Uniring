@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Interfaces.Repositories;
+using Uniring.Application.Services;
 using Uniring.Domain.Entities.IdentityEntities;
 using Uniring.Infrastructure.Repositories;
-using Uniring.Infrastructure.Services;
 using Uniring.Infrastructure.Validators;
 
 namespace Uniring.Infrastructure
@@ -77,7 +77,6 @@ namespace Uniring.Infrastructure
                 opts.SlidingExpiration = true;
             });
 
-            // Register your identity service implementation
             services.AddScoped<IIdentityService, IdentityService>();
 
             // JWT config: if the API will use JWT, register the JwtBearer in the Api host (not here)

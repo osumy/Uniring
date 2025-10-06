@@ -1,0 +1,359 @@
+﻿/* ---------- Fonts ---------- */
+@font-face {
+    font-family: "IRANSansWeb";
+    src: url("../font/IRANSansWeb.woff2") format("woff2");
+}
+
+/* ---------- Theme variables ---------- */
+:root {
+    --bg-deep: #071233;
+    --bg-mid: #0b2a57;
+    --card-text: #0b1b2a;
+    --muted: #556577;
+    --accent: #2057cc;
+    --accent-2: #19439e;
+    --input-bg: #f7fafc;
+    --input-border: #e6eefc;
+    --card-padding: 35px;
+}
+
+/* ---------- Base ---------- */
+html,
+body,
+button,
+input {
+    height: 100%;
+    margin: 0;
+    font-family: "IRANSansWeb";
+    direction: rtl;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--card-text);
+}
+
+/* Accessible helper to hide labels visually but keep for screen readers */
+.sr-only {
+    border: 0 !important;
+    clip: rect(1px, 1px, 1px, 1px) !important;
+    -webkit-clip-path: inset(50%) !important;
+    clip-path: inset(50%) !important;
+    height: 1px !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: absolute !important;
+    width: 1px !important;
+    white-space: nowrap !important;
+}
+
+/* ---------- Page background (exact style preserved) ---------- */
+body.page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--bg-deep), var(--bg-mid) 60%);
+    background-attachment: fixed;
+}
+
+/* ---------- Layout containers ---------- */
+.page-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.center-wrapper {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* ---------- Card (glass) ---------- */
+.card {
+    background: #fff;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: var(--card-padding);
+    box-shadow: 0 6px 30px rgba(3, 7, 11, 0.6);
+    box-sizing: border-box;
+}
+
+/* ---------- Header visuals ---------- */
+.logo-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #e6f0ff 0%, #cfe0ff 50%, #a9c7ff 100%);
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(7, 18, 36, 0.08);
+}
+
+.card-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 6px 0 8px;
+    text-align: center;
+    color: var(--card-text);
+}
+
+.card-description {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 18px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* ---------- Form fields ---------- */
+.register-form {
+    display: block;
+}
+
+.form-row {
+    margin-bottom: 15px;
+}
+
+.input {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: 54px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    font-size: 16px;
+    color: var(--card-text);
+}
+
+    .input::placeholder {
+        color: #94a3b8;
+    }
+
+    .input:focus {
+        border-color: rgba(37, 99, 235, 0.28);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+        outline: none;
+    }
+
+/* ---------- Primary button (uses inline CSS vars for quick overrides) ---------- */
+.btn-primary {
+    height: 54px;
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12);
+    transition: transform 160ms ease, 200ms ease;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+    }
+
+.card[style] .btn-primary:hover {
+    background: var(--primary-btn-hover);
+}
+
+/* when inline vars present */
+
+/* ---------- Helper row: links and language ---------- */
+.helper-row {
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.link-secondary {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+}
+
+.lang-wrapper {
+    float: left;
+}
+
+.btn-lang {
+    border: none;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+}
+
+
+#submitBtn {
+    margin-top: 30px;
+}
+
+#error-row {
+    margin-top: 18px;
+    margin-bottom: 10px;
+}
+
+#error-txt {
+    font-size: 12px;
+    margin-bottom: 5px;
+    margin-top: 0;
+    align-content: center;
+    color: rgb(239, 25, 25);
+}
+
+/* ---------- Validation state (kept) ---------- */
+.field-invalid {
+    border-color: #ef4444 !important;
+}
+
+    .field-invalid + .error-text {
+        font-size: 13px;
+        color: #ef4444;
+        display: block;
+        margin-top: 7px;
+    }
+
+/* ---------- Loader kept for compatibility ---------- */
+.lds-ellipsis,
+.lds-ellipsis div {
+    box-sizing: border-box;
+}
+
+.lds-ellipsis {
+    display: flex;
+    position: relative;
+    width: 80px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+    .lds-ellipsis div {
+        position: absolute;
+        top: 19.333px;
+        width: 12.333px;
+        height: 12.333px;
+        border-radius: 50%;
+        background: currentColor;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0)
+    }
+
+        .lds-ellipsis div:nth-child(1) {
+            left: 8px;
+            animation: lds-ellipsis1 0.6s infinite
+        }
+
+        .lds-ellipsis div:nth-child(2) {
+            left: 8px;
+            animation: lds-ellipsis2 0.6s infinite
+        }
+
+        .lds-ellipsis div:nth-child(3) {
+            left: 32px;
+            animation: lds-ellipsis2 0.6s infinite
+        }
+
+        .lds-ellipsis div:nth-child(4) {
+            left: 56px;
+            animation: lds-ellipsis3 0.6s infinite
+        }
+
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0)
+    }
+
+    100% {
+        transform: scale(1)
+    }
+}
+
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1)
+    }
+
+    100% {
+        transform: scale(0)
+    }
+}
+
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0)
+    }
+
+    100% {
+        transform: translate(24px, 0)
+    }
+}
+
+/* ---------- Responsive tweaks (kept) ---------- */
+@media (max-width: 576px) {
+    .card {
+        padding: 25px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .logo-circle {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+/* ---------- Large-screen zarinpal variant (kept structure) ---------- */
+@media (min-width: 992px) {
+    .page-container.zarinpal .center-wrapper {
+        max-width: 992px;
+        display: flex;
+        flex-wrap: wrap;
+        box-shadow: 0 5px 15px 0 rgba(31, 32, 35, .07);
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .page-container.zarinpal .card {
+        flex: 1;
+    }
+}
+
+/* Small helpers */
+.clear {
+    clear: both;
+}
+
+::placeholder {
+    opacity: 1;
+    color: #94a3b8;
+}
+
+::selection {
+    background: rgba(58, 98, 185, 0.15);
+    color: inherit;
+}
+
+::-moz-selection {
+    background: rgba(58, 98, 185, 0.15);
+    color: inherit;
+}
+
+/* End of stylesheet */
