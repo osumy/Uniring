@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Uniring.Application.Interfaces;
 using Uniring.Contracts.Auth;
-using Uniring.Domain.Entities;
 
 namespace Uniring.Api.Controllers
 {
-
+    [AllowAnonymous]
     public class AccountController : ApiControllerBase
     {
         private readonly IIdentityService _identity;
@@ -17,7 +17,8 @@ namespace Uniring.Api.Controllers
         {
             var (succeeded, errors) = await _identity.RegisterUserAsync(req);
             if (!succeeded) return BadRequest(new { errors });
-            return Ok();
+            RegisterResponse resp = new RegisterResponse("Token", null, null);
+            return Ok(resp);
         }
 
         //[HttpPost("login")]

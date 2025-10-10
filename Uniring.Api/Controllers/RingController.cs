@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Uniring.Application.Interfaces;
-using Uniring.Domain.Entities;
 
 namespace Uniring.Api.Controllers
 {
@@ -15,7 +14,7 @@ namespace Uniring.Api.Controllers
         }
 
         [HttpGet("uid/{uid}")]
-        public async Task<IActionResult> GetRingByUidAsync(string uid)
+        public async Task<IActionResult> GetRingByUid(string uid)
         {
             var result = await _ringService.GetRingByUidAsync(uid);
 
@@ -23,7 +22,7 @@ namespace Uniring.Api.Controllers
         }
 
         [HttpGet("serial/{serial}")]
-        public async Task<IActionResult> GetRingBySerialAsync(string serial)
+        public async Task<IActionResult> GetRingBySerial(string serial)
         {
             var result = await _ringService.GetRingBySerialAsync(serial);
 
