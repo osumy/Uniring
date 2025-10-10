@@ -10,7 +10,7 @@ namespace Uniring.Domain.Entities
     public class Ring
     {
         [Key]
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
 
         [Required]
         public required string Uid { get; set; }
