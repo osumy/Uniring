@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ namespace Uniring.Infrastructure
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IRingRepository, RingRepository>();
+            services.AddScoped<IFileRepository, FileRepository>();
 
             return services;
         }
@@ -75,6 +77,8 @@ namespace Uniring.Infrastructure
                 opts.Cookie.Name = "Uniring.Auth.Cookie";
                 opts.ExpireTimeSpan = TimeSpan.FromDays(1);
                 opts.SlidingExpiration = true;
+                opts.Cookie.SameSite = SameSiteMode.None;
+                opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
             services.AddScoped<IIdentityService, IdentityService>();
