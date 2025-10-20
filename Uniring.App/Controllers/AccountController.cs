@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
+using Uniring.Contracts.Auth;
 
 namespace Uniring.App.Controllers
 {
@@ -14,12 +16,30 @@ namespace Uniring.App.Controllers
         [Route("login")]
         public IActionResult Login()
         {
+            ViewBag.Title = "ورود";
             return View();
         }
 
         [Route("signup")]
+        [HttpGet]
         public IActionResult Signup()
         {
+            ViewBag.Title = "ثبت نام";
+            return View();
+        }
+
+        [Route("signup")]
+        [HttpPost]
+        public async Task<IActionResult> Signup(RegisterRequest requestModel)
+        {
+            ViewBag.Title = "ثبت نام";
+
+            if (!ModelState.IsValid) return View(requestModel);
+
+            var result = await _api.RegisterAsync(requestModel);
+
+            if (result.Token != null) { RedirectToRoute("/"); }
+
             return View();
         }
 

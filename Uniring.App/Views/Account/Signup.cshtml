@@ -1,92 +1,64 @@
-﻿<!DOCTYPE html>
+﻿<main class="card" id="registerCard">
+    <header class="card-header">
+        <h1 class="card-title">ثبت نام</h1>
+        <p class="card-description">لطفا اطلاعات خود را وارد کنید.</p>
+    </header>
 
-<html lang="fa" dir="rtl">
+    <!-- POST to the same controller action Signup (AccountController.Signup) -->
+    <form asp-action="Signup" asp-controller="Account" method="post" class="register-form" novalidate>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ثبت نام</title>
-    <link rel="stylesheet" href="~/css/AuthStyle.css" />
-</head>
-
-<body class="page">
-    <div class="page-container">
-        <div class="center-wrapper">
-            <main class="card" id="registerCard">
-                <header class="card-header">
-                    <h1 class="card-title">ثبت نام</h1>
-                    <p class="card-description">لطفا اطلاعات خود را وارد کنید.</p>
-                </header>
-
-                <form class="register-form" novalidate>
-                    <div class="form-row">
-                        <label class="sr-only" for="username">نام کاربری</label>
-                        <input id="username" name="username" class="input" type="text" placeholder="نام کاربری"
-                               autocomplete="username" inputmode="text" required />
-                    </div>
-
-                    <div class="form-row">
-                        <label class="sr-only" for="phone">شماره موبایل</label>
-                        <input id="phone" name="phone" class="input" type="tel" placeholder="شماره موبایل"
-                               autocomplete="tel" inputmode="tel" required />
-                    </div>
-
-                    <div class="form-row">
-                        <label class="sr-only" for="password">رمز عبور</label>
-                        <input id="password" name="password" class="input" type="password" placeholder="رمز عبور"
-                               autocomplete="new-password" required />
-                    </div>
-
-                    <div class="form-row">
-                        <label class="sr-only" for="confirmPassword">تکرار رمز عبور</label>
-                        <input id="confirmPassword" name="confirmPassword" class="input" type="password"
-                               placeholder="تکرار رمز عبور" autocomplete="new-password" required />
-                    </div>
-
-                    <div class="form-actions">
-                        <button id="submitBtn" type="submit" class="btn-primary">ورود</button>
-                    </div>
-
-                    <div id="error-row">
-                        <p id="error-txt">*خطا: نام کاربری نمی تواند کمتر از 6 حرف باشد.</p>
-                        <p id="error-txt">*خطا: نام کاربری نمی تواند کمتر از 6 حرف باشد.</p>
-                        <p id="error-txt">*خطا: نام کاربری نمی تواند کمتر از 6 حرف باشد.</p>
-
-                    </div>
-
-                    <div class="helper-row">
-                        <a class="link-secondary" href="login">از قبل حساب کاربری دارید؟</a>
-
-                        <div class="lang-wrapper">
-                            <button type="button" id="langButton" class="btn-lang"
-                                    onclick="location.href='signup-ar'">
-                                العربية
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </main>
+        <div class="form-row">
+            <label class="sr-only" for="UserName">نام کاربری</label>
+            <input id="UserName" name="DisplayName" class="input" type="text" placeholder="نام کاربری"
+                   autocomplete="username" inputmode="text" required />
         </div>
-        ```
 
-    </div>
+        <div class="form-row">
+            <label class="sr-only" for="PhoneNumber">شماره موبایل</label>
+            <input id="PhoneNumber" name="PhoneNumber" class="input" type="tel" placeholder="شماره موبایل"
+                   autocomplete="tel" inputmode="tel" required />
+        </div>
 
-    <script>
-        // keep non-invasive: prevent actual submit while demo
-        document.getElementById('registerCard')?.querySelector('form')?.addEventListener('submit', function (e) {
-            e.preventDefault();
-            // simple visual feedback (non-invasive)
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'خوش آمدید...';
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = 'ورود';
-                // in real app remove these lines and handle submit via fetch/XHR
-            }, 900);
-        });
-    </script>
+        <div class="form-row">
+            <label class="sr-only" for="Password">رمز عبور</label>
+            <input id="Password" name="Password" class="input" type="password" placeholder="رمز عبور"
+                   autocomplete="new-password" required />
+        </div>
 
-</body>
+        <div class="form-row">
+            <label class="sr-only" for="ConfirmPassword">تکرار رمز عبور</label>
+            <input id="ConfirmPassword" name="ConfirmPassword" class="input" type="password"
+                   placeholder="تکرار رمز عبور" autocomplete="new-password" required />
+        </div>
 
-</html>
+        <div class="form-actions">
+            <button id="submitBtn" type="submit" class="btn-primary">ثبت نام</button>
+        </div>
+
+        <!-- Error container: server-side ModelState / API errors will render here -->
+        <div id="error-row" aria-live="polite" class="error-row" style="color:crimson;">
+@*             @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="All" class="validation-summary"></div>
+            }
+            else if (TempData["ApiErrors"] is List<string> apiErrors)
+            {
+                foreach (var err in apiErrors)
+                {
+                    <p>*خطا: @err</p>
+                }
+            } *@
+        </div>
+
+        <div class="helper-row">
+            <a class="link-secondary" href="login">از قبل حساب کاربری دارید؟</a>
+
+            <div class="lang-wrapper">
+                <button type="button" id="langButton" class="btn-lang"
+                        onclick="location.href='signup-ar'">
+                    العربية
+                </button>
+            </div>
+        </div>
+    </form>
+</main>
