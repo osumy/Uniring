@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Uniring.Application.Interfaces;
+using Uniring.Contracts.Ring;
 
 namespace Uniring.Api.Controllers
 {
@@ -13,20 +14,27 @@ namespace Uniring.Api.Controllers
             _ringService = ringService;
         }
 
+
         [HttpGet("uid/{uid}")]
-        public async Task<IActionResult> GetRingByUid(string uid)
+        public async Task<ActionResult<RingResponse?>> GetRingByUid([FromRoute] RingRequest ringRequest)
         {
-            var result = await _ringService.GetRingByUidAsync(uid);
+            var result = await _ringService.GetRingByUidAsync(ringRequest.uid!);
 
             return Ok(result);
         }
 
         [HttpGet("serial/{serial}")]
-        public async Task<IActionResult> GetRingBySerial(string serial)
+        public async Task<ActionResult<RingResponse?>> GetRingBySerial([FromRoute] RingRequest ringRequest)
         {
-            var result = await _ringService.GetRingBySerialAsync(serial);
+            var result = await _ringService.GetRingBySerialAsync(ringRequest.serial!);
 
             return Ok(result);
+        }
+
+        [HttpPost("add-media/{id}")]
+        public async Task<ActionResult> AddMedia(string id)
+        {
+            return Ok();
         }
     }
 
