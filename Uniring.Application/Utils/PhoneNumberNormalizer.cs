@@ -1,5 +1,4 @@
-﻿
-using PhoneNumbers;
+﻿using PhoneNumbers;
 
 namespace Uniring.Application.Utils
 {

@@ -20,20 +20,25 @@ namespace Uniring.Application.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _configuration;
 
         public IdentityService(UserManager<ApplicationUser> userManager,
                                SignInManager<ApplicationUser> signInManager,
+                               RoleManager<ApplicationRole> roleManager,
                                IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _configuration = configuration;
         }
 
         // Register: use DisplayName -> UserName, require phone
         public async Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterUserAsync(RegisterRequest request)
         {
+            // TODO: Validation
+
             // normalize phone
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
@@ -59,6 +64,8 @@ namespace Uniring.Application.Services
 
             await _userManager.AddToRoleAsync(user, "user");
 
+            // TODO: LOGIN
+
             return (true, null);
         }
 
@@ -68,7 +75,7 @@ namespace Uniring.Application.Services
         }
 
         // Login: accept phone only
-        public async Task<AuthResponse> LoginAsync(LoginRequest request)
+        public async Task<RegisterResponse> LoginAsync(LoginRequest request)
         {
             //var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
             //if (string.IsNullOrWhiteSpace(normalizedPhone))
