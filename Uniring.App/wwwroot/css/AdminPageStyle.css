@@ -306,5 +306,5 @@ td {
 button,
 input[type="button"],
 input[type="submit"] {
-    font-family: "Noto Sans Arabic", "Noto Sans", Tahoma, Arial, sans-serif;
+    font-family: "Noto Sans Arabic", "Noto Sans", Tahoma, Arial, sans-serif !important;
 }

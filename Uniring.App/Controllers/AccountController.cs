@@ -14,6 +14,10 @@ namespace Uniring.App.Controllers
             _api = api;
         }
 
+        //////////////////////////////////////////////////////////////////////////
+        // Login
+        //////////////////////////////////////////////////////////////////////////
+
         [Route("login")]
         [HttpGet]
         public IActionResult Login()
@@ -26,6 +30,8 @@ namespace Uniring.App.Controllers
         [HttpPost]
         public IActionResult Login(LoginRequest requestModel)
         {
+            ViewBag.Title = "ورود";
+
             return RedirectToAction("Index", "Admin");
 
             if (requestModel.PhoneNumber == "09919529364" && requestModel.Password == "passpass1516")
@@ -35,6 +41,26 @@ namespace Uniring.App.Controllers
 
             return NotFound();
         }
+
+        [Route("login-ar")]
+        [HttpGet]
+        public IActionResult LoginAr(LoginRequest requestModel)
+        {
+            ViewBag.Title = "تسجيل الدخول";
+            return View();
+        }
+
+        [Route("login-ar")]
+        [HttpPost]
+        public IActionResult LoginAr()
+        {
+            ViewBag.Title = "تسجيل الدخول";
+            return View();
+        }
+
+        //////////////////////////////////////////////////////////////////////////
+        // Signup
+        //////////////////////////////////////////////////////////////////////////
 
         [Route("signup")]
         [HttpGet]
@@ -59,15 +85,19 @@ namespace Uniring.App.Controllers
             return View();
         }
 
-        [Route("login-ar")]
-        public IActionResult LoginAr()
+        [Route("signup-ar")]
+        [HttpGet]
+        public IActionResult SignupAr()
         {
+            ViewBag.Title = "إنشاء حساب";
             return View();
         }
 
         [Route("signup-ar")]
-        public IActionResult SignupAr()
+        [HttpPost]
+        public IActionResult SignupAr(RegisterRequest requestModel)
         {
+            ViewBag.Title = "إنشاء حساب";
             return View();
         }
     }

@@ -322,5 +322,7 @@ h1 {
     }
 }
 
-/* style for verification text in Arabic when dir=rtl still ok */
-/* you can override color for Arabic locale if you want */
+
+button, input {
+    font-family: "Vazirmatn", "Tajawal", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial !important;
+}

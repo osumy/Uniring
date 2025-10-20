@@ -31,6 +31,12 @@ input {
     color: var(--card-text);
 }
 
+button,
+input[type="button"],
+input[type="submit"] {
+    font-family: "IRANSansWeb" !important;
+}
+
 /* Accessible helper to hide labels visually but keep for screen readers */
 .sr-only {
     border: 0 !important;

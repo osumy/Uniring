@@ -1,46 +1,64 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+﻿<main class="card" id="registerCard">
+    <header class="card-header">
+        <h1 class="card-title">إنشاء حساب</h1>
+        <p class="card-description">الرجاء إدخال معلوماتك.</p>
+    </header>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="~/css/style.css">
-    <title>إنشاء حساب</title>
-</head>
+    <!-- POST to the same controller action Signup (AccountController.Signup) -->
+    <form asp-action="SignupAr" asp-controller="Account" method="post" class="register-form" novalidate>
 
-<body class="voorodak-page">
-    <div class="voorodak voorodak-default">
-        <div class="voorodak__wrapper"
-             style="--voorodak-button-color: #5498fa; --voorodak-button-color-hover: #2c61a6;">
-            <div class="voorodak__wrapper-main">
-                <div class="voorodak__wrapper-main-box" id="voorodak__wrapper-main-username">
-                    <div class="voorodak__wrapper-main-box-title">إنشاء حساب</div>
-                    <div class="voorodak__wrapper-main-box-description">
-                        <p>الرجاء إدخال معلوماتك.</p>
-                    </div>
-                    <div class="voorodak__wrapper-main-box-field">
-                        <input type="text" name="voorodak__username" placeholder="اسم المستخدم" autocomplete="off">
-                    </div>
-                    <div class="voorodak__wrapper-main-box-field">
-                        <input type="text" name="voorodak__phone" placeholder="رقم الهاتف" autocomplete="off"
-                               inputmode="numeric">
-                    </div>
-                    <div class="voorodak__wrapper-main-box-field">
-                        <input type="password" name="voorodak__password" placeholder="كلمة المرور" autocomplete="off">
-                    </div>
-                    <div class="voorodak__wrapper-main-box-field">
-                        <input type="password" name="voorodak__password_repeat" placeholder="تأكيد كلمة المرور"
-                               autocomplete="off">
-                    </div>
-                    <button id="voorodak__submit-username">إنشاء الحساب</button>
-                    <div class="new-btn"><a href="login-ar">هل لديك حساب بالفعل؟</a></div>
-                    <div class="language-button">
-                        <button onclick="window.location.href='signup'">فارسی</button>
-                    </div>
-                </div>
+        <div class="form-row">
+            <label class="sr-only" for="UserName">اسم المستخدم</label>
+            <input id="UserName" name="DisplayName" class="input" type="text" placeholder="اسم المستخدم"
+                   autocomplete="username" inputmode="text" required />
+        </div>
+
+        <div class="form-row">
+            <label class="sr-only" for="PhoneNumber">رقم الهاتف</label>
+            <input id="PhoneNumber" name="PhoneNumber" class="input" type="tel" placeholder="رقم الهاتف"
+                   autocomplete="tel" inputmode="tel" required />
+        </div>
+
+        <div class="form-row">
+            <label class="sr-only" for="Password">كلمة المرور</label>
+            <input id="Password" name="Password" class="input" type="password" placeholder="كلمة المرور"
+                   autocomplete="new-password" required />
+        </div>
+
+        <div class="form-row">
+            <label class="sr-only" for="ConfirmPassword">تأكيد كلمة المرور</label>
+            <input id="ConfirmPassword" name="ConfirmPassword" class="input" type="password"
+                   placeholder="تأكيد كلمة المرور" autocomplete="new-password" required />
+        </div>
+
+        <div class="form-actions">
+            <button id="submitBtn" type="submit" class="btn-primary">إنشاء الحساب</button>
+        </div>
+
+        <!-- Error container: server-side ModelState / API errors will render here -->
+        <div id="error-row" aria-live="polite" class="error-row" style="color:crimson;">
+            @*             @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="All" class="validation-summary"></div>
+            }
+            else if (TempData["ApiErrors"] is List<string> apiErrors)
+            {
+                foreach (var err in apiErrors)
+                {
+                    <p>*خطا: @err</p>
+                }
+            } *@
+        </div>
+
+        <div class="helper-row">
+            <a class="link-secondary" href="login-ar">هل لديك حساب بالفعل؟</a>
+
+            <div class="lang-wrapper">
+                <button type="button" id="langButton" class="btn-lang"
+                        onclick="location.href='signup'">
+                    فارسی
+                </button>
             </div>
         </div>
-    </div>
-</body>
-
-</html>
+    </form>
+</main>
