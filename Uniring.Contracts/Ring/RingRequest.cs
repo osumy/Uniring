@@ -2,9 +2,9 @@
 {
     public class RingRequest
     {
-        public required string Uid { get; set; }
+        public string? uid { get; set; }
 
-        public required string Serial { get; set; }
+        public string? serial { get; set; }
 
     }
 }
