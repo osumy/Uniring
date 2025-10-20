@@ -1,6 +1,4 @@
-﻿
-using Uniring.Contracts.Ring;
-using Uniring.Domain.Entities;
+﻿using Uniring.Contracts.Ring;
 
 namespace Uniring.Application.Interfaces
 {
