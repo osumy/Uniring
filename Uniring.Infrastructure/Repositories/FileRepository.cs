@@ -16,5 +16,27 @@ namespace Uniring.Infrastructure.Repositories
         {
             return await _db.Files.FirstOrDefaultAsync(r => r.Id == id);
         }
+
+        public Task<bool> SaveFileAsync(FileRecord record) 
+        {
+            _db.Files.Add(record);
+            //await _db.SaveChangesAsync();
+            return null; 
+        }
+
+        public Task<bool> DeleteFileAsync(FileRecord record)
+        {
+            try
+            {
+                if (File.Exists(record.Path)) File.Delete(record.Path);
+                _db.Files.Remove(record);
+                _db.SaveChanges();
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(false);
+            }
+        }
     }
 }
