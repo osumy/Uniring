@@ -1,0 +1,60 @@
+﻿<!doctype html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>انگشتر شریعتی - پنل ادمین</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="container" role="main">
+        <div class="topbar">
+            <div style="flex:1; min-width:220px; text-align:right;">
+                <h1 class="page-title">پنل ادمین</h1>
+                <p class="page-sub">مدیریت مشتریان و انگشترها</p>
+            </div>
+        </div>
+
+        <section class="actions-grid" aria-label="عملیات سریع">
+            <button class="action-btn bg-amber" id="action-new-customer">ثبت مشتری جدید</button>
+            <button class="action-btn bg-amber-dark" id="action-new-ring">ثبت انگشتر جدید</button>
+
+            <button class="action-btn bg-blue" id="action-list-customers">مشاهده لیست مشتریان</button>
+            <button class="action-btn bg-green" id="action-list-rings">مشاهده لیست انگشترها</button>
+        </section>
+
+        <section class="card-table" aria-label="ثبت‌های اخیر">
+            <div class="card-head">
+                <h3 style="margin-right:0;">
+                    ثبت‌های اخیر
+                </h3>
+            </div>
+
+            <div class="table-wrap">
+                <table role="table" aria-label="جدول ثبت‌های اخیر">
+                    <thead>
+                        <tr>
+                            <th>جزئیات انگشتر</th>
+                            <th>مشتری</th>
+                            <th>تاریخ خرید</th>
+                            <th>قیمت</th>
+                            <th>جنس</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrationsBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
