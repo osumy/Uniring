@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Uniring.Contracts.Auth
 {
@@ -28,6 +25,7 @@ namespace Uniring.Contracts.Auth
 
         [Required(ErrorMessage = "Confirm Password Can't be blank")]
         [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Password and Confirm password do not match.")]
         public required string ConfirmPassword { get; set; }
     }
 }
