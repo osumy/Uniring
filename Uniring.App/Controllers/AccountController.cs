@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 using System.Reflection;
 using Uniring.Contracts.Auth;
 
@@ -14,10 +15,25 @@ namespace Uniring.App.Controllers
         }
 
         [Route("login")]
+        [HttpGet]
         public IActionResult Login()
         {
             ViewBag.Title = "ورود";
             return View();
+        }
+
+        [Route("login")]
+        [HttpPost]
+        public IActionResult Login(LoginRequest requestModel)
+        {
+            return RedirectToAction("Index", "Admin");
+
+            if (requestModel.PhoneNumber == "09919529364" && requestModel.Password == "passpass1516")
+            {
+                return RedirectToAction("Index", "AdminController");
+            }
+
+            return NotFound();
         }
 
         [Route("signup")]

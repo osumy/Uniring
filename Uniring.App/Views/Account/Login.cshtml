@@ -1,42 +1,53 @@
-﻿<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+﻿<main class="card" id="loginCard">
+    <header class="card-header">
+        <h1 class="card-title">ورود</h1>
+        <p class="card-description">سلام!</p>
+        <p class="card-description">لطفا شماره موبایل و رمز عبور خود را وارد کنید.</p>
+    </header>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="~/css/style.css">
-    <title>ورود</title>
-</head>
+    <!-- POST to the same controller action Signup (AccountController.Login) -->
+    <form asp-action="Login" asp-controller="Account" method="post" class="register-form" novalidate>
 
-<body class="voorodak-page">
-    <div class="voorodak voorodak-default">
-        <div class="voorodak__wrapper"
-             style="--voorodak-button-color: #5498fa; --voorodak-button-color-hover: #2c61a6;">
-            <div class="voorodak__wrapper-main">
-                <div class="voorodak__wrapper-main-box">
-                    <div class="voorodak__wrapper-main-box-title">ورود</div>
-                    <div class="voorodak__wrapper-main-box-description">
-                        <p>سلام!</p>
-                        <p>لطفا شماره موبایل و رمز عبور خود را وارد کنید.</p>
-                    </div>
-                    <div class="voorodak__wrapper-main-box-field">
-                        <input type="text" name="phone" placeholder="شماره موبایل" autocomplete="off"
-                               inputmode="numeric">
-                    </div>
-                    <div class="voorodak__wrapper-main-box-field">
-                        <input type="password" name="password" placeholder="رمز عبور" autocomplete="off">
-                    </div>
-                    <button id="submit-login">ورود</button>
-                    <div class="new-btn">
-                        <a href="signup">حساب کاربری ندارید؟</a>
-                    </div>
-                    <div class="language-button">
-                        <button onclick="window.location.href='login-ar'">العربية</button>
-                    </div>
-                </div>
+        <div class="form-row">
+            <label class="sr-only" for="PhoneNumber">شماره موبایل</label>
+            <input id="PhoneNumber" name="PhoneNumber" class="input" type="tel" placeholder="شماره موبایل"
+                   autocomplete="tel" inputmode="tel" required />
+        </div>
+
+        <div class="form-row">
+            <label class="sr-only" for="Password">رمز عبور</label>
+            <input id="Password" name="Password" class="input" type="password" placeholder="رمز عبور"
+                   autocomplete="new-password" required />
+        </div>
+
+        <div class="form-actions">
+            <button id="submitBtn" type="submit" class="btn-primary">ورود</button>
+        </div>
+
+        <!-- Error container: server-side ModelState / API errors will render here -->
+        <div id="error-row" aria-live="polite" class="error-row" style="color:crimson;">
+            @*             @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="All" class="validation-summary"></div>
+            }
+            else if (TempData["ApiErrors"] is List<string> apiErrors)
+            {
+                foreach (var err in apiErrors)
+                {
+                    <p>*خطا: @err</p>
+                }
+            } *@
+        </div>
+
+        <div class="helper-row">
+            <a class="link-secondary" href="signup">حساب کاربری ندارید؟</a>
+
+            <div class="lang-wrapper">
+                <button type="button" id="langButton" class="btn-lang"
+                        onclick="location.href='login-ar'">
+                    العربية
+                </button>
             </div>
         </div>
-    </div>
-</body>
-
-</html>
+    </form>
+</main>

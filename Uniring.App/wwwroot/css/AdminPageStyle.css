@@ -302,3 +302,9 @@ td {
         padding: 12px
     }
 }
+
+button,
+input[type="button"],
+input[type="submit"] {
+    font-family: "Noto Sans Arabic", "Noto Sans", Tahoma, Arial, sans-serif;
+}
