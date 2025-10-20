@@ -1,4 +1,8 @@
-﻿using System.Text.Json;
+﻿using Microsoft.AspNetCore.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Uniring.Contracts.ApiResult;
+using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
 
 namespace Uniring.App
@@ -32,6 +36,31 @@ namespace Uniring.App
 
             var json = await result.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<RingResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var result = await client.PostAsJsonAsync("Account/register", requestModel);
+            var raw = await result.Content.ReadAsStringAsync();
+
+            if (result.IsSuccessStatusCode)
+            {
+                try
+                {
+                    // Try to parse expected success DTO
+                    var data = JsonSerializer.Deserialize<RegisterResponse>(raw);
+
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+            
+
+            return null;
         }
     }
 }
