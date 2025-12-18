@@ -28,7 +28,7 @@ namespace Uniring.Api.Controllers
 
             // TODO JWT
             //var token = _jwtGenerator.GenerateToken(result.Data);
-            //var response = new AuthResponseDto
+            //var response = new loginResponseDto
             //{
             //    PhoneNumber = result.Data.PhoneNumber,
             //    Roles = result.Data.Roles,

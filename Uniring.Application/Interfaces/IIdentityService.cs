@@ -6,7 +6,7 @@ namespace Uniring.Application.Interfaces
     {
         Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterUserAsync(RegisterRequest request);
         Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAdminAsync(RegisterRequest request);
-        Task<AuthResponse> LoginAsync(LoginRequest request);
+        Task<LoginResponse> LoginAsync(LoginRequest request);
         Task SetLastPurchaseAsync(string userId, DateTime purchaseTime);
 
         // ForgotPassword, ResetPassword, GetUserById ...

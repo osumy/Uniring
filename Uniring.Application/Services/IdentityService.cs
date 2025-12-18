@@ -74,19 +74,19 @@ namespace Uniring.Application.Services
         }
 
         // Login: accept phone only
-        public async Task<AuthResponse> LoginAsync(LoginRequest request)
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
-            if (user == null) return new AuthResponse { Success = false };
+            if (user == null) return new LoginResponse { Success = false };
 
             var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
             if (!pwdCheck.Succeeded)
-                return new AuthResponse { Success = false };
+                return new LoginResponse { Success = false };
 
-            return new AuthResponse
+            return new LoginResponse
             { Id = user.Id.ToString(), Role = _userManager.GetRolesAsync(user).ToString()! , PhoneNumber = user.PhoneNumber, Success = true};
 
         }
