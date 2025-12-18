@@ -27,15 +27,15 @@ namespace Uniring.App.Services
             throw new NotImplementedException();
         }
 
-        public Task<AccountResponse?> GetAccountByPhoneNumberAsync(string PhoneNumber)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<AccountResponse?> GetAccountByPhoneNumberAsync(string PhoneNumber)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public Task<AccountListResponse?> GetAccountListAsync()
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<AccountListResponse?> GetAccountListAsync()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public Task<RingResponse?> GetRingBySerialAsync(string serial)
         {

@@ -8,8 +8,8 @@ namespace Uniring.App.Interfaces
     {
         Task<RingListResponse?> GetRingListAsync();
         Task<RingResponse?> GetRingBySerialAsync(string serial);
-        Task<AccountListResponse?> GetAccountListAsync();
-        Task<AccountResponse?> GetAccountByPhoneNumberAsync(string PhoneNumber);
+        //Task<AccountListResponse?> GetAccountListAsync();
+        //Task<AccountResponse?> GetAccountByPhoneNumberAsync(string PhoneNumber);
 
         Task<bool> CreateNewAccountAsync(RegisterRequest requestModel);
         Task<bool> CreateNewRingAsync(RingResponse requestModel);

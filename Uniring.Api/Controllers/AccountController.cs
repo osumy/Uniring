@@ -34,7 +34,7 @@ namespace Uniring.Api.Controllers
             //    Roles = result.Data.Roles,
             //    Token = token
             //};
-
+             
             //return Ok(response);
 
             return Created();
