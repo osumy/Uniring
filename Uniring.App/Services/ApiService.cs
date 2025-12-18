@@ -39,10 +39,6 @@ namespace Uniring.App.Services
             return JsonSerializer.Deserialize<RingResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        //public Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         //public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
         //{

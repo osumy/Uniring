@@ -1,5 +1,4 @@
-﻿using Uniring.Contracts.Account;
-using Uniring.Contracts.Auth;
+﻿using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
 
 namespace Uniring.App.Interfaces

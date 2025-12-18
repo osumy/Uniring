@@ -20,13 +20,9 @@ namespace Uniring.Api.Authentication
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.Sub, loginResponse.Id.ToString()),
-                new Claim("phone", loginResponse.PhoneNumber)
+                new Claim("phone", loginResponse.PhoneNumber),
+                new Claim(ClaimTypes.Role, loginResponse.Role)
             };
-
-            //foreach (var role in loginResponse.Role)
-            //{
-            //    claims.Add(new Claim(ClaimTypes.Role, role));
-            //}
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

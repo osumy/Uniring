@@ -26,17 +26,6 @@ namespace Uniring.Api.Controllers
             var (succeeded, errors) = await _identity.RegisterUserAsync(req);
             if (!succeeded) return BadRequest(new { errors });
 
-            // TODO JWT
-            //var token = _jwtGenerator.GenerateToken(result.Data);
-            //var response = new loginResponseDto
-            //{
-            //    PhoneNumber = result.Data.PhoneNumber,
-            //    Roles = result.Data.Roles,
-            //    Token = token
-            //};
-             
-            //return Ok(response);
-
             return Created();
         }
 
@@ -44,19 +33,11 @@ namespace Uniring.Api.Controllers
         public async Task<ActionResult> Login([FromBody] LoginRequest req)
         {
             var res = await _identity.LoginAsync(req);
-            if (!res.Success) return Unauthorized();
+            if (!res.IsSuccess) return Unauthorized();
 
-            var token = _jwtGenerator.GenerateToken(res);
+            res.Data.Token = _jwtGenerator.GenerateToken(res.Data);
 
-            var response = new LoginResponse
-            {
-                Id = res.Id,
-                Token = token,
-                PhoneNumber = res.PhoneNumber,
-                Role = res.Role
-            };
-
-            return Ok(response);
+            return Ok(res.Data);
         }
     }
 

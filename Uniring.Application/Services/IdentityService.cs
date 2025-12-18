@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Utils;
+using Uniring.Contracts.ApiResult;
 using Uniring.Contracts.Auth;
 using Uniring.Domain.Entities.IdentityEntities;
 
@@ -74,21 +75,23 @@ namespace Uniring.Application.Services
         }
 
         // Login: accept phone only
-        public async Task<LoginResponse> LoginAsync(LoginRequest request)
+        public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
         {
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
-            if (user == null) return new LoginResponse { Success = false };
+            if (user == null) return Result<LoginResponse>.Error("Login Failed: User Not Found.");
 
             var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
             if (!pwdCheck.Succeeded)
-                return new LoginResponse { Success = false };
+                return Result<LoginResponse>.Error("Login Failed: Wrong Password.");
 
-            return new LoginResponse
-            { Id = user.Id.ToString(), Role = _userManager.GetRolesAsync(user).ToString()! , PhoneNumber = user.PhoneNumber, Success = true};
-
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "guest";
+            return Result<LoginResponse>.Success(new LoginResponse
+            { Id = user.Id.ToString(), Role = userRole, PhoneNumber = user.PhoneNumber }
+            );
         }
 
         public async Task<bool> ConfirmPhoneAsync(string userId, string token)
