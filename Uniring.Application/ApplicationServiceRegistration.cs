@@ -9,6 +9,7 @@ namespace Uniring.Application
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IRingService, RingService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

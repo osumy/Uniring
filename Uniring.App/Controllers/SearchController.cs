@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Uniring.App.Interfaces;
 
 namespace Uniring.App.Controllers
 {

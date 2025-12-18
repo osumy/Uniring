@@ -13,7 +13,6 @@ namespace Uniring.Application.Services
     /// IdentityService implements registration and login flows:
     /// - Register: create user with phone number and username; sets RegistrationDateTimeUtc
     /// - Login: accepts phone as Identifier, checks password, issues JWT for API clients
-    /// - SignOut: uses SignInManager to sign out (cookie)
     /// - SetLastPurchaseAsync: update LastPurchaseAtUtc
     /// </summary>
     public class IdentityService : IIdentityService
@@ -62,7 +61,7 @@ namespace Uniring.Application.Services
             if (!res.Succeeded)
                 return (false, res.Errors.Select(e => e.Description));
 
-            await _userManager.AddToRoleAsync(user, "user");
+            await _userManager.AddToRoleAsync(user, "guest");
 
             // TODO: LOGIN
 
@@ -75,28 +74,21 @@ namespace Uniring.Application.Services
         }
 
         // Login: accept phone only
-        public async Task<RegisterResponse> LoginAsync(LoginRequest request)
+        public async Task<AuthResponse> LoginAsync(LoginRequest request)
         {
-            //var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
-            //if (string.IsNullOrWhiteSpace(normalizedPhone))
-            //    return new AuthResponse(false, null, null, new[] { "Phone number is required." });
-
-            //var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
-            //if (user == null) return new AuthResponse(false, null, null, new[] { "Invalid credentials." });
-
-            //var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
-            //if (!pwdCheck.Succeeded)
-            //    return new AuthResponse(false, null, null, new[] { "Invalid credentials." });
-
-            //var jwtPair = await GenerateJwtTokenAsync(user);
-            //return new AuthResponse(true, jwtPair.TokenString, jwtPair.ExpiresAt, null);
-            return null;   
-        }
+            var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
 
-        public async Task SignOutAsync()
-        {
-            //await _signInManager.SignOutAsync();
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            if (user == null) return new AuthResponse { Success = false };
+
+            var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
+            if (!pwdCheck.Succeeded)
+                return new AuthResponse { Success = false };
+
+            return new AuthResponse
+            { Id = user.Id.ToString(), Role = _userManager.GetRolesAsync(user).ToString()! , PhoneNumber = user.PhoneNumber, Success = true};
+
         }
 
         public async Task<bool> ConfirmPhoneAsync(string userId, string token)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Uniring.Domain.Entities;
 using Uniring.Domain.Entities.IdentityEntities;
@@ -28,6 +29,20 @@ namespace Uniring.Infrastructure
             builder.Entity<ApplicationUser>()
                 .HasIndex(u => u.PhoneNumber)
                 .IsUnique();
+        }
+
+        public static async Task InitializeRolesAsync(RoleManager<ApplicationRole> roleManager)
+        {
+            string[] roleNames = { "guest", "admin", "user" };
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    await roleManager.CreateAsync(new ApplicationRole(roleName));
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
 using System.Reflection;
+using Uniring.App.Interfaces;
 using Uniring.Contracts.Auth;
 
 namespace Uniring.App.Controllers
@@ -78,9 +79,9 @@ namespace Uniring.App.Controllers
 
             if (!ModelState.IsValid) return View(requestModel);
 
-            var result = await _api.RegisterAsync(requestModel);
+            //var result = await _api.RegisterAsync(requestModel);
 
-            if (result.Token != null) { RedirectToRoute("/"); }
+            //if (result.Token != null) { RedirectToRoute("/"); }
 
             return View();
         }

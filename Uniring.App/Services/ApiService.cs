@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Uniring.App.Interfaces;
 using Uniring.Contracts.ApiResult;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
 
-namespace Uniring.App
+namespace Uniring.App.Services
 {
     public class ApiService : IApiService
     {
@@ -38,29 +39,34 @@ namespace Uniring.App
             return JsonSerializer.Deserialize<RingResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
-        {
-            var client = _httpFactory.CreateClient("Api");
-            var result = await client.PostAsJsonAsync("Account/register", requestModel);
-            var raw = await result.Content.ReadAsStringAsync();
+        //public Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-            if (result.IsSuccessStatusCode)
-            {
-                try
-                {
-                    // Try to parse expected success DTO
-                    var data = JsonSerializer.Deserialize<RegisterResponse>(raw);
+        //public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
+        //{
+        //    var client = _httpFactory.CreateClient("Api");
+        //    var result = await client.PostAsJsonAsync("Account/register", requestModel);
+        //    var raw = await result.Content.ReadAsStringAsync();
 
-                    return data;
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-            }
-            
+        //    if (result.IsSuccessStatusCode)
+        //    {
+        //        try
+        //        {
+        //            // Try to parse expected success DTO
+        //            var data = JsonSerializer.Deserialize<RegisterResponse>(raw);
 
-            return null;
-        }
+        //            return data;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return null;
+        //        }
+        //    }
+
+
+        //    return null;
+        //}
     }
 }

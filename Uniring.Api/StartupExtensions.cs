@@ -1,4 +1,10 @@
-﻿using Uniring.Application;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Uniring.Api.Authentication;
+using Uniring.Application;
+using Uniring.Domain.Entities.IdentityEntities;
 using Uniring.Infrastructure;
 
 namespace Uniring.Api
@@ -11,6 +17,9 @@ namespace Uniring.Api
             // Add services to the container
 
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -35,10 +44,35 @@ namespace Uniring.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            // Jwt
+            var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtSettings.Issuer,
+
+                        ValidateAudience = true,
+                        ValidAudience = jwtSettings.Audience,
+
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
+
             return builder.Build();
         }
 
-        public static WebApplication ConfigurePipeline(this WebApplication app)
+        public static async Task<WebApplication> ConfigurePipelineAsync(this WebApplication app)
         {
             //app.MapIdentityApi<ApplicationUser>();
 
@@ -49,6 +83,13 @@ namespace Uniring.Api
             //});
 
             //app.UseCors("open");
+
+            // Seed roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+                await UniringDbContext.InitializeRolesAsync(roleManager);
+            }
 
             // Swagger
             if (app.Environment.IsDevelopment())
