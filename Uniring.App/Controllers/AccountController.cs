@@ -49,6 +49,7 @@ namespace Uniring.App.Controllers
 
                 Response.Cookies.Append("authToken", result.Token, cookieOptions);
                 Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
                 Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
                 Response.Cookies.Append("userRole", result.Role, cookieOptions);
 
@@ -89,6 +90,7 @@ namespace Uniring.App.Controllers
 
                 Response.Cookies.Append("authToken", result.Token, cookieOptions);
                 Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
                 Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
                 Response.Cookies.Append("userRole", result.Role, cookieOptions);
 
@@ -131,6 +133,7 @@ namespace Uniring.App.Controllers
 
                 Response.Cookies.Append("authToken", result.Token, cookieOptions);
                 Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
                 Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
                 Response.Cookies.Append("userRole", result.Role, cookieOptions);
 
@@ -169,6 +172,7 @@ namespace Uniring.App.Controllers
 
                 Response.Cookies.Append("authToken", result.Token, cookieOptions);
                 Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
                 Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
                 Response.Cookies.Append("userRole", result.Role, cookieOptions);
 

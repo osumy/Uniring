@@ -68,7 +68,8 @@ namespace Uniring.Application.Services
             var roles = await _userManager.GetRolesAsync(user);
             var userRole = roles.FirstOrDefault() ?? "guest";
             return Result<LoginResponse>.Success(new LoginResponse
-            { Id = user.Id.ToString(), Role = userRole, PhoneNumber = user.PhoneNumber }
+            { Id = user.Id.ToString(), Role = userRole,
+                PhoneNumber = user.PhoneNumber, DisplayName = user.UserName }
             );
         }
 
@@ -93,7 +94,8 @@ namespace Uniring.Application.Services
             var roles = await _userManager.GetRolesAsync(user);
             var userRole = roles.FirstOrDefault() ?? "guest";
             return Result<LoginResponse>.Success(new LoginResponse
-            { Id = user.Id.ToString(), Role = userRole, PhoneNumber = user.PhoneNumber }
+            { Id = user.Id.ToString(), Role = userRole,
+                PhoneNumber = user.PhoneNumber, DisplayName = user.UserName }
             );
         }
 
