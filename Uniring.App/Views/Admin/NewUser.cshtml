@@ -24,6 +24,7 @@
         <!-- Scene 1: نام مشتری -->
         <div class="scene active" id="scene1">
             <h1>ثبت مشتری جدید</h1>
+            <p style="color: red">@ViewBag.Error</p>
             <p class="subtitle">لطفاً نام کامل مشتری را وارد کنید</p>
             
             <div class="input-group">
@@ -235,13 +236,34 @@
         passInput.addEventListener('input', checkPasswordMatch);
         confirmPassInput.addEventListener('input', checkPasswordMatch);
 
+        function generateSecurePassword() {
+            const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+            const numberChars = '0123456789';
+            const specialChars = '!@@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            // انتخاب حداقل یک کاراکتر از هر دسته
+            let password = '';
+            password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
+            password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
+            password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
+            password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+
+            // ترکیب همه کاراکترها برای بقیه رمز
+            const allChars = uppercaseChars + lowercaseChars + numberChars + specialChars;
+    
+            // تولید 8 کاراکتر اضافه (در مجموع 12 کاراکتر)
+            for (let i = 0; i < 8; i++) {
+                password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+            }
+
+            // ترتیب کاراکترها را تصادفی کن (برای جلوگیری از الگوی ثابت)
+            return password.split('').sort(() => 0.5 - Math.random()).join('');
+        }
+
         // Generate password
         document.getElementById('generatePassword').addEventListener('click', () => {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@@#$%';
-            let password = '';
-            for (let i = 0; i < 10; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            const password = generateSecurePassword();
             passInput.value = password;
             confirmPassInput.value = password;
             formData.password = password;
@@ -278,19 +300,21 @@
 
         // Scene 4: Submit
         document.getElementById('submitBtn').addEventListener('click', () => {
-            alert(`✅ مشتری "${formData.name}" با موفقیت ثبت شد!\n\n📱 شماره: ${formData.phone}\n🔑 رمز عبور: ${formData.password}`);
-            
-            // Reset form
-            formData.name = '';
-            formData.phone = '';
-            formData.password = '';
-            document.getElementById('customer-name').value = '';
-            document.getElementById('customer-phone').value = '';
-            passInput.value = '';
-            confirmPassInput.value = '';
-            finalPassword.textContent = '••••••••';
-            showScene('scene1');
+            // مقادیر را به فیلدهای مخفی منتقل کن
+            document.getElementById('hiddenName').value = formData.name;
+            document.getElementById('hiddenPhone').value = formData.phone;
+            document.getElementById('hiddenPassword').value = formData.password;
+            document.getElementById('hiddenPassword2').value = formData.password;
+
+            // فرم مخفی را submit کن
+            document.getElementById('hiddenForm').submit();
         });
     </script>
+    <form id="hiddenForm" asp-controller="Admin" asp-action="NewUser" method="post">
+        <input type="hidden" name="DisplayName" id="hiddenName" />
+        <input type="hidden" name="PhoneNumber" id="hiddenPhone" />
+        <input type="hidden" name="Password" id="hiddenPassword" />
+        <input type="hidden" name="ConfirmPassword" id="hiddenPassword2" />
+    </form>
 </body>
 </html>

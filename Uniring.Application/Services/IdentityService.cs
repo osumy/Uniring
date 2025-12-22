@@ -73,6 +73,48 @@ namespace Uniring.Application.Services
             );
         }
 
+        public async Task<Result<LoginResponse>> RegisterCustomerAsync(RegisterRequest request)
+        {
+            // TODO: Validation
+
+            // normalize phone
+            var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
+
+            if (string.IsNullOrWhiteSpace(normalizedPhone))
+                return Result<LoginResponse>.Error("Signup Failed: Wrong PhoneNumber.");
+
+            // check duplicate phone
+            var existing = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            if (existing != null)
+                return Result<LoginResponse>.Error("Signup Failed: Already Registered.");
+
+            var user = new ApplicationUser
+            {
+                UserName = request.DisplayName,     // display name only
+                PhoneNumber = normalizedPhone,
+                RegistrationDateTimeUtc = DateTime.UtcNow,
+                Email = null
+            };
+
+            var res = await _userManager.CreateAsync(user, request.Password);
+            if (!res.Succeeded)
+                return Result<LoginResponse>.Error("Signup Failed.");
+
+            await _userManager.AddToRoleAsync(user, "user");
+
+            var user2 = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "user";
+            return Result<LoginResponse>.Success(new LoginResponse
+            {
+                Id = user.Id.ToString(),
+                Role = userRole,
+                PhoneNumber = user.PhoneNumber,
+                DisplayName = user.UserName
+            }
+            );
+        }
+
         public Task<Result<LoginResponse>> RegisterAdminAsync(RegisterRequest request)
         {
             throw new NotImplementedException();

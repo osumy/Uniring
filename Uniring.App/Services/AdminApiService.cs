@@ -1,4 +1,5 @@
-﻿using Uniring.App.Interfaces;
+﻿using System.Text.Json;
+using Uniring.App.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
 
@@ -6,9 +7,25 @@ namespace Uniring.App.Services
 {
     public class AdminApiService : IAdminApiService
     {
-        public Task<bool> CreateNewAccountAsync(RegisterRequest requestModel)
+        private readonly IHttpClientFactory _httpFactory;
+
+        public AdminApiService(IHttpClientFactory httpFactory)
         {
-            throw new NotImplementedException();
+            _httpFactory = httpFactory;
+        }
+
+        public async Task<bool> CreateNewAccountAsync(RegisterRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var result = await client.PostAsJsonAsync("Admin/register-user", requestModel);
+            var raw = await result.Content.ReadAsStringAsync();
+
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public Task<bool> CreateNewRingAsync(RingResponse requestModel)
