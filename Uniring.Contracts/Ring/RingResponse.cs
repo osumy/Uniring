@@ -2,6 +2,8 @@
 {
     public class RingResponse
     {
+        public required Guid Id { get; set; }
+
         public required string Uid { get; set; }
 
         public required string Name { get; set; }

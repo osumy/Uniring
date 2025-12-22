@@ -29,6 +29,8 @@ namespace Uniring.Application.Services
                 Serial = result.Serial,
                 Name = result.Name,
                 Price = result.Price,
+                Id = result.Id,
+                Description = result.Description
             };
 
             return response;
@@ -49,6 +51,8 @@ namespace Uniring.Application.Services
                 Serial = result.Serial,
                 Name = result.Name,
                 Price = result.Price,
+                Id = result.Id,
+                Description = result.Description
             };
 
             return response;
