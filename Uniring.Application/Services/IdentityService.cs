@@ -35,7 +35,7 @@ namespace Uniring.Application.Services
         }
 
         // Register: use DisplayName -> UserName, require phone
-        public async Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterUserAsync(RegisterRequest request)
+        public async Task<Result<LoginResponse>> RegisterUserAsync(RegisterRequest request)
         {
             // TODO: Validation
 
@@ -43,12 +43,12 @@ namespace Uniring.Application.Services
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
             if (string.IsNullOrWhiteSpace(normalizedPhone))
-                return (false, new[] { "Phone number is required." });
+                return Result<LoginResponse>.Error("Signup Failed: Wrong PhoneNumber.");
 
             // check duplicate phone
             var existing = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
             if (existing != null)
-                return (false, new[] { "Phone number already in use." });
+                return Result<LoginResponse>.Error("Signup Failed: Already Registered.");
 
             var user = new ApplicationUser
             {
@@ -60,16 +60,19 @@ namespace Uniring.Application.Services
 
             var res = await _userManager.CreateAsync(user, request.Password);
             if (!res.Succeeded)
-                return (false, res.Errors.Select(e => e.Description));
+                return Result<LoginResponse>.Error("Signup Failed.");
 
             await _userManager.AddToRoleAsync(user, "guest");
 
-            // TODO: LOGIN
-
-            return (true, null);
+            var user2 = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "guest";
+            return Result<LoginResponse>.Success(new LoginResponse
+            { Id = user.Id.ToString(), Role = userRole, PhoneNumber = user.PhoneNumber }
+            );
         }
 
-        public Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAdminAsync(RegisterRequest request)
+        public Task<Result<LoginResponse>> RegisterAdminAsync(RegisterRequest request)
         {
             throw new NotImplementedException();
         }

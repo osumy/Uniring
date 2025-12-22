@@ -23,10 +23,12 @@ namespace Uniring.Api.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterRequest req)
         {
-            var (succeeded, errors) = await _identity.RegisterUserAsync(req);
-            if (!succeeded) return BadRequest(new { errors });
+            var res = await _identity.RegisterUserAsync(req);
+            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
 
-            return Created();
+            res.Data.Token = _jwtGenerator.GenerateToken(res.Data);
+
+            return Ok(res.Data);
         }
 
         [HttpPost("login")]

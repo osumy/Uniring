@@ -16,7 +16,11 @@ namespace Uniring.Api
         {
             // Add services to the container
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.PropertyNamingPolicy = null; 
+                    });
 
             builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
@@ -53,10 +57,10 @@ namespace Uniring.Api
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
+                        ValidIssuer = jwtSettings?.Issuer,
 
                         ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
+                        ValidAudience = jwtSettings?.Audience,
 
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
