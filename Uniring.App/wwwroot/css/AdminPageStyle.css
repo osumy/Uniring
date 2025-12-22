@@ -1,6 +1,6 @@
 ﻿:root {
-    --bg-1: #0f1724;
-    --bg-2: #0b1220;
+    --bg1: #0f2130; /* from homepage */
+    --bg2: #0b1621; /* from homepage */
     --text-1: #e6eef8;
     --muted: #94a3b8;
     --radius: 12px;
@@ -44,8 +44,8 @@ body {
 
 body {
     min-height: 100%;
-    background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
-    color: var(--text-1);
+    background: radial-gradient(1200px 600px at 20% 10%, rgba(255, 255, 255, 0.02), transparent 8%), linear-gradient(180deg, var(--bg1), var(--bg2) 60%);
+    color: var(--text-1); /* or var(--white) if you adopt homepage color scheme */
     direction: rtl;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -110,6 +110,7 @@ body {
 }
 
 .action-btn {
+    text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;

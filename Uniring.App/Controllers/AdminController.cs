@@ -9,5 +9,17 @@ namespace Uniring.App.Controllers
         {
             return View();
         }
+
+        [Route("admin-panel/new-ring")]
+        public IActionResult NewRing()
+        {
+            return View();
+        }
+
+        [Route("admin-panel/new-user")]
+        public IActionResult NewUser()
+        {
+            return View();
+        }
     }
 }

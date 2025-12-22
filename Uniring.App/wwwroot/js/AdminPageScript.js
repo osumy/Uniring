@@ -61,32 +61,4 @@ function renderRows(data) {
 // اجرا در بارگذاری صفحه
 document.addEventListener('DOMContentLoaded', () => {
     renderRows(registrations);
-
-    // هندلر دکمه‌های اکشن — این‌جا فقط نمونه است؛ بعدا میتونی با AJAX یا fetch به سرور وصل کنی
-    const byId = id => document.getElementById(id);
-    const actions = [
-        { id: 'action-new-customer', handler: () => alert('ثبت مشتری جدید (اینجا فرم یا روت سمت سرور را صدا بزن)') },
-        { id: 'action-new-ring', handler: () => alert('ثبت انگشتر جدید (اینجا فرم یا روت سمت سرور را صدا بزن)') },
-        { id: 'action-list-customers', handler: () => alert('نمایش لیست مشتریان (هدایت به صفحهٔ لیست)') },
-        { id: 'action-list-rings', handler: () => alert('نمایش لیست انگشترها (هدایت به صفحهٔ لیست)') },
-        { id: 'registerBtnHeader', handler: () => alert('ثبت انگشتر جدید (هدر)') },
-        { id: 'registerBtnMobile', handler: () => alert('ثبت سریع (موبایل)') },
-        {
-            id: 'sidebarToggle', handler: () => {
-                const t = document.createElement('div');
-                t.textContent = 'باز/بسته کردن نوار کناری (نسخهٔ نمایشی)';
-                t.style.position = 'fixed'; t.style.right = '50%'; t.style.top = '16%';
-                t.style.transform = 'translateX(50%)'; t.style.background = 'rgba(10,12,16,0.88)';
-                t.style.color = 'white'; t.style.padding = '10px 14px'; t.style.borderRadius = '8px';
-                t.style.boxShadow = '0 10px 30px rgba(2,6,23,0.6)';
-                document.body.appendChild(t);
-                setTimeout(() => t.remove(), 1700);
-            }
-        }
-    ];
-
-    actions.forEach(a => {
-        const el = byId(a.id);
-        if (el) el.addEventListener('click', a.handler);
-    });
 });
