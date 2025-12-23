@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Uniring.Contracts.File;
+﻿using Uniring.Contracts.Media;
 using Uniring.Domain.Entities;
 
 namespace Uniring.Application.Interfaces
 {
-    public interface IFileService
+    public interface IMediaService
     {
-        Task<bool> SaveFileAsync(FileRequest file);
+        Task<bool> SaveFileAsync(MediaRequest file);
         Task<Stream?> OpenReadStreamAsync(FileRecord record, CancellationToken ct = default);
         Task<bool> DeleteFileAsync(FileRecord record);
     }
