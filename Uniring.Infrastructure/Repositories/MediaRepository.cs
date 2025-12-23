@@ -15,14 +15,14 @@ namespace Uniring.Infrastructure.Repositories
 
         public async Task<Media?> GetFileByIdAsync(Guid id)
         {
-            return await _db.Files.FirstOrDefaultAsync(r => r.Id == id);
+            return await _db.Medias.FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<bool> SaveFileAsync(Media record)
         {
             try
             {
-                _db.Files.Add(record);
+                _db.Medias.Add(record);
                 await _db.SaveChangesAsync();
                 return true;
             }
@@ -36,7 +36,7 @@ namespace Uniring.Infrastructure.Repositories
         {
             try
             {
-                _db.Files.Remove(record);
+                _db.Medias.Remove(record);
                 await _db.SaveChangesAsync();
                 return true;
             }

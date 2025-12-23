@@ -10,8 +10,6 @@
 
         public required string Serial { get; set; }
 
-        public required int Price { get; set; }
-
         public string? Description { get; set; }
 
     }

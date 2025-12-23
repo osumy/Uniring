@@ -229,6 +229,35 @@ namespace Uniring.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Uniring.Domain.Entities.Media", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Medias");
+                });
+
             modelBuilder.Entity("Uniring.Domain.Entities.Ring", b =>
                 {
                     b.Property<Guid>("Id")
@@ -241,9 +270,6 @@ namespace Uniring.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
 
                     b.Property<string>("Serial")
                         .IsRequired()
@@ -260,9 +286,8 @@ namespace Uniring.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1a64021c-7666-457f-9d3d-86b62c984b2f"),
+                            Id = new Guid("bf706b70-1035-4a6f-a28d-2d20849b7ba7"),
                             Name = "انگشتر عقیق",
-                            Price = 25,
                             Serial = "R2732874204",
                             Uid = "UID"
                         });

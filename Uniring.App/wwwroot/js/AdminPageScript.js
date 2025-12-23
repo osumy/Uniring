@@ -1,9 +1,9 @@
 ﻿const registrations = [
-    { id: 'RNG-003-2024', ringName: 'انگشتر تیتانیوم مدرن', customerName: 'دیوید رودریگز', customerEmail: 'david.r@email.com', purchaseDate: '25 ژانویه 2024', price: '$899.99', material: 'TITANIUM' },
-    { id: 'RNG-002-2024', ringName: 'حلقه طلای وینتیج', customerName: 'مایکل چن', customerEmail: 'michael.c@email.com', purchaseDate: '20 ژانویه 2024', price: '$1,299.99', material: 'GOLD' },
-    { id: 'RNG-001-2024', ringName: 'حلقه کلاسیک الماس', customerName: 'سارا جانسون', customerEmail: 'sarah.j@email.com', purchaseDate: '15 ژانویه 2024', price: '$2,499.99', material: 'PLATINUM' },
-    { id: 'RR001236', ringName: 'بافت نقره‌ای گران‌قیمت', customerName: 'امیلی دیویس', customerEmail: 'emily.d@example.com', purchaseDate: '25 ژانویه 2024', price: '$2,800', material: 'SILVER' },
-    { id: 'RR001235', ringName: 'تنگستن کارباید قدرتمند', customerName: 'مایکل چن', customerEmail: 'michael.c@example.com', purchaseDate: '20 ژانویه 2024', price: '$6,200', material: 'TUNGSTEN' },
+    { id: 'RNG-003-2024', ringName: 'انگشتر تیتانیوم مدرن', customerName: 'دیوید رودریگز', customerEmail: 'david.r@email.com', purchaseDate: '25 ژانویه 2024', material: 'TITANIUM' },
+    { id: 'RNG-002-2024', ringName: 'حلقه طلای وینتیج', customerName: 'مایکل چن', customerEmail: 'michael.c@email.com', purchaseDate: '20 ژانویه 2024', material: 'GOLD' },
+    { id: 'RNG-001-2024', ringName: 'حلقه کلاسیک الماس', customerName: 'سارا جانسون', customerEmail: 'sarah.j@email.com', purchaseDate: '15 ژانویه 2024', material: 'PLATINUM' },
+    { id: 'RR001236', ringName: 'بافت نقره‌ای گران‌قیمت', customerName: 'امیلی دیویس', customerEmail: 'emily.d@example.com', purchaseDate: '25 ژانویه 2024', material: 'SILVER' },
+    { id: 'RR001235', ringName: 'تنگستن کارباید قدرتمند', customerName: 'مایکل چن', customerEmail: 'michael.c@example.com', purchaseDate: '20 ژانویه 2024', material: 'TUNGSTEN' },
 ];
 
 // نگاشت کلاس متریال
@@ -45,8 +45,6 @@ function renderRows(data) {
         const purchase = document.createElement('div'); purchase.className = 'purchase';
         purchase.innerHTML = '<span style="margin-right:6px;">' + reg.purchaseDate + '</span>';
         td3.appendChild(purchase);
-
-        const td4 = document.createElement('td'); td4.className = 'price'; td4.textContent = reg.price;
 
         const td5 = document.createElement('td');
         const badge = document.createElement('span'); badge.className = 'badge ' + (matClass[reg.material] || '');

@@ -27,7 +27,6 @@ namespace Uniring.Application.Services
                 Uid = result.Uid,
                 Serial = result.Serial,
                 Name = result.Name,
-                Price = result.Price,
                 Id = result.Id,
                 Description = result.Description
             };
@@ -49,7 +48,6 @@ namespace Uniring.Application.Services
                 Uid = result.Uid,
                 Serial = result.Serial,
                 Name = result.Name,
-                Price = result.Price,
                 Id = result.Id,
                 Description = result.Description
             };
