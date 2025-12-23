@@ -2,7 +2,7 @@
 
 namespace Uniring.Domain.Entities
 {
-    public class FileRecord
+    public class Media
     {
         [Key]
         public required Guid Id { get; set; }
