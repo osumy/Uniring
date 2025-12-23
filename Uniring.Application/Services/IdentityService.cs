@@ -34,7 +34,7 @@ namespace Uniring.Application.Services
             _configuration = configuration;
         }
 
-        // Register: use DisplayName -> UserName, require phone
+        // Register: require phone
         public async Task<Result<LoginResponse>> RegisterUserAsync(RegisterRequest request)
         {
             // TODO: Validation
@@ -52,10 +52,12 @@ namespace Uniring.Application.Services
 
             var user = new ApplicationUser
             {
-                UserName = request.DisplayName,     // display name only
+                UserName = normalizedPhone,
+                DisplayName = request.DisplayName,
                 PhoneNumber = normalizedPhone,
                 RegistrationDateTimeUtc = DateTime.UtcNow,
-                Email = null
+                Email = null,
+                EmailConfirmed = true
             };
 
             var res = await _userManager.CreateAsync(user, request.Password);
@@ -69,7 +71,7 @@ namespace Uniring.Application.Services
             var userRole = roles.FirstOrDefault() ?? "guest";
             return Result<LoginResponse>.Success(new LoginResponse
             { Id = user.Id.ToString(), Role = userRole,
-                PhoneNumber = user.PhoneNumber, DisplayName = user.UserName }
+                PhoneNumber = user.PhoneNumber, DisplayName = user.DisplayName }
             );
         }
 
@@ -90,10 +92,12 @@ namespace Uniring.Application.Services
 
             var user = new ApplicationUser
             {
-                UserName = request.DisplayName,     // display name only
+                UserName = normalizedPhone,
+                DisplayName = request.DisplayName,
                 PhoneNumber = normalizedPhone,
                 RegistrationDateTimeUtc = DateTime.UtcNow,
-                Email = null
+                Email = null,
+                EmailConfirmed = true
             };
 
             var res = await _userManager.CreateAsync(user, request.Password);
@@ -110,7 +114,7 @@ namespace Uniring.Application.Services
                 Id = user.Id.ToString(),
                 Role = userRole,
                 PhoneNumber = user.PhoneNumber,
-                DisplayName = user.UserName
+                DisplayName = user.DisplayName
             }
             );
         }
@@ -137,7 +141,7 @@ namespace Uniring.Application.Services
             var userRole = roles.FirstOrDefault() ?? "guest";
             return Result<LoginResponse>.Success(new LoginResponse
             { Id = user.Id.ToString(), Role = userRole,
-                PhoneNumber = user.PhoneNumber, DisplayName = user.UserName }
+                PhoneNumber = user.PhoneNumber, DisplayName = user.DisplayName }
             );
         }
 

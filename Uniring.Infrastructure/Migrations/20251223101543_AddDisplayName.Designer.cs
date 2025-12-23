@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Uniring.Infrastructure;
 
@@ -11,9 +12,11 @@ using Uniring.Infrastructure;
 namespace Uniring.Infrastructure.Migrations
 {
     [DbContext(typeof(UniringDbContext))]
-    partial class UniringDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251223101543_AddDisplayName")]
+    partial class AddDisplayName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,15 +257,10 @@ namespace Uniring.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RingId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RingId");
 
                     b.ToTable("Medias");
                 });
@@ -295,7 +293,7 @@ namespace Uniring.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5a56f52e-9072-4334-b47c-afe089fcfdb4"),
+                            Id = new Guid("841945d0-a170-4915-b388-941554dda619"),
                             Name = "انگشتر عقیق",
                             Serial = "R2732874204",
                             Uid = "UID"
@@ -351,20 +349,6 @@ namespace Uniring.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Uniring.Domain.Entities.Media", b =>
-                {
-                    b.HasOne("Uniring.Domain.Entities.Ring", "Ring")
-                        .WithMany("Medias")
-                        .HasForeignKey("RingId");
-
-                    b.Navigation("Ring");
-                });
-
-            modelBuilder.Entity("Uniring.Domain.Entities.Ring", b =>
-                {
-                    b.Navigation("Medias");
                 });
 #pragma warning restore 612, 618
         }

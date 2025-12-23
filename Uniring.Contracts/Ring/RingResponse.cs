@@ -12,5 +12,7 @@
 
         public string? Description { get; set; }
 
+        public required List<Guid> mediaIds { get; set; }
+
     }
 }

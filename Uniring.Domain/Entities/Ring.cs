@@ -18,5 +18,7 @@ namespace Uniring.Domain.Entities
 
         public string? Description { get; set; }
 
+        public ICollection<Media> Medias { get; set; } = new List<Media>();
+
     }
 }
