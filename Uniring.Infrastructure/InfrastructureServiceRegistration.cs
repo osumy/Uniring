@@ -27,7 +27,7 @@ namespace Uniring.Infrastructure
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IRingRepository, RingRepository>();
-            services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IMediaRepository, MediaRepository>();
 
             return services;
         }

@@ -12,7 +12,7 @@ namespace Uniring.Infrastructure
         public UniringDbContext(DbContextOptions<UniringDbContext> options) : base(options) { }
 
         public DbSet<Ring> Rings { get; set; }
-        public DbSet<FileRecord> Files { get; set; }
+        public DbSet<Media> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

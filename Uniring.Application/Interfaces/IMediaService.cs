@@ -1,12 +1,14 @@
-﻿using Uniring.Contracts.Media;
+﻿using Uniring.Contracts.ApiResult;
+using Uniring.Contracts.Media;
 using Uniring.Domain.Entities;
 
 namespace Uniring.Application.Interfaces
 {
     public interface IMediaService
     {
-        Task<bool> SaveFileAsync(MediaRequest file);
-        Task<Stream?> OpenReadStreamAsync(FileRecord record, CancellationToken ct = default);
-        Task<bool> DeleteFileAsync(FileRecord record);
+        Task<Result<MediaRequest>> SaveFileAsync(MediaRequest request);
+        Task<Media?> GetMetadataAsync(Guid id);
+        Task<Stream?> OpenReadStreamAsync(Guid id, CancellationToken ct = default);
+        Task<bool> DeleteFileAsync(Guid id);
     }
 }

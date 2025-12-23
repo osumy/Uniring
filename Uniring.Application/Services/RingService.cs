@@ -1,7 +1,6 @@
 ﻿using Uniring.Application.Interfaces;
 using Uniring.Application.Interfaces.Repositories;
 using Uniring.Contracts.Ring;
-using Uniring.Domain.Entities;
 
 namespace Uniring.Application.Services
 {

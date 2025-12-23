@@ -18,31 +18,46 @@ namespace Uniring.Api.Controllers
         [HttpPost("upload")]
         public async Task<ActionResult> UploadFile(MediaRequest media)
         {
-            if (media == null) return BadRequest("No file provided.");
+            if (media?.file == null)
+                return BadRequest("No file provided.");
 
             string ext = Path.GetExtension(media.file.FileName);
-            if (!MediaTypeHandler.isValidMedia(ext)) return BadRequest("Unsupported image format.");
+            if (!MediaTypeHandler.isValidMedia(ext))
+                return BadRequest("Unsupported media format.");
 
-            bool res = await _mediaService.SaveFileAsync(media);
+            var res = await _mediaService.SaveFileAsync(media);
+            if (!res.IsSuccess)
+                return StatusCode(500, "Failed to save file.");
 
-            if (!res) return StatusCode(500);
-
-            return Created();
+            return Ok(res.Data);
         }
 
-        [HttpGet("download/{id}")]
-        public async Task<ActionResult> DownloadFileById([FromRoute] MediaRequest file)
-        {
 
-            //var stream = await _mediaService.OpenReadStreamAsync(file);
-            //if (stream == null) return NotFound();
-            //return File(stream, file.file.ContentType, enableRangeProcessing: false, fileDownloadName: record.OriginalFileName);
-            return Ok();
+        [HttpGet("download/{id}")]
+        public async Task<ActionResult> DownloadFileById(Guid id)
+        {
+            var stream = await _mediaService.OpenReadStreamAsync(id);
+            if (stream == null)
+                return NotFound();
+
+            // Get metadata to set filename and content-type
+            var media = await _mediaService.GetMetadataAsync(id);
+            if (media == null)
+            {
+                stream.Dispose();
+                return NotFound();
+            }
+
+            return File(stream, media.ContentType, media.OriginalFileName, enableRangeProcessing: true);
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult> DeleteFileById([FromRoute] MediaRequest file)
+        public async Task<ActionResult> DeleteFileById(Guid id)
         {
+            bool success = await _mediaService.DeleteFileAsync(id);
+            if (!success)
+                return NotFound();
+
             return Ok();
         }
     }
