@@ -19,7 +19,7 @@ jobs:
 
     - name: Deploy to VPS
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} '
+        ssh -o StrictHostKeyChecking=no -p 9011 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} '
           cd /tmp &&
           rm -rf myapp-deploy &&
           git clone --depth=1 https://github.com/${{ github.repository }}.git myapp-deploy &&
