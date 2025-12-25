@@ -16,6 +16,7 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"]));
 
 builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<IAdminApiService, AdminApiService>();
 
 
 var app = builder.Build();

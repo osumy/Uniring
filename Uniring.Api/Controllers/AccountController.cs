@@ -1,9 +1,7 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Uniring.Api.Authentication;
 using Uniring.Application.Interfaces;
-using Uniring.Contracts.ApiResult;
 using Uniring.Contracts.Auth;
 
 namespace Uniring.Api.Controllers
@@ -23,40 +21,23 @@ namespace Uniring.Api.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterRequest req)
         {
-            var (succeeded, errors) = await _identity.RegisterUserAsync(req);
-            if (!succeeded) return BadRequest(new { errors });
+            var res = await _identity.RegisterUserAsync(req);
+            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
 
-            // TODO JWT
-            //var token = _jwtGenerator.GenerateToken(result.Data);
-            //var response = new AuthResponseDto
-            //{
-            //    PhoneNumber = result.Data.PhoneNumber,
-            //    Roles = result.Data.Roles,
-            //    Token = token
-            //};
+            res.Data.Token = _jwtGenerator.GenerateToken(res.Data);
 
-            //return Ok(response);
-
-            return Created();
+            return Ok(res.Data);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginRequest req)
         {
             var res = await _identity.LoginAsync(req);
-            if (!res.Success) return Unauthorized();
+            if (!res.IsSuccess) return Unauthorized();
 
-            var token = _jwtGenerator.GenerateToken(res);
+            res.Data.Token = _jwtGenerator.GenerateToken(res.Data);
 
-            var response = new LoginResponse
-            {
-                Id = res.Id,
-                Token = token,
-                PhoneNumber = res.PhoneNumber,
-                Role = res.Role
-            };
-
-            return Ok(response);
+            return Ok(res.Data);
         }
     }
 

@@ -39,34 +39,55 @@ namespace Uniring.App.Services
             return JsonSerializer.Deserialize<RingResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        //public Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
-        //public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel)
-        //{
-        //    var client = _httpFactory.CreateClient("Api");
-        //    var result = await client.PostAsJsonAsync("Account/register", requestModel);
-        //    var raw = await result.Content.ReadAsStringAsync();
+        public async Task<LoginResponse> RegisterAsync(RegisterRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var result = await client.PostAsJsonAsync("Account/register", requestModel);
+            var raw = await result.Content.ReadAsStringAsync();
 
-        //    if (result.IsSuccessStatusCode)
-        //    {
-        //        try
-        //        {
-        //            // Try to parse expected success DTO
-        //            var data = JsonSerializer.Deserialize<RegisterResponse>(raw);
+            if (result.IsSuccessStatusCode)
+            {
+                try
+                {
+                    // Try to parse expected success DTO
+                    var data = JsonSerializer.Deserialize<LoginResponse>(raw);
 
-        //            return data;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return null;
-        //        }
-        //    }
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
 
 
-        //    return null;
-        //}
+            return null;
+        }
+
+        public async Task<LoginResponse> LoginAsync(LoginRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var result = await client.PostAsJsonAsync("Account/login", requestModel);
+            var raw = await result.Content.ReadAsStringAsync();
+
+            if (result.IsSuccessStatusCode)
+            {
+                try
+                {
+                    // Try to parse expected success DTO
+                    var data = JsonSerializer.Deserialize<LoginResponse>(raw);
+
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+
+
+            return null;
+        }
     }
 }

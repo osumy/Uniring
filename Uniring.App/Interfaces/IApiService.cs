@@ -8,7 +8,8 @@ namespace Uniring.App.Interfaces
     {
         Task<RingResponse?> GetRingByUidAsync(string uid);
         Task<RingResponse?> GetRingBySerialAsync(string serial);
-        //Task<RegisterResponse> RegisterAsync(RegisterRequest requestModel);
+        Task<LoginResponse> RegisterAsync(RegisterRequest requestModel);
+        Task<LoginResponse> LoginAsync(LoginRequest requestModel);
 
     }
 }

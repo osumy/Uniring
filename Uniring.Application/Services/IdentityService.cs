@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Utils;
+using Uniring.Contracts.ApiResult;
 using Uniring.Contracts.Auth;
 using Uniring.Domain.Entities.IdentityEntities;
 
@@ -33,8 +35,8 @@ namespace Uniring.Application.Services
             _configuration = configuration;
         }
 
-        // Register: use DisplayName -> UserName, require phone
-        public async Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterUserAsync(RegisterRequest request)
+        // Register: require phone
+        public async Task<Result<LoginResponse>> RegisterUserAsync(RegisterRequest request)
         {
             // TODO: Validation
 
@@ -42,53 +44,106 @@ namespace Uniring.Application.Services
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
             if (string.IsNullOrWhiteSpace(normalizedPhone))
-                return (false, new[] { "Phone number is required." });
+                return Result<LoginResponse>.Error("Signup Failed: Wrong PhoneNumber.");
 
             // check duplicate phone
             var existing = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
             if (existing != null)
-                return (false, new[] { "Phone number already in use." });
+                return Result<LoginResponse>.Error("Signup Failed: Already Registered.");
 
             var user = new ApplicationUser
             {
-                UserName = request.DisplayName,     // display name only
+                UserName = normalizedPhone,
+                DisplayName = request.DisplayName,
                 PhoneNumber = normalizedPhone,
                 RegistrationDateTimeUtc = DateTime.UtcNow,
-                Email = null
+                Email = null,
+                EmailConfirmed = true
             };
 
             var res = await _userManager.CreateAsync(user, request.Password);
             if (!res.Succeeded)
-                return (false, res.Errors.Select(e => e.Description));
+                return Result<LoginResponse>.Error("Signup Failed.");
 
             await _userManager.AddToRoleAsync(user, "guest");
 
-            // TODO: LOGIN
-
-            return (true, null);
+            var user2 = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "guest";
+            return Result<LoginResponse>.Success(new LoginResponse
+            { Id = user.Id.ToString(), Role = userRole,
+                PhoneNumber = user.PhoneNumber, DisplayName = user.DisplayName }
+            );
         }
 
-        public Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAdminAsync(RegisterRequest request)
+        public async Task<Result<LoginResponse>> RegisterCustomerAsync(RegisterRequest request)
+        {
+            // TODO: Validation
+
+            // normalize phone
+            var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
+
+            if (string.IsNullOrWhiteSpace(normalizedPhone))
+                return Result<LoginResponse>.Error("Signup Failed: Wrong PhoneNumber.");
+
+            // check duplicate phone
+            var existing = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            if (existing != null)
+                return Result<LoginResponse>.Error("Signup Failed: Already Registered.");
+
+            var user = new ApplicationUser
+            {
+                UserName = normalizedPhone,
+                DisplayName = request.DisplayName,
+                PhoneNumber = normalizedPhone,
+                RegistrationDateTimeUtc = DateTime.UtcNow,
+                Email = null,
+                EmailConfirmed = true
+            };
+
+            var res = await _userManager.CreateAsync(user, request.Password);
+            if (!res.Succeeded)
+                return Result<LoginResponse>.Error("Signup Failed.");
+
+            await _userManager.AddToRoleAsync(user, "user");
+
+            var user2 = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "user";
+            return Result<LoginResponse>.Success(new LoginResponse
+            {
+                Id = user.Id.ToString(),
+                Role = userRole,
+                PhoneNumber = user.PhoneNumber,
+                DisplayName = user.DisplayName
+            }
+            );
+        }
+
+        public Task<Result<LoginResponse>> RegisterAdminAsync(RegisterRequest request)
         {
             throw new NotImplementedException();
         }
 
         // Login: accept phone only
-        public async Task<AuthResponse> LoginAsync(LoginRequest request)
+        public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
         {
             var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
 
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone);
-            if (user == null) return new AuthResponse { Success = false };
+            if (user == null) return Result<LoginResponse>.Error("Login Failed: User Not Found.");
 
             var pwdCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
             if (!pwdCheck.Succeeded)
-                return new AuthResponse { Success = false };
+                return Result<LoginResponse>.Error("Login Failed: Wrong Password.");
 
-            return new AuthResponse
-            { Id = user.Id.ToString(), Role = _userManager.GetRolesAsync(user).ToString()! , PhoneNumber = user.PhoneNumber, Success = true};
-
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "guest";
+            return Result<LoginResponse>.Success(new LoginResponse
+            { Id = user.Id.ToString(), Role = userRole,
+                PhoneNumber = user.PhoneNumber, DisplayName = user.DisplayName }
+            );
         }
 
         public async Task<bool> ConfirmPhoneAsync(string userId, string token)
@@ -105,6 +160,53 @@ namespace Uniring.Application.Services
             if (user == null) return;
             user.LastPurchaseAtUtc = purchaseTime.ToUniversalTime();
             await _userManager.UpdateAsync(user);
+        }
+
+
+        public async Task<List<LoginResponse>> GetUsersInRoleAsync(string roleName)
+        {
+            var users = new List<LoginResponse>();
+            var allUsers = _userManager.Users.ToList();
+
+            foreach (var user in allUsers)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName))
+                {
+                    users.Add( new LoginResponse { 
+                        Id = user.Id.ToString(),
+                        PhoneNumber = user.PhoneNumber,
+                        Role = roleName,
+                        DisplayName = user.DisplayName,
+                        });
+                }
+            }
+
+            return users;
+        }
+
+        public async Task<Result<LoginResponse>> GetByIdAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<LoginResponse>.Error("Not Found!");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            string userRole = roles.FirstOrDefault();
+
+            if (!roles.Any())
+            {
+                return Result<LoginResponse>.Error("User has no role assigned.");
+            }
+
+            return Result<LoginResponse>.Success(new LoginResponse
+            {
+                Id = user.Id.ToString(),
+                PhoneNumber = user.PhoneNumber,
+                Role = userRole,
+                DisplayName = user.DisplayName,
+            });
         }
 
         //    // JWT creation helper

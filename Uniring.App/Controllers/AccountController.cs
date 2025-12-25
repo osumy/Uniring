@@ -29,23 +29,46 @@ namespace Uniring.App.Controllers
 
         [Route("login")]
         [HttpPost]
-        public IActionResult Login(LoginRequest requestModel)
+        public async Task<IActionResult> Login(LoginRequest requestModel)
         {
             ViewBag.Title = "ورود";
 
-            return RedirectToAction("Index", "Admin");
+                //return RedirectToAction("Index", "Admin");
 
-            if (requestModel.PhoneNumber == "09919529364" && requestModel.Password == "passpass1516")
+            if (!ModelState.IsValid) return View(requestModel);
+
+            var result = await _api.LoginAsync(requestModel);
+
+            if (result?.Token != null)
             {
-                return RedirectToAction("Index", "AdminController");
-            }
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddHours(1)
+                };
 
-            return NotFound();
+                Response.Cookies.Append("authToken", result.Token, cookieOptions);
+                Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
+                Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
+                Response.Cookies.Append("userRole", result.Role, cookieOptions);
+
+                if (result.Role == "admin")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+
+                return RedirectToAction("Index", "Search");
+            }
+            return View();
+
         }
 
         [Route("login-ar")]
         [HttpGet]
-        public IActionResult LoginAr(LoginRequest requestModel)
+        public IActionResult LoginAr()
         {
             ViewBag.Title = "تسجيل الدخول";
             return View();
@@ -53,9 +76,32 @@ namespace Uniring.App.Controllers
 
         [Route("login-ar")]
         [HttpPost]
-        public IActionResult LoginAr()
+        public async Task<IActionResult> LoginAr(LoginRequest requestModel)
         {
             ViewBag.Title = "تسجيل الدخول";
+
+            if (!ModelState.IsValid) return View(requestModel);
+
+            var result = await _api.LoginAsync(requestModel);
+
+            if (result?.Token != null)
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddHours(1)
+                };
+
+                Response.Cookies.Append("authToken", result.Token, cookieOptions);
+                Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
+                Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
+                Response.Cookies.Append("userRole", result.Role, cookieOptions);
+
+                return RedirectToAction("Index", "Search");
+            }
             return View();
         }
 
@@ -79,10 +125,26 @@ namespace Uniring.App.Controllers
 
             if (!ModelState.IsValid) return View(requestModel);
 
-            //var result = await _api.RegisterAsync(requestModel);
+            var result = await _api.RegisterAsync(requestModel);
 
-            //if (result.Token != null) { RedirectToRoute("/"); }
+            if (result?.Token != null)
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddHours(1)
+                };
 
+                Response.Cookies.Append("authToken", result.Token, cookieOptions);
+                Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
+                Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
+                Response.Cookies.Append("userRole", result.Role, cookieOptions);
+
+                return RedirectToAction("Index", "Search");
+            }
             return View();
         }
 
@@ -96,9 +158,32 @@ namespace Uniring.App.Controllers
 
         [Route("signup-ar")]
         [HttpPost]
-        public IActionResult SignupAr(RegisterRequest requestModel)
+        public async Task<IActionResult> SignupAr(RegisterRequest requestModel)
         {
             ViewBag.Title = "إنشاء حساب";
+
+            if (!ModelState.IsValid) return View(requestModel);
+
+            var result = await _api.RegisterAsync(requestModel);
+
+            if (result?.Token != null)
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddHours(1)
+                };
+
+                Response.Cookies.Append("authToken", result.Token, cookieOptions);
+                Response.Cookies.Append("userId", result.Id, cookieOptions);
+                Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
+                Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
+                Response.Cookies.Append("userRole", result.Role, cookieOptions);
+
+                return RedirectToAction("Index", "Search");
+            }
             return View();
         }
     }

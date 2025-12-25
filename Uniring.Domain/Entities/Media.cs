@@ -2,7 +2,7 @@
 
 namespace Uniring.Domain.Entities
 {
-    public class FileRecord
+    public class Media
     {
         [Key]
         public required Guid Id { get; set; }
@@ -16,5 +16,8 @@ namespace Uniring.Domain.Entities
         public required string Path { get; set; }
         [Required]
         public required DateTime CreatedAt { get; set; }
+
+        public Guid? RingId { get; set; }
+        //public Ring? Ring { get; set; }
     }
 }

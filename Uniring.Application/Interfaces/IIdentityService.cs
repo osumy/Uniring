@@ -1,15 +1,21 @@
-﻿using Uniring.Contracts.Auth;
+﻿using Uniring.Contracts.ApiResult;
+using Uniring.Contracts.Auth;
+using Uniring.Domain.Entities.IdentityEntities;
 
 namespace Uniring.Application.Interfaces
 {
     public interface IIdentityService
     {
-        Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterUserAsync(RegisterRequest request);
-        Task<(bool Succeeded, IEnumerable<string>? Errors)> RegisterAdminAsync(RegisterRequest request);
-        Task<AuthResponse> LoginAsync(LoginRequest request);
+        Task<Result<LoginResponse>> RegisterUserAsync(RegisterRequest request);
+        Task<Result<LoginResponse>> RegisterCustomerAsync(RegisterRequest request);
+        Task<Result<LoginResponse>> RegisterAdminAsync(RegisterRequest request);
+        Task<Result<LoginResponse>> LoginAsync(LoginRequest request);
         Task SetLastPurchaseAsync(string userId, DateTime purchaseTime);
 
-        // ForgotPassword, ResetPassword, GetUserById ...
+        Task<List<LoginResponse>> GetUsersInRoleAsync(string roleName);
+        Task<Result<LoginResponse>> GetByIdAsync(string id);
+
+        // ForgotPassword, ResetPassword, ...
 
     }
 

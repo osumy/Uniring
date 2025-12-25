@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Uniring.Contracts.File
+namespace Uniring.Contracts.Media
 {
-    public class FileRequest
+    public class MediaRequest
     {
         public Guid? id { get; set; }
 

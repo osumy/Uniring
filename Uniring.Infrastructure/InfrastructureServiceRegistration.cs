@@ -27,7 +27,7 @@ namespace Uniring.Infrastructure
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IRingRepository, RingRepository>();
-            services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IMediaRepository, MediaRepository>();
 
             return services;
         }
@@ -37,7 +37,7 @@ namespace Uniring.Infrastructure
             services.AddDbContext<UniringDbContext> (
                 options =>
                 {
-                    options.UseSqlServer(conn);
+                    options.UseNpgsql(conn);
                 });
 
             return services;
@@ -51,8 +51,8 @@ namespace Uniring.Infrastructure
                 options.User.RequireUniqueEmail = false;
 
                 // Password policy
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 4;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;

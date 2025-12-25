@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Uniring.Domain.Entities
 {
@@ -21,10 +16,9 @@ namespace Uniring.Domain.Entities
         [Required]
         public required string Serial { get; set; }
 
-        [Required]
-        public required int Price { get; set; }
-
         public string? Description { get; set; }
+
+        //public ICollection<Media> Medias { get; set; } = new List<Media>();
 
     }
 }

@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت مشتری جدید</title>
+
+            <!-- Google fonts for Persian and Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;700&family=Vazirmatn:wght@300;400;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/NewUserStyle.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="step active" id="step1">۱</div>
+            <div class="step" id="step2">۲</div>
+            <div class="step" id="step3">۳</div>
+            <div class="step" id="step4">۴</div>
+        </div>
+
+        <!-- Scene 1: نام مشتری -->
+        <div class="scene active" id="scene1">
+            <h1>ثبت مشتری جدید</h1>
+            <p style="color: red">@ViewBag.Error</p>
+            <p class="subtitle">لطفاً نام کامل مشتری را وارد کنید</p>
+            
+            <div class="input-group">
+                <label for="customer-name">نام کامل</label>
+                <input type="text" 
+                       id="customer-name" 
+                       name="customer-name" 
+                       placeholder="مثلاً: حسین جعفری"
+                       required>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-next" id="next1">ادامه</button>
+            </div>
+        </div>
+
+        <!-- Scene 2: شماره تلفن -->
+        <div class="scene" id="scene2">
+            <h1>شماره تلفن</h1>
+            <p class="subtitle">شماره تماس مشتری را وارد کنید</p>
+            
+            <div class="input-group">
+                <label for="customer-phone">شماره تلفن</label>
+                <input type="text" 
+                       id="customer-phone" 
+                       name="customer-phone" 
+                       placeholder="مثلاً: 09123456789"
+                       required>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-prev" id="prev2">بازگشت</button>
+                <button class="btn btn-next" id="next2">ادامه</button>
+            </div>
+        </div>
+
+        <!-- Scene 3: رمز عبور -->
+        <div class="scene" id="scene3">
+            <h1>تنظیم رمز عبور</h1>
+            <p class="subtitle">رمز عبور امن برای مشتری تنظیم کنید</p>
+            
+            <div class="input-group">
+                <label for="customer-password">رمز عبور</label>
+                <div style="position: relative;">
+                    <input type="password" 
+                           id="customer-password" 
+                           name="customer-password" 
+                           placeholder="••••••••"
+                           required>
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="customer-password-confirm">تکرار رمز عبور</label>
+                <div style="position: relative;">
+                    <input type="password" 
+                           id="customer-password-confirm" 
+                           name="customer-password-confirm" 
+                           placeholder="••••••••"
+                           required>
+                    <button type="button" class="password-toggle" id="togglePasswordConfirm">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="match-error" id="matchError">رمز عبور و تکرار آن یکسان نیست!</div>
+            </div>
+            
+            <button type="button" class="generate-btn" id="generatePassword">
+                <i class="fas fa-sync-alt"></i> تولید خودکار رمز عبور
+            </button>
+            
+            <div class="btn-group">
+                <button class="btn btn-prev" id="prev3">بازگشت</button>
+                <button class="btn btn-next" id="next3">بررسی و ثبت</button>
+            </div>
+        </div>
+
+        <!-- Scene 4: تأیید نهایی -->
+        <div class="scene" id="scene4">
+            <div class="success-icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <h1>آماده ثبت هستید؟</h1>
+            <p class="subtitle">اطلاعات مشتری را بررسی کنید</p>
+            
+            <div class="customer-preview">
+                <div class="preview-item">
+                    <span class="preview-label">نام کامل:</span>
+                    <span id="finalName">نام مشتری</span>
+                </div>
+                <div class="preview-item">
+                    <span class="preview-label">شماره تلفن:</span>
+                    <span id="finalPhone">09123456789</span>
+                </div>
+                <div class="preview-item">
+                    <span class="preview-label">رمز عبور:</span>
+                    <span id="finalPassword">••••••••</span>
+                </div>
+            </div>
+            
+            <button class="btn-submit" id="submitBtn">ثبت مشتری جدید</button>
+        </div>
+    </div>
+
+    <script>
+        const formData = {
+            name: '',
+            phone: '',
+            password: ''
+        };
+
+        // DOM Elements
+        const scenes = document.querySelectorAll('.scene');
+        const steps = document.querySelectorAll('.step');
+        const progressBar = document.getElementById('progressBar');
+        const passInput = document.getElementById('customer-password');
+        const confirmPassInput = document.getElementById('customer-password-confirm');
+        const matchError = document.getElementById('matchError');
+        const finalPassword = document.getElementById('finalPassword');
+
+        function showScene(sceneId) {
+            scenes.forEach(scene => scene.classList.remove('active'));
+            document.getElementById(sceneId).classList.add('active');
+            
+            const sceneNumber = parseInt(sceneId.replace('scene', ''));
+            progressBar.style.width = `${(sceneNumber - 1) * 33.33}%`;
+            
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < sceneNumber - 1) {
+                    step.classList.add('completed');
+                } else if (index === sceneNumber - 1) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // Scene 1: نام
+        document.getElementById('next1').addEventListener('click', () => {
+            const name = document.getElementById('customer-name').value.trim();
+            if (name) {
+                formData.name = name;
+                document.getElementById('finalName').textContent = name;
+                showScene('scene2');
+            } else {
+                alert('لطفاً نام کامل را وارد کنید');
+            }
+        });
+
+        // Scene 2: تلفن
+        document.getElementById('next2').addEventListener('click', () => {
+            const phone = document.getElementById('customer-phone').value.trim();
+            const phoneRegex = /^09\d{9}$/;
+            if (phone && phoneRegex.test(phone)) {
+                formData.phone = phone;
+                document.getElementById('finalPhone').textContent = phone;
+                showScene('scene3');
+            } else {
+                alert('لطفاً یک شماره تلفن معتبر وارد کنید (مثلاً: 09123456789)');
+            }
+        });
+
+        document.getElementById('prev2').addEventListener('click', () => {
+            showScene('scene1');
+        });
+
+        // Scene 3: رمز عبور
+        const togglePass = document.getElementById('togglePassword');
+        const toggleConfirmPass = document.getElementById('togglePasswordConfirm');
+
+        // Toggle password visibility
+        togglePass.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                togglePass.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passInput.type = 'password';
+                togglePass.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+
+        toggleConfirmPass.addEventListener('click', () => {
+            if (confirmPassInput.type === 'password') {
+                confirmPassInput.type = 'text';
+                toggleConfirmPass.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                confirmPassInput.type = 'password';
+                toggleConfirmPass.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+
+        // Real-time password match check
+        function checkPasswordMatch() {
+            const pass = passInput.value;
+            const confirmPass = confirmPassInput.value;
+            
+            if (confirmPass && pass !== confirmPass) {
+                matchError.style.display = 'block';
+                return false;
+            } else {
+                matchError.style.display = 'none';
+                return true;
+            }
+        }
+
+        passInput.addEventListener('input', checkPasswordMatch);
+        confirmPassInput.addEventListener('input', checkPasswordMatch);
+
+        function generateSecurePassword() {
+            const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+            const numberChars = '0123456789';
+            const specialChars = '!@@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            // انتخاب حداقل یک کاراکتر از هر دسته
+            let password = '';
+            password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
+            password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
+            password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
+            password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+
+            // ترکیب همه کاراکترها برای بقیه رمز
+            const allChars = uppercaseChars + lowercaseChars + numberChars + specialChars;
+    
+            // تولید 8 کاراکتر اضافه (در مجموع 12 کاراکتر)
+            for (let i = 0; i < 8; i++) {
+                password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+            }
+
+            // ترتیب کاراکترها را تصادفی کن (برای جلوگیری از الگوی ثابت)
+            return password.split('').sort(() => 0.5 - Math.random()).join('');
+        }
+
+        // Generate password
+        document.getElementById('generatePassword').addEventListener('click', () => {
+            const password = generateSecurePassword();
+            passInput.value = password;
+            confirmPassInput.value = password;
+            formData.password = password;
+            finalPassword.textContent = password; // Update final preview
+            matchError.style.display = 'none';
+        });
+
+        document.getElementById('next3').addEventListener('click', () => {
+            const pass = passInput.value;
+            const confirmPass = confirmPassInput.value;
+            
+            if (!pass || !confirmPass) {
+                alert('لطفاً هر دو فیلد رمز عبور را پر کنید');
+                return;
+            }
+            
+            if (!checkPasswordMatch()) {
+                return;
+            }
+            
+            if (pass.length < 4) {
+                alert('رمز عبور باید حداقل 4 کاراکتر باشد');
+                return;
+            }
+            
+            formData.password = pass;
+            finalPassword.textContent = pass; // نمایش رمز واقعی در صفحه نهایی
+            showScene('scene4');
+        });
+
+        document.getElementById('prev3').addEventListener('click', () => {
+            showScene('scene2');
+        });
+
+        // Scene 4: Submit
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            // مقادیر را به فیلدهای مخفی منتقل کن
+            document.getElementById('hiddenName').value = formData.name;
+            document.getElementById('hiddenPhone').value = formData.phone;
+            document.getElementById('hiddenPassword').value = formData.password;
+            document.getElementById('hiddenPassword2').value = formData.password;
+
+            // فرم مخفی را submit کن
+            document.getElementById('hiddenForm').submit();
+        });
+    </script>
+    <form id="hiddenForm" asp-controller="Admin" asp-action="NewUser" method="post">
+        <input type="hidden" name="DisplayName" id="hiddenName" />
+        <input type="hidden" name="PhoneNumber" id="hiddenPhone" />
+        <input type="hidden" name="Password" id="hiddenPassword" />
+        <input type="hidden" name="ConfirmPassword" id="hiddenPassword2" />
+    </form>
+</body>
+</html>

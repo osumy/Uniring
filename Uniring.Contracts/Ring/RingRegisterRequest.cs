@@ -7,5 +7,7 @@
         public string? Description { get; set; }
 
         public required string OwnerPhoneNumber { get; set; }
+
+        public required List<Guid> MediaIds { get; set; }
     }
 }

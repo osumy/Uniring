@@ -15,18 +15,14 @@ namespace Uniring.Api.Authentication
             _jwtSettings = jwtSettings.Value;
         }
 
-        public string GenerateToken(AuthResponse authResponse)
+        public string GenerateToken(LoginResponse loginResponse)
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Sub, authResponse.Id.ToString()),
-                new Claim("phone", authResponse.PhoneNumber)
+                new Claim(JwtRegisteredClaimNames.Sub, loginResponse.Id.ToString()),
+                new Claim("phone", loginResponse.PhoneNumber),
+                new Claim(ClaimTypes.Role, loginResponse.Role)
             };
-
-            //foreach (var role in authResponse.Role)
-            //{
-            //    claims.Add(new Claim(ClaimTypes.Role, role));
-            //}
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

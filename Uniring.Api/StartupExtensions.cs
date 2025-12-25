@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 using Uniring.Api.Authentication;
 using Uniring.Application;
@@ -16,7 +18,11 @@ namespace Uniring.Api
         {
             // Add services to the container
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.PropertyNamingPolicy = null; 
+                    });
 
             builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
@@ -53,16 +59,32 @@ namespace Uniring.Api
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
+                        ValidIssuer = jwtSettings?.Issuer,
 
                         ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
+                        ValidAudience = jwtSettings?.Audience,
 
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
 
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.Zero,
+                        
+                        RoleClaimType = ClaimTypes.Role
+
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            if (string.IsNullOrEmpty(context.Request.Headers["Authorization"]) &&
+                                context.Request.Cookies.TryGetValue("authToken", out string token))
+                            {
+                                context.Token = token;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -83,12 +105,19 @@ namespace Uniring.Api
             //});
 
             //app.UseCors("open");
+            // AFTER building the app, BEFORE running it
+            //using var DBscope = app.Services.CreateScope();
+            //var dbContext = DBscope.ServiceProvider.GetRequiredService<UniringDbContext>();
+            //dbContext.Database.Migrate(); // Applies pending migrations
 
             // Seed roles
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-                await UniringDbContext.InitializeRolesAsync(roleManager);
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                
+                await DatabaseInitializer.InitializeRolesAsync(roleManager);
+                await DatabaseInitializer.InitializeAdminsAsync(userManager, roleManager);
             }
 
             // Swagger

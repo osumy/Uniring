@@ -63,11 +63,9 @@ function setLang(langKey) {
     // update the dt labels in product details
     const dtPurchase = document.getElementById('prod-dt-purchase');
     const dtSerial = document.getElementById('prod-dt-serial');
-    const dtPrice = document.getElementById('prod-dt-price');
 
     if (dtPurchase) dtPurchase.textContent = s.labelPurchase || (s.lang === 'ar' ? 'تاريخ الشراء' : 'تاریخ خرید');
     if (dtSerial) dtSerial.textContent = s.labelSerial || (s.lang === 'ar' ? 'الرقم التسلسلي' : 'شماره سریال');
-    if (dtPrice) dtPrice.textContent = s.labelPrice || (s.lang === 'ar' ? 'السعر' : 'قیمت');
 
     // update active state on language buttons
     langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === langKey));
@@ -79,7 +77,7 @@ function setLang(langKey) {
         document.body.style.fontFamily = '"Vazirmatn","Tajawal", system-ui, -apple-system, "Segoe UI", Roboto, Arial';
     }
 
-    // If a product is already rendered, re-localize its dynamic parts (purchase date & price formatting)
+    // If a product is already rendered, re-localize its dynamic parts (purchase date formatting)
     // Example: if result-product is visible and product data fields are present, re-format them:
     const prodSectionVisible = document.getElementById('result-product').style.display !== 'none';
     if (prodSectionVisible) {
@@ -89,17 +87,6 @@ function setLang(langKey) {
             const dt = new Date(purchaseText);
             const locale = document.documentElement.getAttribute('lang') === 'ar' ? 'ar-EG' : 'fa-IR';
             document.getElementById('prod-purchase').textContent = isNaN(dt) ? '' : dt.toLocaleString(locale);
-        }
-        // reformat price numeric value if stored
-        const priceRaw = document.getElementById('prod-price').getAttribute('data-raw');
-        if (priceRaw) {
-            try {
-                const num = Number(priceRaw);
-                if (Number.isFinite(num)) {
-                    const locale = document.documentElement.getAttribute('lang') === 'ar' ? 'ar-EG' : 'fa-IR';
-                    document.getElementById('prod-price').textContent = new Intl.NumberFormat(locale).format(num) + (s.priceSuffix || ' USD');
-                }
-            } catch (e) { }
         }
     }
 
@@ -153,7 +140,7 @@ function renderNotFound() {
 }
 
 // Render Product
-// product = { imageUrl, name, description, purchaseISO, serial, price }
+// product = { imageUrl, name, description, purchaseISO, serial }
 function renderProduct(product) {
     hideResults();
 
@@ -171,7 +158,6 @@ function renderProduct(product) {
     document.getElementById('prod-purchase').textContent = dt ? dt.toLocaleString(locale) : '';
 
     document.getElementById('prod-serial').textContent = product.serial || '';
-    document.getElementById('prod-price').textContent = product.price || '';
 
     // verification sentence localized
     document.getElementById('prod-verify').textContent = cur === 'ar'
@@ -226,7 +212,7 @@ async function searchSerial() {
         // parse JSON
         const data = await res.json();
         // Example of expected JSON:
-        // {"uid":"UID","name":"انگشتر عقیق","serial":"R2732874204","price":25,"description":null}
+        // {"uid":"UID","name":"انگشتر عقیق","serial":"R2732874204","description":null}
 
         // Map server JSON to the product object expected by renderProduct()
         const product = {
@@ -238,19 +224,6 @@ async function searchSerial() {
             purchaseISO: data.purchaseISO || data.purchaseDate || null,
 
             serial: data.serial || data.uid || val,
-
-            // format price: keep raw numeric price and add a label — adjust to your currency rules
-            price: (function (p) {
-                if (p === null || p === undefined) return '';
-                // add thousands separators for readability
-                try {
-                    const num = Number(p);
-                    if (Number.isFinite(num)) {
-                        return new Intl.NumberFormat(document.documentElement.getAttribute('lang') === 'ar' ? 'ar-EG' : 'fa-IR').format(num) + ' USD';
-                    }
-                } catch (e) { }
-                return String(p);
-            })(data.price)
         };
 
         // render the product

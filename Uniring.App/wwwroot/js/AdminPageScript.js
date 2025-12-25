@@ -1,9 +1,9 @@
 ﻿const registrations = [
-    { id: 'RNG-003-2024', ringName: 'انگشتر تیتانیوم مدرن', customerName: 'دیوید رودریگز', customerEmail: 'david.r@email.com', purchaseDate: '25 ژانویه 2024', price: '$899.99', material: 'TITANIUM' },
-    { id: 'RNG-002-2024', ringName: 'حلقه طلای وینتیج', customerName: 'مایکل چن', customerEmail: 'michael.c@email.com', purchaseDate: '20 ژانویه 2024', price: '$1,299.99', material: 'GOLD' },
-    { id: 'RNG-001-2024', ringName: 'حلقه کلاسیک الماس', customerName: 'سارا جانسون', customerEmail: 'sarah.j@email.com', purchaseDate: '15 ژانویه 2024', price: '$2,499.99', material: 'PLATINUM' },
-    { id: 'RR001236', ringName: 'بافت نقره‌ای گران‌قیمت', customerName: 'امیلی دیویس', customerEmail: 'emily.d@example.com', purchaseDate: '25 ژانویه 2024', price: '$2,800', material: 'SILVER' },
-    { id: 'RR001235', ringName: 'تنگستن کارباید قدرتمند', customerName: 'مایکل چن', customerEmail: 'michael.c@example.com', purchaseDate: '20 ژانویه 2024', price: '$6,200', material: 'TUNGSTEN' },
+    { id: 'RNG-003-2024', ringName: 'انگشتر تیتانیوم مدرن', customerName: 'دیوید رودریگز', customerEmail: 'david.r@email.com', purchaseDate: '25 ژانویه 2024', material: 'TITANIUM' },
+    { id: 'RNG-002-2024', ringName: 'حلقه طلای وینتیج', customerName: 'مایکل چن', customerEmail: 'michael.c@email.com', purchaseDate: '20 ژانویه 2024', material: 'GOLD' },
+    { id: 'RNG-001-2024', ringName: 'حلقه کلاسیک الماس', customerName: 'سارا جانسون', customerEmail: 'sarah.j@email.com', purchaseDate: '15 ژانویه 2024', material: 'PLATINUM' },
+    { id: 'RR001236', ringName: 'بافت نقره‌ای گران‌قیمت', customerName: 'امیلی دیویس', customerEmail: 'emily.d@example.com', purchaseDate: '25 ژانویه 2024', material: 'SILVER' },
+    { id: 'RR001235', ringName: 'تنگستن کارباید قدرتمند', customerName: 'مایکل چن', customerEmail: 'michael.c@example.com', purchaseDate: '20 ژانویه 2024', material: 'TUNGSTEN' },
 ];
 
 // نگاشت کلاس متریال
@@ -46,8 +46,6 @@ function renderRows(data) {
         purchase.innerHTML = '<span style="margin-right:6px;">' + reg.purchaseDate + '</span>';
         td3.appendChild(purchase);
 
-        const td4 = document.createElement('td'); td4.className = 'price'; td4.textContent = reg.price;
-
         const td5 = document.createElement('td');
         const badge = document.createElement('span'); badge.className = 'badge ' + (matClass[reg.material] || '');
         badge.textContent = matMap[reg.material] || reg.material;
@@ -61,32 +59,4 @@ function renderRows(data) {
 // اجرا در بارگذاری صفحه
 document.addEventListener('DOMContentLoaded', () => {
     renderRows(registrations);
-
-    // هندلر دکمه‌های اکشن — این‌جا فقط نمونه است؛ بعدا میتونی با AJAX یا fetch به سرور وصل کنی
-    const byId = id => document.getElementById(id);
-    const actions = [
-        { id: 'action-new-customer', handler: () => alert('ثبت مشتری جدید (اینجا فرم یا روت سمت سرور را صدا بزن)') },
-        { id: 'action-new-ring', handler: () => alert('ثبت انگشتر جدید (اینجا فرم یا روت سمت سرور را صدا بزن)') },
-        { id: 'action-list-customers', handler: () => alert('نمایش لیست مشتریان (هدایت به صفحهٔ لیست)') },
-        { id: 'action-list-rings', handler: () => alert('نمایش لیست انگشترها (هدایت به صفحهٔ لیست)') },
-        { id: 'registerBtnHeader', handler: () => alert('ثبت انگشتر جدید (هدر)') },
-        { id: 'registerBtnMobile', handler: () => alert('ثبت سریع (موبایل)') },
-        {
-            id: 'sidebarToggle', handler: () => {
-                const t = document.createElement('div');
-                t.textContent = 'باز/بسته کردن نوار کناری (نسخهٔ نمایشی)';
-                t.style.position = 'fixed'; t.style.right = '50%'; t.style.top = '16%';
-                t.style.transform = 'translateX(50%)'; t.style.background = 'rgba(10,12,16,0.88)';
-                t.style.color = 'white'; t.style.padding = '10px 14px'; t.style.borderRadius = '8px';
-                t.style.boxShadow = '0 10px 30px rgba(2,6,23,0.6)';
-                document.body.appendChild(t);
-                setTimeout(() => t.remove(), 1700);
-            }
-        }
-    ];
-
-    actions.forEach(a => {
-        const el = byId(a.id);
-        if (el) el.addEventListener('click', a.handler);
-    });
 });

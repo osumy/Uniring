@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PhoneNumbers;
+using System.Reflection.Emit;
 using Uniring.Domain.Entities;
 using Uniring.Domain.Entities.IdentityEntities;
 
@@ -12,7 +14,7 @@ namespace Uniring.Infrastructure
         public UniringDbContext(DbContextOptions<UniringDbContext> options) : base(options) { }
 
         public DbSet<Ring> Rings { get; set; }
-        public DbSet<FileRecord> Files { get; set; }
+        public DbSet<Media> Medias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -21,7 +23,7 @@ namespace Uniring.Infrastructure
             // Seed Data
             builder.Entity<Ring>().HasData( new Ring
             {
-                Uid = "UID", Name = "انگشتر عقیق", Price = 25, Serial = "R2732874204", Id = Guid.NewGuid()
+                Uid = "UID", Name = "انگشتر عقیق", Serial = "R2732874204", Id = Guid.NewGuid()
             });
 
             // Unique index on PhoneNumber to prevent duplicate phone registrations.
@@ -29,20 +31,38 @@ namespace Uniring.Infrastructure
             builder.Entity<ApplicationUser>()
                 .HasIndex(u => u.PhoneNumber)
                 .IsUnique();
-        }
 
-        public static async Task InitializeRolesAsync(RoleManager<ApplicationRole> roleManager)
-        {
-            string[] roleNames = { "guest", "admin", "user" };
+            // Fix potential comparer issues for value types
+            builder.Entity<Media>()
+                .Property(m => m.Id)
+                .HasConversion<Guid>();
 
-            foreach (var roleName in roleNames)
-            {
-                var roleExist = await roleManager.RoleExistsAsync(roleName);
-                if (!roleExist)
-                {
-                    await roleManager.CreateAsync(new ApplicationRole(roleName));
-                }
-            }
+            builder.Entity<Media>()
+                .Property(m => m.CreatedAt)
+                .HasConversion<DateTime>();
+
+            builder.Entity<Ring>()
+                .Property(r => r.Id)
+                .HasConversion<Guid>();
+
+            //// Reconfigure the relationship explicitly
+            //builder.Entity<Ring>()
+            //    .HasMany(r => r.Medias)
+            //    .WithOne(m => m.Ring)
+            //    .HasForeignKey(m => m.RingId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull);
+
+            //// Configure Ring → Media one-to-many
+            //builder.Entity<Ring>()
+            //    .HasMany(r => r.Medias)
+            //    .WithOne(m => m.Ring)
+            //    .HasForeignKey(m => m.RingId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull); // or Restrict
+
+            //// Optional: Ensure Ring.Uid is unique (if needed)
+            //builder.Entity<Ring>()
+            //    .HasIndex(r => r.Uid)
+            //    .IsUnique();
         }
     }
 }

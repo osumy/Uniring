@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت انگشتر جدید</title>
+
+        <!-- Google fonts for Persian and Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;700&family=Vazirmatn:wght@300;400;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/NewRingStyle.css">
+
+</head>
+<body>
+    <div class="form-container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="step active" id="step1">۱</div>
+            <div class="step" id="step2">۲</div>
+            <div class="step" id="step3">۳</div>
+            <div class="step" id="step4">۴</div>
+        </div>
+
+        <!-- Scene 1: Ring Name -->
+        <div class="scene active" id="scene1">
+            <h1>ثبت انگشتر جدید</h1>
+            <p class="subtitle">لطفاً نام انگشتر را وارد کنید</p>
+            
+            <div class="input-group">
+                <label for="ring-name">نام انگشتر</label>
+                <input type="text" 
+                       id="ring-name" 
+                       name="ring-name" 
+                       placeholder="مثلاً: انگشتر نفیس «شکارچی»"
+                       required>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-next" id="next1">ادامه</button>
+            </div>
+        </div>
+
+        <!-- Scene 2: Media Upload -->
+        <div class="scene" id="scene2">
+            <h1>آپلود مدیا</h1>
+            <p class="subtitle">عکس یا ویدیوی انگشتر را آپلود کنید</p>
+            
+            <div class="upload-container" id="uploadContainer">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <p>فایل‌ها را به اینجا بکشید و رها کنید</p>
+                <p class="upload-text">یا</p>
+                <button class="btn btn-next" style="width: auto;">انتخاب فایل‌ها</button>
+                <input type="file" class="file-input" id="mediaUpload" accept="image/*,video/*" multiple>
+            </div>
+            
+            <div class="file-list" id="fileList">
+                <!-- Files will be added here dynamically -->
+            </div>
+            
+            <div class="progress-container-media" id="progressContainer">
+                <div class="progress-bar-media" id="progressBarMedia"></div>
+                <div class="progress-percent" id="progressPercent">0%</div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-prev" id="prev2">بازگشت</button>
+                <button class="btn btn-next" id="next2" disabled>ادامه</button>
+            </div>
+        </div>
+
+        <!-- Scene 3: Description -->
+        <div class="scene" id="scene3">
+            <h1>توضیحات</h1>
+            <p class="subtitle">توضیحات اختیاری در مورد انگشتر</p>
+            
+            <div class="input-group">
+                <label for="ring-desc">توضیحات (اختیاری)</label>
+                <textarea 
+                    id="ring-desc" 
+                    name="ring-desc" 
+                    placeholder="مثلاً: فیروزه نیشابور، به سبک حکاکی سه بعدی"></textarea>
+            </div>
+            
+            <div class="ring-preview">
+                <div class="preview-image">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="preview-text">
+                    <div class="preview-name" id="previewName">نام انگشتر</div>
+                    <div class="preview-desc" id="previewDesc">بدون توضیحات</div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-prev" id="prev3">بازگشت</button>
+                <button class="btn btn-next" id="next3">بررسی و ارسال</button>
+            </div>
+        </div>
+
+        <!-- Scene 4: Confirmation -->
+        <div class="scene" id="scene4">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>آماده ارسال هستید؟</h1>
+            <p class="subtitle">قبل از ارسال، جزئیات انگشتر را بررسی کنید.</p>
+            
+            <div class="ring-preview">
+                <div class="preview-image">
+                    <i class="fas fa-diamond"></i>
+                </div>
+                <div class="preview-text">
+                    <div class="preview-name" id="finalName">نام انگشتر</div>
+                    <div class="preview-desc" id="finalDesc">بدون توضیحات</div>
+                </div>
+            </div>
+            
+            <button class="btn-submit" id="submitBtn">ارسال انگشتر</button>
+        </div>
+    </div>
+
+    <script>
+        // Form data object
+        const formData = {
+            name: '',
+            media: [],
+            description: ''
+        };
+
+        // DOM Elements
+        const scenes = document.querySelectorAll('.scene');
+        const steps = document.querySelectorAll('.step');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Scene navigation
+        function showScene(sceneId) {
+            // Hide all scenes
+            scenes.forEach(scene => scene.classList.remove('active'));
+            
+            // Show requested scene
+            document.getElementById(sceneId).classList.add('active');
+            
+            // Update progress bar
+            const sceneNumber = parseInt(sceneId.replace('scene', ''));
+            progressBar.style.width = `${(sceneNumber - 1) * 33.33}%`;
+            
+            // Update step indicators
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < sceneNumber - 1) {
+                    step.classList.add('completed');
+                } else if (index === sceneNumber - 1) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // Scene 1: Ring Name
+        document.getElementById('next1').addEventListener('click', () => {
+            const name = document.getElementById('ring-name').value.trim();
+            if (name) {
+                formData.name = name;
+                showScene('scene2');
+                document.getElementById('previewName').textContent = name;
+                document.getElementById('finalName').textContent = name;
+            } else {
+                alert('لطفاً نام انگشتر را وارد کنید');
+            }
+        });
+
+        // Scene 2: Media Upload
+        const uploadContainer = document.getElementById('uploadContainer');
+        const fileInput = document.getElementById('mediaUpload');
+        const fileList = document.getElementById('fileList');
+        const next2Btn = document.getElementById('next2');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBarMedia = document.getElementById('progressBarMedia');
+        const progressPercent = document.getElementById('progressPercent');
+
+        // Click on upload container triggers file input
+        uploadContainer.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                // Clear previous files
+                formData.media = [];
+                fileList.innerHTML = '';
+                
+                // Add new files
+                Array.from(files).forEach(file => {
+                    formData.media.push(file);
+                    
+                    // Create file item
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-remove" data-filename="${file.name}">×</span>
+                    `;
+                    fileList.appendChild(fileItem);
+                    
+                    // Add remove functionality
+                    fileItem.querySelector('.file-remove').addEventListener('click', function() {
+                        const fileName = this.getAttribute('data-filename');
+                        formData.media = formData.media.filter(f => f.name !== fileName);
+                        this.closest('.file-item').remove();
+                        
+                        if (formData.media.length === 0) {
+                            next2Btn.disabled = true;
+                        }
+                    });
+                });
+                
+                // Enable next button
+                next2Btn.disabled = false;
+                
+                // Simulate upload progress
+                progressContainer.style.display = 'block';
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                    }
+                    progressBarMedia.style.width = `${progress}%`;
+                    progressPercent.textContent = `${Math.round(progress)}%`;
+                }, 200);
+            }
+        });
+
+        // Drag and drop functionality
+        uploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadContainer.style.backgroundColor = '#e0e6ff';
+        });
+
+        uploadContainer.addEventListener('dragleave', () => {
+            uploadContainer.style.backgroundColor = '#f8f9ff';
+        });
+
+        uploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadContainer.style.backgroundColor = '#f8f9ff';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        });
+
+        document.getElementById('next2').addEventListener('click', () => {
+            if (formData.media.length > 0) {
+                showScene('scene3');
+            }
+        });
+
+        document.getElementById('prev2').addEventListener('click', () => {
+            showScene('scene1');
+        });
+
+        // Scene 3: Description
+        const ringDesc = document.getElementById('ring-desc');
+        ringDesc.addEventListener('input', () => {
+            formData.description = ringDesc.value;
+            document.getElementById('previewDesc').textContent = 
+                ringDesc.value || 'بدون توضیحات';
+            document.getElementById('finalDesc').textContent = 
+                ringDesc.value || 'بدون توضیحات';
+        });
+
+        document.getElementById('next3').addEventListener('click', () => {
+            showScene('scene4');
+        });
+
+        document.getElementById('prev3').addEventListener('click', () => {
+            showScene('scene2');
+        });
+
+        // Scene 4: Confirmation
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            // In a real app, you would submit the form data here
+            alert(`انگشتر "${formData.name}" با موفقیت ثبت شد!\n\nتوضیحات: ${formData.description || 'ندارد'}`);
+            
+            // Reset form
+            formData.name = '';
+            formData.media = [];
+            formData.description = '';
+            document.getElementById('ring-name').value = '';
+            document.getElementById('ring-desc').value = '';
+            fileList.innerHTML = '';
+            progressContainer.style.display = 'none';
+            progressBarMedia.style.width = '0%';
+            progressPercent.textContent = '0%';
+            next2Btn.disabled = true;
+            
+            // Go back to first scene
+            showScene('scene1');
+        });
+    </script>
+</body>
+</html>
