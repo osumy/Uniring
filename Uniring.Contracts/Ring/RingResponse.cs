@@ -12,7 +12,7 @@
 
         public string? Description { get; set; }
 
-        public required List<Guid> mediaIds { get; set; }
+        public required List<Guid> MediaIds { get; set; }
 
     }
 }

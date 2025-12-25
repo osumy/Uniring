@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Utils;
 using Uniring.Contracts.ApiResult;
@@ -159,6 +160,53 @@ namespace Uniring.Application.Services
             if (user == null) return;
             user.LastPurchaseAtUtc = purchaseTime.ToUniversalTime();
             await _userManager.UpdateAsync(user);
+        }
+
+
+        public async Task<List<LoginResponse>> GetUsersInRoleAsync(string roleName)
+        {
+            var users = new List<LoginResponse>();
+            var allUsers = _userManager.Users.ToList();
+
+            foreach (var user in allUsers)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName))
+                {
+                    users.Add( new LoginResponse { 
+                        Id = user.Id.ToString(),
+                        PhoneNumber = user.PhoneNumber,
+                        Role = roleName,
+                        DisplayName = user.DisplayName,
+                        });
+                }
+            }
+
+            return users;
+        }
+
+        public async Task<Result<LoginResponse>> GetByIdAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<LoginResponse>.Error("Not Found!");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            string userRole = roles.FirstOrDefault();
+
+            if (!roles.Any())
+            {
+                return Result<LoginResponse>.Error("User has no role assigned.");
+            }
+
+            return Result<LoginResponse>.Success(new LoginResponse
+            {
+                Id = user.Id.ToString(),
+                PhoneNumber = user.PhoneNumber,
+                Role = userRole,
+                DisplayName = user.DisplayName,
+            });
         }
 
         //    // JWT creation helper

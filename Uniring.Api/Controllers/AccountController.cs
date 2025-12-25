@@ -1,9 +1,7 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Uniring.Api.Authentication;
 using Uniring.Application.Interfaces;
-using Uniring.Contracts.ApiResult;
 using Uniring.Contracts.Auth;
 
 namespace Uniring.Api.Controllers

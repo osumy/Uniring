@@ -33,8 +33,7 @@ namespace Uniring.App.Controllers
         {
             ViewBag.Title = "ورود";
 
-            //if (requestModel.PhoneNumber == "admin" && requestModel.Password == "admin123")
-                return RedirectToAction("Index", "Admin");
+                //return RedirectToAction("Index", "Admin");
 
             if (!ModelState.IsValid) return View(requestModel);
 
@@ -55,6 +54,11 @@ namespace Uniring.App.Controllers
                 Response.Cookies.Append("userName", result.DisplayName, cookieOptions);
                 Response.Cookies.Append("phoneNumber", result.PhoneNumber, cookieOptions);
                 Response.Cookies.Append("userRole", result.Role, cookieOptions);
+
+                if (result.Role == "admin")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
 
                 return RedirectToAction("Index", "Search");
             }
