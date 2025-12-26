@@ -15,12 +15,41 @@ namespace Uniring.Infrastructure.Repositories
 
         public async Task<Ring?> GetRingBySerialAsync(string serial)
         {
-            return await _db.Rings.FirstOrDefaultAsync(r => r.Serial == serial);
+            return await _db.Rings
+                .Include(r => r.Medias)
+                .FirstOrDefaultAsync(r => r.Serial == serial);
         }
 
         public async Task<Ring?> GetRingByUidAsync(string uid)
         {
-            return await _db.Rings.FirstOrDefaultAsync(r => r.Uid == uid);
+            return await _db.Rings
+                .Include(r => r.Medias)
+                .FirstOrDefaultAsync(r => r.Uid == uid);
         }
+
+        public async Task<Ring?> GetByIdAsync(Guid id)
+        {
+            return await _db.Rings
+                .Include(r => r.Medias) // Include related media
+                .FirstOrDefaultAsync(r => r.Id == id);
+        }
+
+        public async Task AddAsync(Ring ring)
+        {
+            await _db.Rings.AddAsync(ring);
+        }
+
+        public void Delete(Ring ring)
+        {
+            _db.Rings.Remove(ring);
+        }
+
+        public async Task<bool> ExistsBySerialAsync(string serial)
+        {
+            return await _db.Rings.AnyAsync(r => r.Serial == serial);
+        }
+
+        //// Don't forget to implement UnitOfWork property
+        //public IUnitOfWork UnitOfWork => _db;
     }
 }
