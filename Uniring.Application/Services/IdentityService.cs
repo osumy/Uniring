@@ -165,6 +165,9 @@ namespace Uniring.Application.Services
 
         public async Task<List<LoginResponse>> GetUsersInRoleAsync(string roleName)
         {
+            if (roleName != "user") // Optional safety
+                throw new ArgumentException("Only 'user' role allowed for this admin view");
+
             var users = new List<LoginResponse>();
             var allUsers = _userManager.Users.ToList();
 

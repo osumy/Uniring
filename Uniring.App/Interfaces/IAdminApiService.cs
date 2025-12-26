@@ -18,5 +18,8 @@ namespace Uniring.App.Interfaces
 
         Task<bool> DeleteAccountAsync();
         Task<bool> DeleteRingAsync();
+
+        Task<List<LoginResponse>> GetUsersAsync();
+
     }
 }

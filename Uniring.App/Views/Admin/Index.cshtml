@@ -1,17 +1,12 @@
 ﻿<!doctype html>
 <html lang="fa" dir="rtl">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>انگشتر شریعتی - پنل ادمین</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;600;700;800&display=swap"
-          rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/AdminPageStyle.css">
 </head>
-
 <body>
     <main class="container" role="main">
         <div class="topbar">
@@ -22,22 +17,19 @@
         </div>
 
         <section class="actions-grid" aria-label="عملیات سریع">
-            <a style="text-decoration: none;" href="/admin-panel/new-user" class="action-btn bg-green" id="action-new-customer">ثبت مشتری جدید</a>
-            <a style="text-decoration: none;" href="/admin-panel/new-ring" class="action-btn bg-blue" id="action-new-ring">ثبت انگشتر جدید</a>
+            <a href="/admin-panel/new-user" class="action-btn bg-green" style="text-decoration: none;">ثبت مشتری جدید</a>
+            <a href="/admin-panel/new-ring" class="action-btn bg-blue" style="text-decoration: none;">ثبت انگشتر جدید</a>
             <button class="action-btn bg-amber-dark" id="action-list-customers">مشاهده لیست مشتریان</button>
             <button class="action-btn bg-amber" id="action-list-rings">مشاهده لیست انگشترها</button>
         </section>
 
-        <section class="card-table" aria-label="ثبت‌های اخیر">
+        <section class="card-table" aria-label="نتایج دینامیک">
             <div class="card-head">
-                <h3 style="margin-right:0;">
-                    ثبت‌های اخیر
-                </h3>
+                <h3 id="dynamicTableTitle">ثبت‌های اخیر</h3>
             </div>
-
             <div class="table-wrap">
-                <table role="table" aria-label="جدول ثبت‌های اخیر">
-                    <thead>
+                <table>
+                    <thead id="dynamicTableHead">
                         <tr>
                             <th>جزئیات انگشتر</th>
                             <th>مشتری</th>
@@ -46,14 +38,14 @@
                             <th>جنس</th>
                         </tr>
                     </thead>
-                    <tbody id="registrationsBody">
+                    <tbody id="dynamicTableBody">
+                        <!-- Content will be replaced by JS -->
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
 
-     <script src="~/js/AdminPageScript.js"></script>
+    <script src="~/js/AdminPageScript.js"></script>
 </body>
-
 </html>

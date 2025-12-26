@@ -49,6 +49,11 @@ namespace Uniring.Infrastructure.Repositories
             return await _db.Rings.AnyAsync(r => r.Serial == serial);
         }
 
+        public async Task<List<Ring>> GetAllAsync()
+        {
+            return await _db.Rings.Include(r => r.Medias).ToListAsync();
+        }
+
         //// Don't forget to implement UnitOfWork property
         //public IUnitOfWork UnitOfWork => _db;
     }

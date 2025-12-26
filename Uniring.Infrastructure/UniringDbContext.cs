@@ -45,19 +45,11 @@ namespace Uniring.Infrastructure
                 .Property(r => r.Id)
                 .HasConversion<Guid>();
 
-            //// Reconfigure the relationship explicitly
-            //builder.Entity<Ring>()
-            //    .HasMany(r => r.Medias)
-            //    .WithOne(m => m.Ring)
-            //    .HasForeignKey(m => m.RingId)
-            //    .OnDelete(DeleteBehavior.ClientSetNull);
-
-            //// Configure Ring → Media one-to-many
-            //builder.Entity<Ring>()
-            //    .HasMany(r => r.Medias)
-            //    .WithOne(m => m.Ring)
-            //    .HasForeignKey(m => m.RingId)
-            //    .OnDelete(DeleteBehavior.ClientSetNull); // or Restrict
+            builder.Entity<Ring>()
+                .HasMany(r => r.Medias)
+                .WithOne(m => m.Ring)
+                .HasForeignKey(m => m.RingId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //// Optional: Ensure Ring.Uid is unique (if needed)
             //builder.Entity<Ring>()

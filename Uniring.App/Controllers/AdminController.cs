@@ -57,5 +57,12 @@ namespace Uniring.App.Controllers
             ViewBag.Error = "ثبت ناموفق!";
             return View();
         }
+
+        [HttpGet("api/users")]
+        public async Task<IActionResult> GetUsersJson()
+        {
+            var users = await _api.GetUsersAsync();
+            return Json(users);
+        }
     }
 }

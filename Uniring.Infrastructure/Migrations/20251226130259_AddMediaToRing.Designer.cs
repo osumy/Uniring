@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Uniring.Infrastructure;
@@ -11,9 +12,11 @@ using Uniring.Infrastructure;
 namespace Uniring.Infrastructure.Migrations
 {
     [DbContext(typeof(UniringDbContext))]
-    partial class UniringDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251226130259_AddMediaToRing")]
+    partial class AddMediaToRing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,7 +295,7 @@ namespace Uniring.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("655a26e4-5047-49cd-b70a-4f3491b0d59f"),
+                            Id = new Guid("ecda4eef-a458-43c9-8834-ce4851718667"),
                             Name = "انگشتر عقیق",
                             Serial = "R2732874204",
                             Uid = "UID"
@@ -354,8 +357,7 @@ namespace Uniring.Infrastructure.Migrations
                 {
                     b.HasOne("Uniring.Domain.Entities.Ring", "Ring")
                         .WithMany("Medias")
-                        .HasForeignKey("RingId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("RingId");
 
                     b.Navigation("Ring");
                 });

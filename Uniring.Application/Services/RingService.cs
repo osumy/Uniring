@@ -141,6 +141,20 @@ namespace Uniring.Application.Services
             return $"RNG-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..6].ToUpper()}";
         }
 
+        public async Task<List<RingResponse>> GetRingsAsync()
+        {
+            var rings = await _ringRepository.GetAllAsync();
+            return rings.Select(r => new RingResponse
+            {
+                Id = r.Id,
+                Uid = r.Uid,
+                Name = r.Name,
+                Serial = r.Serial,
+                Description = r.Description,
+                MediaIds = r.Medias.Select(m => m.Id).ToList()
+            }).ToList();
+        }
+
         public async Task<RingResponse?> GetRingBySerialAsync(string serial)
         {
             var result = await _ringRepository.GetRingBySerialAsync(serial);
@@ -150,17 +164,17 @@ namespace Uniring.Application.Services
                 return null;
             }
 
-            //RingResponse response = new RingResponse
-            //{ 
-            //    Uid = result.Uid,
-            //    Serial = result.Serial,
-            //    Name = result.Name,
-            //    Id = result.Id,
-            //    Description = result.Description
-            //};
+            RingResponse response = new RingResponse
+            {
+                Uid = result.Uid,
+                Serial = result.Serial,
+                Name = result.Name,
+                Id = result.Id,
+                Description = result.Description,
+                MediaIds = result.Medias.Select(m => m.Id).ToList()
+            };
 
-            //return response;
-            return null;
+            return response;
         }
 
         public async Task<RingResponse?> GetRingByUidAsync(string uid)
@@ -172,18 +186,17 @@ namespace Uniring.Application.Services
                 return null;
             }
 
-            //RingResponse response = new RingResponse 
-            //{ 
-            //    Uid = result.Uid,
-            //    Serial = result.Serial,
-            //    Name = result.Name,
-            //    Id = result.Id,
-            //    Description = result.Description
-            //};
+            RingResponse response = new RingResponse
+            {
+                Uid = result.Uid,
+                Serial = result.Serial,
+                Name = result.Name,
+                Id = result.Id,
+                Description = result.Description,
+                MediaIds = result.Medias.Select(m => m.Id).ToList()
+            };
 
-            //return response;
-
-            return null;
+            return response;
         }
     }
 }

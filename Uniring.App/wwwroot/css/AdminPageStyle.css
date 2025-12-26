@@ -303,3 +303,18 @@ input[type="button"],
 input[type="submit"] {
     font-family: "Noto Sans Arabic", "Noto Sans", Tahoma, Arial, sans-serif !important;
 }
+
+/* ========== اضافه‌شده برای جدول دینامیک ========== */
+
+.empty-cell,
+.error-cell {
+    text-align: center !important;
+    padding: 24px !important;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.error-cell {
+    color: #f87171; /* red-400 */
+    font-style: normal;
+}

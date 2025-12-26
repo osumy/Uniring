@@ -72,5 +72,15 @@ namespace Uniring.App.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<List<LoginResponse>> GetUsersAsync()
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.GetAsync("Admin/users");
+            if (!res.IsSuccessStatusCode) return new List<LoginResponse>();
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<LoginResponse>>(json) ?? new List<LoginResponse>();
+        }
+
     }
 }
