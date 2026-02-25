@@ -1,4 +1,4 @@
-﻿using Uniring.Contracts.Auth;
+using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
 
 namespace Uniring.App.Interfaces
@@ -13,10 +13,10 @@ namespace Uniring.App.Interfaces
         Task<bool> CreateNewAccountAsync(RegisterRequest requestModel);
         Task<bool> CreateNewRingAsync(RingResponse requestModel);
 
-        Task<bool> UpdateAccountAsync();
+        Task<bool> UpdateAccountAsync(string userId, UpdateUserRequest requestModel);
         Task<bool> UpdateRingAsync();
 
-        Task<bool> DeleteAccountAsync();
+        Task<bool> DeleteAccountAsync(string userId);
         Task<bool> DeleteRingAsync();
 
         Task<List<LoginResponse>> GetUsersAsync();

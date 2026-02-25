@@ -1,4 +1,4 @@
-﻿using Uniring.Contracts.ApiResult;
+using Uniring.Contracts.ApiResult;
 using Uniring.Contracts.Auth;
 using Uniring.Domain.Entities.IdentityEntities;
 
@@ -14,6 +14,9 @@ namespace Uniring.Application.Interfaces
 
         Task<List<LoginResponse>> GetUsersInRoleAsync(string roleName);
         Task<Result<LoginResponse>> GetByIdAsync(string id);
+
+        Task<Result<bool>> DeleteUserAsync(string id);
+        Task<Result<LoginResponse>> UpdateUserAsync(string id, UpdateUserRequest request);
 
         // ForgotPassword, ResetPassword, ...
 

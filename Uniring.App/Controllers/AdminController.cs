@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Uniring.App.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
@@ -63,6 +63,26 @@ namespace Uniring.App.Controllers
         {
             var users = await _api.GetUsersAsync();
             return Json(users);
+        }
+
+        [HttpDelete("api/users/{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var ok = await _api.DeleteAccountAsync(id);
+            if (!ok) return BadRequest();
+            return Ok();
+        }
+
+        [HttpPut("api/users/{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var ok = await _api.UpdateAccountAsync(id, model);
+            if (!ok) return BadRequest();
+
+            // برای سادگی، همان مدل ورودی را برمی‌گردانیم
+            return Json(model);
         }
     }
 }

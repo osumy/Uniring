@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Uniring.Application.Interfaces;
 using Uniring.Contracts.Auth;
@@ -31,6 +31,22 @@ namespace Uniring.Api.Controllers
         {
             var users = await _identity.GetUsersInRoleAsync("user"); // Only "user" role
             return Ok(users);
+        }
+
+        [HttpDelete("users/{id}")]
+        public async Task<ActionResult> DeleteUser(string id)
+        {
+            var res = await _identity.DeleteUserAsync(id);
+            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
+            return Ok();
+        }
+
+        [HttpPut("users/{id}")]
+        public async Task<ActionResult<LoginResponse>> UpdateUser(string id, [FromBody] UpdateUserRequest req)
+        {
+            var res = await _identity.UpdateUserAsync(id, req);
+            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
+            return Ok(res.Data);
         }
 
         [HttpGet("rings")]

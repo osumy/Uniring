@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const btnUsers = document.getElementById('action-list-customers');
     const btnRings = document.getElementById('action-list-rings');
     const tableTitle = document.getElementById('dynamicTableTitle');
@@ -30,7 +30,7 @@
             <tr>
                 <th>نام نمایشی</th>
                 <th>شماره تلفن</th>
-                <th>شناسه کاربری</th>
+                <th>عملیات</th>
             </tr>
         `;
 
@@ -47,12 +47,21 @@
 
             let rows = '';
             users.forEach(u => {
-                // فقط کاربران با role = "user" — ولی فیلتر از سمت سرور انجام می‌شه
+                const id = u.id || '';
+                const displayName = u.displayName || '—';
+                const phone = u.phoneNumber || '—';
+
                 rows += `
-                    <tr>
-                        <td>${escapeHtml(u.displayName || '—')}</td>
-                        <td>${escapeHtml(u.phoneNumber || '—')}</td>
-                        <td>${escapeHtml(u.id || '—')}</td>
+                    <tr data-user-id="${escapeHtml(id)}">
+                        <td data-field="displayName">${escapeHtml(displayName)}</td>
+                        <td data-field="phoneNumber">${escapeHtml(phone)}</td>
+                        <td>
+                            <div class="row-actions" data-user-id="${escapeHtml(id)}">
+                                <button type="button" class="btn-inline btn-secondary" data-action="orders">سفارشات</button>
+                                <button type="button" class="btn-inline btn-primary" data-action="edit">ویرایش</button>
+                                <button type="button" class="btn-inline btn-danger" data-action="delete">حذف</button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             });
@@ -119,4 +128,76 @@
         };
         return text.replace(/[&<>"']/g, m => map[m]);
     }
+
+    // عملیات روی هر ردیف مشتری (حذف / ویرایش / سفارشات)
+    tableBody.addEventListener('click', async (event) => {
+        const btn = event.target.closest('.btn-inline');
+        if (!btn) return;
+
+        const action = btn.dataset.action;
+        const row = btn.closest('tr');
+        const container = btn.closest('.row-actions');
+        const userId = container?.dataset.userId || row?.dataset.userId;
+
+        if (!userId) {
+            alert('شناسه مشتری نامعتبر است.');
+            return;
+        }
+
+        if (action === 'delete') {
+            const ok = confirm('آیا از حذف این مشتری مطمئن هستید؟ این عمل قابل بازگشت نیست.');
+            if (!ok) return;
+
+            try {
+                const res = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+                    method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error('Delete failed');
+
+                row?.remove();
+            } catch (err) {
+                console.error('Error deleting user:', err);
+                alert('خطا در حذف مشتری. لطفاً دوباره تلاش کنید.');
+            }
+        } else if (action === 'edit') {
+            const displayNameCell = row.querySelector('[data-field="displayName"]');
+            const phoneCell = row.querySelector('[data-field="phoneNumber"]');
+
+            const currentName = displayNameCell?.textContent?.trim() || '';
+            const currentPhone = phoneCell?.textContent?.trim() || '';
+
+            const newName = prompt('نام نمایشی جدید را وارد کنید:', currentName);
+            if (newName === null) return;
+
+            const newPhone = prompt('شماره تلفن جدید را وارد کنید:', currentPhone);
+            if (newPhone === null) return;
+
+            const payload = {
+                displayName: newName.trim(),
+                phoneNumber: newPhone.trim()
+            };
+
+            try {
+                const res = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('Update failed');
+
+                const updated = await res.json();
+                if (displayNameCell) displayNameCell.textContent = updated.displayName || payload.displayName;
+                if (phoneCell) phoneCell.textContent = updated.phoneNumber || payload.phoneNumber;
+            } catch (err) {
+                console.error('Error updating user:', err);
+                alert('خطا در بروزرسانی مشخصات مشتری. لطفاً دوباره تلاش کنید.');
+            }
+        } else if (action === 'orders') {
+            alert('نمایش سفارشات برای این مشتری هنوز در بک‌اند پیاده‌سازی نشده است.');
+        }
+    });
 });

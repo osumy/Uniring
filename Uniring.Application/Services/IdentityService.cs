@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Data;
@@ -209,6 +209,60 @@ namespace Uniring.Application.Services
                 PhoneNumber = user.PhoneNumber,
                 Role = userRole,
                 DisplayName = user.DisplayName,
+            });
+        }
+
+        public async Task<Result<bool>> DeleteUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<bool>.Error("User not found.");
+            }
+
+            var res = await _userManager.DeleteAsync(user);
+            if (!res.Succeeded)
+            {
+                return Result<bool>.Error("Delete failed.");
+            }
+
+            return Result<bool>.Success(true);
+        }
+
+        public async Task<Result<LoginResponse>> UpdateUserAsync(string id, UpdateUserRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<LoginResponse>.Error("User not found.");
+            }
+
+            var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
+            if (string.IsNullOrWhiteSpace(normalizedPhone))
+                return Result<LoginResponse>.Error("Wrong PhoneNumber.");
+
+            var existing = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone && u.Id != user.Id);
+            if (existing != null)
+                return Result<LoginResponse>.Error("PhoneNumber already in use.");
+
+            user.DisplayName = request.DisplayName;
+            user.PhoneNumber = normalizedPhone;
+            user.UserName = normalizedPhone;
+
+            var res = await _userManager.UpdateAsync(user);
+            if (!res.Succeeded)
+                return Result<LoginResponse>.Error("Update failed.");
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? "user";
+
+            return Result<LoginResponse>.Success(new LoginResponse
+            {
+                Id = user.Id.ToString(),
+                DisplayName = user.DisplayName,
+                PhoneNumber = user.PhoneNumber!,
+                Role = role
             });
         }
 

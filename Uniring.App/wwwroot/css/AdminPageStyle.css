@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --bg1: #0f2130; /* from homepage */
     --bg2: #0b1621; /* from homepage */
     --text-1: #e6eef8;
@@ -317,4 +317,49 @@ input[type="submit"] {
 .error-cell {
     color: #f87171; /* red-400 */
     font-style: normal;
+}
+
+/* دکمه‌های عملیات داخل جدول مشتریان */
+.row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.btn-inline {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: transparent;
+    color: var(--text-1);
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-inline:hover {
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.btn-primary {
+    border-color: #3b82f6;
+    color: #bfdbfe;
+}
+
+.btn-danger {
+    border-color: #f97373;
+    color: #fecaca;
+}
+
+.btn-secondary {
+    border-color: rgba(148, 163, 184, 0.6);
+    color: var(--muted);
+}
+
+@media (max-width: 640px) {
+    .btn-inline {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
 }

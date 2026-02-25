@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Uniring.App.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
@@ -33,9 +33,11 @@ namespace Uniring.App.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteAccountAsync()
+        public async Task<bool> DeleteAccountAsync(string userId)
         {
-            throw new NotImplementedException();
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.DeleteAsync($"Admin/users/{userId}");
+            return res.IsSuccessStatusCode;
         }
 
         public Task<bool> DeleteRingAsync()
@@ -63,9 +65,11 @@ namespace Uniring.App.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAccountAsync()
+        public async Task<bool> UpdateAccountAsync(string userId, UpdateUserRequest requestModel)
         {
-            throw new NotImplementedException();
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.PutAsJsonAsync($"Admin/users/{userId}", requestModel);
+            return res.IsSuccessStatusCode;
         }
 
         public Task<bool> UpdateRingAsync()
