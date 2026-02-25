@@ -44,7 +44,7 @@ body {
 
 body {
     min-height: 100%;
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(255, 255, 255, 0.02), transparent 8%), linear-gradient(180deg, var(--bg1), var(--bg2) 60%);
+    background-color: #051c2e;
     color: var(--text-1); /* or var(--white) if you adopt homepage color scheme */
     direction: rtl;
     -webkit-font-smoothing: antialiased;
@@ -160,6 +160,35 @@ body {
         font-weight: 700;
         color: var(--text-1)
     }
+
+.card-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-search-input {
+    min-width: 0;
+    width: 220px;
+    max-width: 260px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    background: rgba(15, 23, 42, 0.85);
+    color: var(--text-1);
+    font-size: 0.85rem;
+    direction: rtl;
+}
+
+.card-search-input::placeholder {
+    color: var(--muted);
+}
+
+.card-search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
 
 .table-wrap {
     overflow-x: auto
@@ -367,7 +396,6 @@ input[type="submit"] {
 /* صفحه‌بندی جدول مشتریان */
 .pagination-container {
     padding: 12px 16px 18px;
-    border-top: 1px solid rgba(148, 163, 184, 0.06);
     display: flex;
     justify-content: center;
 }
@@ -376,10 +404,6 @@ input[type="submit"] {
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    background: rgba(15, 23, 42, 0.7);
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .pager-btn {

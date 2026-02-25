@@ -5,11 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableHead = document.getElementById('dynamicTableHead');
     const tableBody = document.getElementById('dynamicTableBody');
     const paginationContainer = document.getElementById('paginationContainer');
+    const userSearchInput = document.getElementById('userSearchInput');
 
     // state for users list + pagination
     let allUsers = [];
     let currentUserPage = 1;
     const USERS_PAGE_SIZE = 10; // تعداد ردیف در هر صفحه (برای موبایل هم مناسب است)
+    let currentFilterText = '';
 
     if (!btnUsers || !btnRings || !tableBody) return;
 
@@ -43,17 +45,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return rawPhone;
     }
 
+    function getFilteredUsers() {
+        if (!Array.isArray(allUsers) || allUsers.length === 0) return [];
+
+        const term = currentFilterText.trim().toLowerCase();
+        if (!term) return allUsers;
+
+        return allUsers.filter(u => {
+            const name = (u.displayName || '').toString().toLowerCase();
+            return name.includes(term);
+        });
+    }
+
     function renderUsersPage(pageNumber) {
-        if (!Array.isArray(allUsers) || allUsers.length === 0) return;
-
-        const totalItems = allUsers.length;
-        const totalPages = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
-
-        currentUserPage = Math.min(Math.max(1, pageNumber), totalPages);
-
-        const start = (currentUserPage - 1) * USERS_PAGE_SIZE;
-        const end = start + USERS_PAGE_SIZE;
-        const pageItems = allUsers.slice(start, end);
+        const users = getFilteredUsers();
 
         const headers = `
             <tr>
@@ -62,6 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 <th>عملیات</th>
             </tr>
         `;
+
+        if (!Array.isArray(users) || users.length === 0) {
+            const msg = currentFilterText.trim()
+                ? 'هیچ مشتری مطابق جست‌وجو یافت نشد.'
+                : 'مشتری‌ای یافت نشد.';
+            showEmpty('لیست مشتریان', headers, msg);
+            return;
+        }
+
+        const totalItems = users.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
+
+        currentUserPage = Math.min(Math.max(1, pageNumber), totalPages);
+
+        const start = (currentUserPage - 1) * USERS_PAGE_SIZE;
+        const end = start + USERS_PAGE_SIZE;
+        const pageItems = users.slice(start, end);
 
         let rows = '';
         pageItems.forEach(u => {
@@ -145,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             allUsers = users;
+            currentFilterText = userSearchInput ? userSearchInput.value || '' : '';
             renderUsersPage(1);
         } catch (err) {
             console.error('Error loading users:', err);
@@ -194,6 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
             showError('خطا در بارگذاری لیست انگشترها. لطفاً دوباره تلاش کنید.');
         }
     });
+
+    if (userSearchInput) {
+        userSearchInput.addEventListener('input', () => {
+            currentFilterText = userSearchInput.value || '';
+            if (!allUsers.length) return;
+            renderUsersPage(1);
+        });
+    }
 
     // جلوگیری از XSS
     function escapeHtml(text) {
