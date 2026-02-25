@@ -1,4 +1,4 @@
-﻿namespace Uniring.Contracts.Ring
+namespace Uniring.Contracts.Ring
 {
     public class RingRegisterRequest
     {
@@ -6,7 +6,7 @@
 
         public string? Description { get; set; }
 
-        public required string OwnerPhoneNumber { get; set; }
+        public string? OwnerPhoneNumber { get; set; }
 
         public required List<Guid> MediaIds { get; set; }
     }

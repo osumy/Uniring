@@ -1,4 +1,4 @@
-﻿
+
 using Uniring.Contracts.Ring;
 using Uniring.Domain.Entities;
 
@@ -22,5 +22,7 @@ namespace Uniring.Application.Interfaces.Repositories
 
         Task<List<Ring>> GetAllAsync();
 
+        Task AddAsync(Ring ring);
+        Task SaveChangesAsync();
     }
 }

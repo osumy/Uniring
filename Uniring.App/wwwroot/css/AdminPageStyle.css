@@ -178,6 +178,7 @@ body {
     color: var(--text-1);
     font-size: 0.85rem;
     direction: rtl;
+    font-family: "Noto Sans Arabic", "Noto Sans", Tahoma, Arial, sans-serif;
 }
 
 .card-search-input::placeholder {

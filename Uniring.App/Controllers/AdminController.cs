@@ -8,10 +8,12 @@ namespace Uniring.App.Controllers
     public class AdminController : Controller
     {
         private readonly IAdminApiService _api;
+        private readonly IConfiguration _configuration;
 
-        public AdminController(IAdminApiService api)
+        public AdminController(IAdminApiService api, IConfiguration configuration)
         {
             _api = api;
+            _configuration = configuration;
         }
 
         [Route("admin-panel")]
@@ -24,6 +26,7 @@ namespace Uniring.App.Controllers
         [HttpGet]
         public IActionResult NewRing()
         {
+            ViewBag.ApiBaseUrl = _configuration["Api:BaseUrl"] ?? string.Empty;
             return View();
         }
 

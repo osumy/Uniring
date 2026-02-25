@@ -28,9 +28,11 @@ namespace Uniring.App.Services
             return false;
         }
 
-        public Task<bool> CreateNewRingAsync(RingResponse requestModel)
+        public async Task<bool> CreateNewRingAsync(RingRegisterRequest requestModel)
         {
-            throw new NotImplementedException();
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.PostAsJsonAsync("Admin/rings", requestModel);
+            return res.IsSuccessStatusCode;
         }
 
         public async Task<bool> DeleteAccountAsync(string userId)

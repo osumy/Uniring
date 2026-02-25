@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Interfaces.Repositories;
 using Uniring.Application.Utils;
@@ -71,17 +71,22 @@ namespace Uniring.Application.Services
 
             // Validate media type
             if (!MediaTypeHandler.isValidMedia(ext))
-                return Result<MediaRequest>.Error("Not Supported media type."); ;
+                return Result<MediaRequest>.Error("Not Supported media type.");
 
-            // Determine subfolder
-            string subfolder = MediaTypeHandler.isValidImage(ext) ? "image" : "video";
-            string uploadDir = Path.Combine(_hostEnvironment.ContentRootPath, "media", subfolder);
+            // Enforce max size for videos (100 MB), no limit for images
+            const long MaxVideoBytes = 100L * 1024 * 1024;
+            if (MediaTypeHandler.isValidVideo(ext) && file.Length > MaxVideoBytes)
+            {
+                return Result<MediaRequest>.Error("Video file is too large. Maximum size is 100 MB.");
+            }
+
+            // Single folder for all media at project root (no extension on disk)
+            string uploadDir = Path.Combine(_hostEnvironment.ContentRootPath, "Media");
             Directory.CreateDirectory(uploadDir); // Ensure directory exists
 
-            // Generate unique filename
+            // Generate unique filename (no extension)
             Guid id = Guid.NewGuid();
-            string uniqueFileName = $"{id}{ext}";
-            string relativePath = Path.Combine("media", subfolder, uniqueFileName);
+            string uniqueFileName = id.ToString("N");
             string fullPath = Path.Combine(uploadDir, uniqueFileName);
 
             // Save file to disk
@@ -104,7 +109,7 @@ namespace Uniring.Application.Services
                 OriginalFileName = file.FileName,
                 ContentType = file.ContentType ?? "application/octet-stream",
                 Size = file.Length,
-                Path = relativePath,
+                Path = fullPath,
                 CreatedAt = DateTime.UtcNow
             };
 

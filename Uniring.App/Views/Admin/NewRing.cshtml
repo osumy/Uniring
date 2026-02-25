@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -123,6 +123,8 @@
     </div>
 
     <script>
+        const apiBaseUrl = '@ViewBag.ApiBaseUrl';
+
         // Form data object
         const formData = {
             name: '',
@@ -176,63 +178,120 @@
         const fileInput = document.getElementById('mediaUpload');
         const fileList = document.getElementById('fileList');
         const next2Btn = document.getElementById('next2');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBarMedia = document.getElementById('progressBarMedia');
-        const progressPercent = document.getElementById('progressPercent');
 
         // Click on upload container triggers file input
         uploadContainer.addEventListener('click', () => {
             fileInput.click();
         });
 
+        // Utility to format bytes
+        function formatBytes(bytes) {
+            if (!bytes && bytes !== 0) return '';
+            const sizes = ['بایت', 'کیلوبایت', 'مگابایت', 'گیگابایت'];
+            if (bytes === 0) return '0 بایت';
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            const val = bytes / Math.pow(1024, i);
+            return `${val.toFixed(1)} ${sizes[i]}`;
+        }
+
+        let localMediaCounter = 0;
+
+        function addFiles(files) {
+            if (!files || !files.length) return;
+
+            Array.from(files).forEach(file => {
+                const ext = file.name.split('.').pop()?.toLowerCase() || '';
+                const isVideo = ['mp4', 'webm', 'mov', 'mkv'].includes(ext);
+                const maxVideoBytes = 100 * 1024 * 1024;
+
+                if (!['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'mov', 'mkv'].includes(ext)) {
+                    alert(`فرمت فایل "${file.name}" پشتیبانی نمی‌شود.`);
+                    return;
+                }
+
+                if (isVideo && file.size > maxVideoBytes) {
+                    alert(`حجم ویدیو "${file.name}" بیشتر از ۱۰۰ مگابایت است.`);
+                    return;
+                }
+
+                const localId = `m_${++localMediaCounter}`;
+
+                const mediaItem = {
+                    localId,
+                    file,
+                    isVideo,
+                    uploaded: false,
+                    mediaId: null
+                };
+                formData.media.push(mediaItem);
+
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.dataset.localId = localId;
+                fileItem.innerHTML = `
+                    <div class="file-main">
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-meta">${isVideo ? 'ویدیو' : 'عکس'} • ${formatBytes(file.size)}</span>
+                    </div>
+                    <div class="file-actions">
+                        <button type="button" class="file-move-up">↑</button>
+                        <button type="button" class="file-move-down">↓</button>
+                        <button type="button" class="file-remove">حذف</button>
+                    </div>
+                    <div class="file-progress">
+                        <div class="file-progress-bar"></div>
+                    </div>
+                `;
+                fileList.appendChild(fileItem);
+
+                const removeBtn = fileItem.querySelector('.file-remove');
+                const moveUpBtn = fileItem.querySelector('.file-move-up');
+                const moveDownBtn = fileItem.querySelector('.file-move-down');
+
+                removeBtn.addEventListener('click', () => {
+                    formData.media = formData.media.filter(m => m.localId !== localId);
+                    fileItem.remove();
+                    if (formData.media.length === 0) {
+                        next2Btn.disabled = true;
+                    }
+                });
+
+                moveUpBtn.addEventListener('click', () => {
+                    const index = formData.media.findIndex(m => m.localId === localId);
+                    if (index > 0) {
+                        const tmp = formData.media[index - 1];
+                        formData.media[index - 1] = formData.media[index];
+                        formData.media[index] = tmp;
+                        fileList.insertBefore(fileItem, fileItem.previousElementSibling);
+                    }
+                });
+
+                moveDownBtn.addEventListener('click', () => {
+                    const index = formData.media.findIndex(m => m.localId === localId);
+                    if (index < formData.media.length - 1) {
+                        const tmp = formData.media[index + 1];
+                        formData.media[index + 1] = formData.media[index];
+                        formData.media[index] = tmp;
+                        const next = fileItem.nextElementSibling;
+                        if (next) {
+                            fileList.insertBefore(next, fileItem);
+                        }
+                    }
+                });
+            });
+
+            if (formData.media.length > 0) {
+                next2Btn.disabled = false;
+            }
+        }
+
         // Handle file selection
         fileInput.addEventListener('change', (e) => {
             const files = e.target.files;
             if (files.length > 0) {
-                // Clear previous files
-                formData.media = [];
-                fileList.innerHTML = '';
-                
-                // Add new files
-                Array.from(files).forEach(file => {
-                    formData.media.push(file);
-                    
-                    // Create file item
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
-                    fileItem.innerHTML = `
-                        <span class="file-name">${file.name}</span>
-                        <span class="file-remove" data-filename="${file.name}">×</span>
-                    `;
-                    fileList.appendChild(fileItem);
-                    
-                    // Add remove functionality
-                    fileItem.querySelector('.file-remove').addEventListener('click', function() {
-                        const fileName = this.getAttribute('data-filename');
-                        formData.media = formData.media.filter(f => f.name !== fileName);
-                        this.closest('.file-item').remove();
-                        
-                        if (formData.media.length === 0) {
-                            next2Btn.disabled = true;
-                        }
-                    });
-                });
-                
-                // Enable next button
-                next2Btn.disabled = false;
-                
-                // Simulate upload progress
-                progressContainer.style.display = 'block';
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += Math.random() * 15;
-                    if (progress >= 100) {
-                        progress = 100;
-                        clearInterval(interval);
-                    }
-                    progressBarMedia.style.width = `${progress}%`;
-                    progressPercent.textContent = `${Math.round(progress)}%`;
-                }, 200);
+                addFiles(files);
+                // reset input so selecting same files again still triggers change
+                fileInput.value = '';
             }
         });
 
@@ -251,9 +310,7 @@
             uploadContainer.style.backgroundColor = '#f8f9ff';
             const files = e.dataTransfer.files;
             if (files.length > 0) {
-                fileInput.files = e.dataTransfer.files;
-                const event = new Event('change', { bubbles: true });
-                fileInput.dispatchEvent(event);
+                addFiles(files);
             }
         });
 
@@ -285,25 +342,122 @@
             showScene('scene2');
         });
 
+        async function uploadSingleMedia(mediaItem) {
+            return new Promise((resolve, reject) => {
+                if (!apiBaseUrl) {
+                    reject(new Error('Api base url is not configured.'));
+                    return;
+                }
+
+                const file = mediaItem.file;
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', apiBaseUrl + 'Media/upload', true);
+
+                const form = new FormData();
+                form.append('file', file);
+
+                const rowEl = fileList.querySelector(`.file-item[data-local-id="${mediaItem.localId}"]`);
+                const progressBarEl = rowEl?.querySelector('.file-progress-bar');
+
+                xhr.upload.onprogress = (event) => {
+                    if (!progressBarEl || !event.lengthComputable) return;
+                    const percent = (event.loaded / event.total) * 100;
+                    progressBarEl.style.width = `${percent}%`;
+                };
+
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                const res = JSON.parse(xhr.responseText);
+                                mediaItem.uploaded = true;
+                                mediaItem.mediaId = res.id || res.Id || res.id?.id || null;
+                                if (progressBarEl) progressBarEl.style.width = '100%';
+                                resolve(mediaItem);
+                            } catch (e) {
+                                reject(e);
+                            }
+                        } else {
+                            reject(new Error(`Upload failed with status ${xhr.status}`));
+                        }
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Network error during upload.'));
+
+                xhr.send(form);
+            });
+        }
+
+        async function registerRingOnServer() {
+            if (!apiBaseUrl) throw new Error('Api base url is not configured.');
+
+            const mediaIds = formData.media
+                .filter(m => m.uploaded && m.mediaId)
+                .map(m => m.mediaId);
+
+            const payload = {
+                Name: formData.name,
+                Description: formData.description || null,
+                OwnerPhoneNumber: null,
+                MediaIds: mediaIds
+            };
+
+            const res = await fetch(apiBaseUrl + 'Admin/rings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                throw new Error('ثبت انگشتر در سرور ناموفق بود.');
+            }
+        }
+
         // Scene 4: Confirmation
-        document.getElementById('submitBtn').addEventListener('click', () => {
-            // In a real app, you would submit the form data here
-            alert(`انگشتر "${formData.name}" با موفقیت ثبت شد!\n\nتوضیحات: ${formData.description || 'ندارد'}`);
-            
-            // Reset form
-            formData.name = '';
-            formData.media = [];
-            formData.description = '';
-            document.getElementById('ring-name').value = '';
-            document.getElementById('ring-desc').value = '';
-            fileList.innerHTML = '';
-            progressContainer.style.display = 'none';
-            progressBarMedia.style.width = '0%';
-            progressPercent.textContent = '0%';
-            next2Btn.disabled = true;
-            
-            // Go back to first scene
-            showScene('scene1');
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            if (!formData.name) {
+                alert('نام انگشتر مشخص نیست.');
+                showScene('scene1');
+                return;
+            }
+            if (!formData.media.length) {
+                alert('حداقل یک مدیا برای انگشتر انتخاب کنید.');
+                showScene('scene2');
+                return;
+            }
+
+            try {
+                for (const mediaItem of formData.media) {
+                    if (!mediaItem.uploaded) {
+                        await uploadSingleMedia(mediaItem);
+                    }
+                }
+
+                await registerRingOnServer();
+
+                alert(`انگشتر "${formData.name}" با موفقیت ثبت شد!`);
+
+                // Reset form
+                formData.name = '';
+                formData.media = [];
+                formData.description = '';
+                document.getElementById('ring-name').value = '';
+                document.getElementById('ring-desc').value = '';
+                fileList.innerHTML = '';
+                next2Btn.disabled = true;
+                document.getElementById('previewName').textContent = 'نام انگشتر';
+                document.getElementById('previewDesc').textContent = 'بدون توضیحات';
+                document.getElementById('finalName').textContent = 'نام انگشتر';
+                document.getElementById('finalDesc').textContent = 'بدون توضیحات';
+
+                showScene('scene1');
+            } catch (err) {
+                console.error('Error registering ring with media:', err);
+                alert('خطا در آپلود مدیا یا ثبت انگشتر. لطفاً دوباره تلاش کنید.');
+            }
         });
     </script>
 </body>

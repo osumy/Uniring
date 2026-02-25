@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Uniring.Application.Interfaces.Repositories;
 using Uniring.Domain.Entities;
 
@@ -54,7 +54,14 @@ namespace Uniring.Infrastructure.Repositories
             return await _db.Rings.Include(r => r.Medias).ToListAsync();
         }
 
-        //// Don't forget to implement UnitOfWork property
-        //public IUnitOfWork UnitOfWork => _db;
+        public async Task AddAsync(Ring ring)
+        {
+            await _db.Rings.AddAsync(ring);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _db.SaveChangesAsync();
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Uniring.App.Interfaces
         //Task<AccountResponse?> GetAccountByPhoneNumberAsync(string PhoneNumber);
 
         Task<bool> CreateNewAccountAsync(RegisterRequest requestModel);
-        Task<bool> CreateNewRingAsync(RingResponse requestModel);
+        Task<bool> CreateNewRingAsync(RingRegisterRequest requestModel);
 
         Task<bool> UpdateAccountAsync(string userId, UpdateUserRequest requestModel);
         Task<bool> UpdateRingAsync();

@@ -10,11 +10,13 @@ namespace Uniring.Api.Controllers
     {
         private readonly IIdentityService _identity;
         private readonly IRingService _ringService;
+        private readonly UniringDbContext _db;
 
-        public AdminController(IIdentityService identity, IRingService ringService)
+        public AdminController(IIdentityService identity, IRingService ringService, UniringDbContext db)
         {
             _identity = identity;
             _ringService = ringService;
+            _db = db;
         }
 
         [HttpPost("register-user")]
@@ -71,7 +73,53 @@ namespace Uniring.Api.Controllers
         public async Task<ActionResult<List<RingResponse>>> GetRings()
         {
             // For now, return empty or mock; adjust as needed
-            return Ok(new List<RingResponse>());
+            var rings = await _ringService.GetRingsAsync();
+            return Ok(rings);
+        }
+
+        [HttpPost("rings")]
+        public async Task<ActionResult<RingResponse>> RegisterRing([FromBody] RingRegisterRequest req)
+        {
+            if (string.IsNullOrWhiteSpace(req.Name))
+                return BadRequest("Name is required.");
+
+            var ring = new Ring
+            {
+                Id = Guid.NewGuid(),
+                Uid = $"RNG-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..6].ToUpper()}",
+                Name = req.Name.Trim(),
+                Serial = Guid.NewGuid().ToString("N"),
+                Description = req.Description?.Trim()
+            };
+
+            await _db.Rings.AddAsync(ring);
+            await _db.SaveChangesAsync();
+
+            if (req.MediaIds is { Count: > 0 })
+            {
+                var medias = await _db.Medias
+                    .Where(m => req.MediaIds.Contains(m.Id))
+                    .ToListAsync();
+
+                foreach (var media in medias)
+                {
+                    media.RingId = ring.Id;
+                }
+
+                await _db.SaveChangesAsync();
+            }
+
+            var response = new RingResponse
+            {
+                Id = ring.Id,
+                Uid = ring.Uid,
+                Name = ring.Name,
+                Serial = ring.Serial,
+                Description = ring.Description,
+                MediaIds = req.MediaIds ?? new List<Guid>()
+            };
+
+            return Ok(response);
         }
 
     }
