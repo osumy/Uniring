@@ -18,6 +18,8 @@ namespace Uniring.Application.Interfaces
         Task<Result<bool>> DeleteUserAsync(string id);
         Task<Result<LoginResponse>> UpdateUserAsync(string id, UpdateUserRequest request);
 
+        Task<Result<bool>> ChangePasswordAsync(string id, string newPassword);
+
         // ForgotPassword, ResetPassword, ...
 
     }

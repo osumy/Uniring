@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableTitle = document.getElementById('dynamicTableTitle');
     const tableHead = document.getElementById('dynamicTableHead');
     const tableBody = document.getElementById('dynamicTableBody');
+    const paginationContainer = document.getElementById('paginationContainer');
+
+    // state for users list + pagination
+    let allUsers = [];
+    let currentUserPage = 1;
+    const USERS_PAGE_SIZE = 10; // تعداد ردیف در هر صفحه (برای موبایل هم مناسب است)
 
     if (!btnUsers || !btnRings || !tableBody) return;
 
@@ -12,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tableTitle.textContent = title;
         tableHead.innerHTML = headers;
         tableBody.innerHTML = rowsHtml;
+        if (paginationContainer) {
+            paginationContainer.innerHTML = '';
+        }
     }
 
     function showError(message) {
@@ -22,10 +31,30 @@ document.addEventListener('DOMContentLoaded', () => {
         setTable(title, headers, `<tr><td class="empty-cell" colspan="10">${message}</td></tr>`);
     }
 
-    // ======================
-    // بارگذاری لیست کاربران
-    // ======================
-    btnUsers.addEventListener('click', async () => {
+    function formatPhoneForDisplay(rawPhone) {
+        if (typeof rawPhone !== 'string' || !rawPhone) return '';
+
+        // اگر شماره در قالب E.164 ایران باشد (مثل +9891xxxxxxx)، آن را به فرمت داخلی 09.. تبدیل می‌کنیم
+        if (rawPhone.startsWith('+98') && rawPhone.length >= 4) {
+            return '0' + rawPhone.substring(3);
+        }
+
+        // در غیر این صورت همان مقدار را نشان بده
+        return rawPhone;
+    }
+
+    function renderUsersPage(pageNumber) {
+        if (!Array.isArray(allUsers) || allUsers.length === 0) return;
+
+        const totalItems = allUsers.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
+
+        currentUserPage = Math.min(Math.max(1, pageNumber), totalPages);
+
+        const start = (currentUserPage - 1) * USERS_PAGE_SIZE;
+        const end = start + USERS_PAGE_SIZE;
+        const pageItems = allUsers.slice(start, end);
+
         const headers = `
             <tr>
                 <th>نام نمایشی</th>
@@ -34,6 +63,69 @@ document.addEventListener('DOMContentLoaded', () => {
             </tr>
         `;
 
+        let rows = '';
+        pageItems.forEach(u => {
+            const id = u.id || '';
+            const displayName = u.displayName || '—';
+            const phone = formatPhoneForDisplay(u.phoneNumber || '');
+
+            rows += `
+                <tr data-user-id="${escapeHtml(id)}">
+                    <td data-field="displayName">${escapeHtml(displayName)}</td>
+                    <td data-field="phoneNumber">${escapeHtml(phone || '—')}</td>
+                    <td>
+                        <div class="row-actions" data-user-id="${escapeHtml(id)}">
+                            <button type="button" class="btn-inline btn-secondary" data-action="orders">انگشترها</button>
+                            <button type="button" class="btn-inline btn-primary" data-action="edit">ویرایش</button>
+                            <button type="button" class="btn-inline btn-primary" data-action="password">ویرایش رمز عبور</button>
+                            <button type="button" class="btn-inline btn-danger" data-action="delete">حذف</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        setTable('لیست مشتریان', headers, rows);
+
+        // رندر کنترل‌های صفحه‌بندی
+        if (paginationContainer) {
+            const canPrev = currentUserPage > 1;
+            const canNext = currentUserPage < totalPages;
+
+            paginationContainer.innerHTML = `
+                <div class="pagination-inner">
+                    <button type="button" class="pager-btn" data-page="prev" ${canPrev ? '' : 'disabled'}>قبلی</button>
+                    <span class="pager-info">صفحه ${currentUserPage} از ${totalPages}</span>
+                    <button type="button" class="pager-btn" data-page="next" ${canNext ? '' : 'disabled'}>بعدی</button>
+                </div>
+            `;
+
+            const prevBtn = paginationContainer.querySelector('[data-page="prev"]');
+            const nextBtn = paginationContainer.querySelector('[data-page="next"]');
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentUserPage > 1) {
+                        renderUsersPage(currentUserPage - 1);
+                    }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    const totalPages2 = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
+                    if (currentUserPage < totalPages2) {
+                        renderUsersPage(currentUserPage + 1);
+                    }
+                });
+            }
+        }
+    }
+
+    // ======================
+    // بارگذاری لیست کاربران
+    // ======================
+    btnUsers.addEventListener('click', async () => {
         try {
             const res = await fetch('/api/users');
             if (!res.ok) throw new Error('دریافت داده با خطا مواجه شد.');
@@ -41,32 +133,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const users = await res.json();
 
             if (!Array.isArray(users) || users.length === 0) {
+                const headers = `
+                    <tr>
+                        <th>نام نمایشی</th>
+                        <th>شماره تلفن</th>
+                        <th>عملیات</th>
+                    </tr>
+                `;
                 showEmpty('لیست مشتریان', headers);
                 return;
             }
 
-            let rows = '';
-            users.forEach(u => {
-                const id = u.id || '';
-                const displayName = u.displayName || '—';
-                const phone = u.phoneNumber || '—';
-
-                rows += `
-                    <tr data-user-id="${escapeHtml(id)}">
-                        <td data-field="displayName">${escapeHtml(displayName)}</td>
-                        <td data-field="phoneNumber">${escapeHtml(phone)}</td>
-                        <td>
-                            <div class="row-actions" data-user-id="${escapeHtml(id)}">
-                                <button type="button" class="btn-inline btn-secondary" data-action="orders">سفارشات</button>
-                                <button type="button" class="btn-inline btn-primary" data-action="edit">ویرایش</button>
-                                <button type="button" class="btn-inline btn-danger" data-action="delete">حذف</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            setTable('لیست مشتریان', headers, rows);
+            allUsers = users;
+            renderUsersPage(1);
         } catch (err) {
             console.error('Error loading users:', err);
             showError('خطا در بارگذاری لیست مشتریان. لطفاً دوباره تلاش کنید.');
@@ -129,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return text.replace(/[&<>"']/g, m => map[m]);
     }
 
-    // عملیات روی هر ردیف مشتری (حذف / ویرایش / سفارشات)
+    // عملیات روی هر ردیف مشتری (حذف / ویرایش / رمز / سفارشات)
     tableBody.addEventListener('click', async (event) => {
         const btn = event.target.closest('.btn-inline');
         if (!btn) return;
@@ -145,59 +224,93 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (action === 'delete') {
-            const ok = confirm('آیا از حذف این مشتری مطمئن هستید؟ این عمل قابل بازگشت نیست.');
-            if (!ok) return;
+            // حذف در مودال اختصاصی هندل می‌شود
+            openDeleteModal(userId);
+        } else if (action === 'edit') {
+            // ویرایش مشخصات در صفحه جداگانه
+            window.location.href = `/admin-panel/users/${encodeURIComponent(userId)}/edit`;
+        } else if (action === 'password') {
+            // ویرایش رمز عبور در صفحه جداگانه
+            window.location.href = `/admin-panel/users/${encodeURIComponent(userId)}/change-password`;
+        } else if (action === 'orders') {
+            alert('نمایش سفارشات برای این مشتری هنوز در بک‌اند پیاده‌سازی نشده است.');
+        }
+    });
 
+    // ======================
+    // مودال حذف کاربر
+    // ======================
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteModalConfirm = document.getElementById('deleteConfirmBtn');
+    const deleteModalCancel = document.getElementById('deleteCancelBtn');
+    let deleteUserId = null;
+
+    function openDeleteModal(userId) {
+        deleteUserId = userId;
+        if (!deleteModal) return;
+        deleteModal.classList.add('is-open');
+    }
+
+    function closeDeleteModal() {
+        if (!deleteModal) return;
+        deleteUserId = null;
+        deleteModal.classList.remove('is-open');
+    }
+
+    if (deleteModalCancel) {
+        deleteModalCancel.addEventListener('click', () => {
+            closeDeleteModal();
+        });
+    }
+
+    if (deleteModal) {
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                closeDeleteModal();
+            }
+        });
+    }
+
+    if (deleteModalConfirm) {
+        deleteModalConfirm.addEventListener('click', async () => {
+            if (!deleteUserId) {
+                closeDeleteModal();
+                return;
+            }
+            const id = deleteUserId;
             try {
-                const res = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+                const res = await fetch(`/api/users/${encodeURIComponent(id)}`, {
                     method: 'DELETE'
                 });
 
                 if (!res.ok) throw new Error('Delete failed');
 
-                row?.remove();
+                // حذف ردیف از جدول و بروزرسانی لیست داخلی
+                allUsers = allUsers.filter(u => u.id !== id);
+                if (allUsers.length === 0) {
+                    const headers = `
+                        <tr>
+                            <th>نام نمایشی</th>
+                            <th>شماره تلفن</th>
+                            <th>عملیات</th>
+                        </tr>
+                    `;
+                    showEmpty('لیست مشتریان', headers, 'مشتری‌ای یافت نشد.');
+                } else {
+                    // اگر صفحه فعلی بعد از حذف خالی شد، یک صفحه برگردیم
+                    const maxPage = Math.max(1, Math.ceil(allUsers.length / USERS_PAGE_SIZE));
+                    if (currentUserPage > maxPage) {
+                        currentUserPage = maxPage;
+                    }
+                    renderUsersPage(currentUserPage);
+                }
+
+                closeDeleteModal();
             } catch (err) {
                 console.error('Error deleting user:', err);
                 alert('خطا در حذف مشتری. لطفاً دوباره تلاش کنید.');
+                closeDeleteModal();
             }
-        } else if (action === 'edit') {
-            const displayNameCell = row.querySelector('[data-field="displayName"]');
-            const phoneCell = row.querySelector('[data-field="phoneNumber"]');
-
-            const currentName = displayNameCell?.textContent?.trim() || '';
-            const currentPhone = phoneCell?.textContent?.trim() || '';
-
-            const newName = prompt('نام نمایشی جدید را وارد کنید:', currentName);
-            if (newName === null) return;
-
-            const newPhone = prompt('شماره تلفن جدید را وارد کنید:', currentPhone);
-            if (newPhone === null) return;
-
-            const payload = {
-                displayName: newName.trim(),
-                phoneNumber: newPhone.trim()
-            };
-
-            try {
-                const res = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) throw new Error('Update failed');
-
-                const updated = await res.json();
-                if (displayNameCell) displayNameCell.textContent = updated.displayName || payload.displayName;
-                if (phoneCell) phoneCell.textContent = updated.phoneNumber || payload.phoneNumber;
-            } catch (err) {
-                console.error('Error updating user:', err);
-                alert('خطا در بروزرسانی مشخصات مشتری. لطفاً دوباره تلاش کنید.');
-            }
-        } else if (action === 'orders') {
-            alert('نمایش سفارشات برای این مشتری هنوز در بک‌اند پیاده‌سازی نشده است.');
-        }
-    });
+        });
+    }
 });

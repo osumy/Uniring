@@ -58,6 +58,69 @@ namespace Uniring.App.Controllers
             return View();
         }
 
+        [HttpGet("admin-panel/users/{id}/edit")]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await _api.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var model = new UpdateUserRequest
+            {
+                DisplayName = user.DisplayName,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            ViewBag.UserId = id;
+            return View(model);
+        }
+
+        [HttpPost("admin-panel/users/{id}/edit")]
+        public async Task<IActionResult> EditUser(string id, UpdateUserRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.UserId = id;
+                return View(model);
+            }
+
+            var ok = await _api.UpdateAccountAsync(id, model);
+            if (!ok)
+            {
+                ViewBag.UserId = id;
+                ViewBag.Error = "بروزرسانی ناموفق بود.";
+                return View(model);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet("admin-panel/users/{id}/change-password")]
+        public IActionResult ChangePassword(string id)
+        {
+            ViewBag.UserId = id;
+            return View(new ChangePasswordRequest());
+        }
+
+        [HttpPost("admin-panel/users/{id}/change-password")]
+        public async Task<IActionResult> ChangePassword(string id, ChangePasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.UserId = id;
+                return View(model);
+            }
+
+            var ok = await _api.ChangePasswordAsync(id, model);
+            if (!ok)
+            {
+                ViewBag.UserId = id;
+                ViewBag.Error = "تغییر رمز عبور ناموفق بود.";
+                return View(model);
+            }
+
+            return RedirectToAction("Index");
+        }
+
         [HttpGet("api/users")]
         public async Task<IActionResult> GetUsersJson()
         {

@@ -21,5 +21,8 @@ namespace Uniring.App.Interfaces
 
         Task<List<LoginResponse>> GetUsersAsync();
 
+        Task<LoginResponse?> GetUserByIdAsync(string userId);
+        Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest requestModel);
+
     }
 }

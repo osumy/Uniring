@@ -86,5 +86,21 @@ namespace Uniring.App.Services
             return JsonSerializer.Deserialize<List<LoginResponse>>(json) ?? new List<LoginResponse>();
         }
 
+        public async Task<LoginResponse?> GetUserByIdAsync(string userId)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.GetAsync($"Admin/users/{userId}");
+            if (!res.IsSuccessStatusCode) return null;
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<LoginResponse>(json);
+        }
+
+        public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.PostAsJsonAsync($"Admin/users/{userId}/change-password", requestModel);
+            return res.IsSuccessStatusCode;
+        }
+
     }
 }

@@ -363,3 +363,119 @@ input[type="submit"] {
         padding: 3px 8px;
     }
 }
+
+/* صفحه‌بندی جدول مشتریان */
+.pagination-container {
+    padding: 12px 16px 18px;
+    border-top: 1px solid rgba(148, 163, 184, 0.06);
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.7);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.pager-btn {
+    background: transparent;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    color: var(--text-1);
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.pager-btn[disabled] {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.pager-info {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* مودال حذف مشتری */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 50;
+}
+
+.modal-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-dialog {
+    background: #020617;
+    border-radius: 18px;
+    padding: 24px 22px;
+    max-width: 380px;
+    width: 90%;
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    transform: translateY(40px);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    opacity: 0;
+}
+
+.modal-backdrop.is-open .modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal-title {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-1);
+    text-align: right;
+}
+
+.modal-text {
+    margin: 0 0 18px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-align: right;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 10px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-btn-secondary {
+    background: rgba(148, 163, 184, 0.18);
+    color: var(--text-1);
+}
+
+.modal-btn-danger {
+    background: #ef4444;
+    color: #fdf2f2;
+}

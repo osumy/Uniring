@@ -266,6 +266,37 @@ namespace Uniring.Application.Services
             });
         }
 
+        public async Task<Result<bool>> ChangePasswordAsync(string id, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<bool>.Error("User not found.");
+            }
+
+            // در سناریوی ادمین، پسورد قبلی را نمی‌گیریم و فقط ریست می‌کنیم
+            // اگر کاربر قبلاً پسورد دارد، ابتدا آن را حذف می‌کنیم
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            IdentityResult res;
+
+            if (hasPassword)
+            {
+                var removeRes = await _userManager.RemovePasswordAsync(user);
+                if (!removeRes.Succeeded)
+                {
+                    return Result<bool>.Error("Could not remove existing password.");
+                }
+            }
+
+            res = await _userManager.AddPasswordAsync(user, newPassword);
+            if (!res.Succeeded)
+            {
+                return Result<bool>.Error("Could not set new password.");
+            }
+
+            return Result<bool>.Success(true);
+        }
+
         //    // JWT creation helper
         //    private async Task<(string TokenString, DateTime ExpiresAt)> GenerateJwtTokenAsync(ApplicationUser user)
         //    {

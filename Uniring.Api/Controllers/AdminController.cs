@@ -33,6 +33,14 @@ namespace Uniring.Api.Controllers
             return Ok(users);
         }
 
+        [HttpGet("users/{id}")]
+        public async Task<ActionResult<LoginResponse>> GetUserById(string id)
+        {
+            var res = await _identity.GetByIdAsync(id);
+            if (!res.IsSuccess || res.Data == null) return NotFound(res.ErrorMessage);
+            return Ok(res.Data);
+        }
+
         [HttpDelete("users/{id}")]
         public async Task<ActionResult> DeleteUser(string id)
         {
@@ -47,6 +55,16 @@ namespace Uniring.Api.Controllers
             var res = await _identity.UpdateUserAsync(id, req);
             if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
             return Ok(res.Data);
+        }
+
+        [HttpPost("users/{id}/change-password")]
+        public async Task<ActionResult> ChangePassword(string id, [FromBody] ChangePasswordRequest req)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var res = await _identity.ChangePasswordAsync(id, req.NewPassword);
+            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
+            return Ok();
         }
 
         [HttpGet("rings")]

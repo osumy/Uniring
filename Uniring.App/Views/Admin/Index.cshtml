@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8" />
@@ -38,8 +38,23 @@
                     </tbody>
                 </table>
             </div>
+            <div id="paginationContainer" class="pagination-container"></div>
         </section>
     </main>
+
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal-backdrop">
+        <div class="modal-dialog">
+            <h2 class="modal-title">حذف مشتری</h2>
+            <p class="modal-text">
+                آیا از حذف این مشتری مطمئن هستید؟ این عمل قابل بازگشت نیست.
+            </p>
+            <div class="modal-actions">
+                <button type="button" id="deleteCancelBtn" class="modal-btn modal-btn-secondary">انصراف</button>
+                <button type="button" id="deleteConfirmBtn" class="modal-btn modal-btn-danger">حذف</button>
+            </div>
+        </div>
+    </div>
 
     <script src="~/js/AdminPageScript.js"></script>
 </body>

@@ -1,0 +1,44 @@
+@model Uniring.Contracts.Auth.UpdateUserRequest
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویرایش اطلاعات مشتری</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;700&family=Vazirmatn:wght@300;400;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/css/NewUserStyle.css">
+</head>
+<body>
+    <div class="form-container">
+        <h1>ویرایش اطلاعات مشتری</h1>
+        @if (!string.IsNullOrEmpty(ViewBag.Error as string))
+        {
+            <p style="color: #f97373; margin-top:10px;">@ViewBag.Error</p>
+        }
+
+        <form asp-action="EditUser" asp-controller="Admin" method="post"
+              asp-route-id="@ViewBag.UserId">
+            <div class="input-group" style="margin-top:24px;">
+                <label asp-for="DisplayName">نام کامل</label>
+                <input asp-for="DisplayName" />
+                <span asp-validation-for="DisplayName" class="match-error"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="PhoneNumber">شماره تلفن</label>
+                <input asp-for="PhoneNumber" placeholder="مثلاً: 09123456789" />
+                <span asp-validation-for="PhoneNumber" class="match-error"></span>
+            </div>
+
+            <div class="btn-group">
+                <a href="/admin-panel" class="btn btn-prev" style="text-decoration:none; text-align:center;">بازگشت به پنل</a>
+                <button type="submit" class="btn btn-next">ذخیره تغییرات</button>
+            </div>
+        </form>
+    </div>
+
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>
+
