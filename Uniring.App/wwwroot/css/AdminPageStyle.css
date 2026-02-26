@@ -1,10 +1,55 @@
 :root {
-    --bg1: #0f2130; /* from homepage */
-    --bg2: #0b1621; /* from homepage */
+    --bg1: #0f2130;
+    /* from homepage */
+    --bg2: #0b1621;
+    /* from homepage */
     --text-1: #e6eef8;
     --muted: #94a3b8;
     --radius: 12px;
     font-family: "Noto Sans Arabic", "Noto Sans", Tahoma, Arial, sans-serif;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+}
+
+.toast {
+    background: #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast.error {
+    background: #e74c3c;
+}
+
+.toast.success {
+    background: #2ecc71;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .bg-amber {
@@ -45,7 +90,8 @@ body {
 body {
     min-height: 100%;
     background-color: #051c2e;
-    color: var(--text-1); /* or var(--white) if you adopt homepage color scheme */
+    color: var(--text-1);
+    /* or var(--white) if you adopt homepage color scheme */
     direction: rtl;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -154,12 +200,12 @@ body {
     justify-content: space-between;
 }
 
-    .card-head h3 {
-        margin: 0;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--text-1)
-    }
+.card-head h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-1)
+}
 
 .card-search {
     display: flex;
@@ -217,9 +263,9 @@ tbody tr {
     transition: background .18s
 }
 
-    tbody tr:hover {
-        background: rgba(255, 255, 255, 0.02)
-    }
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02)
+}
 
 td {
     padding: 14px 16px;
@@ -345,7 +391,8 @@ input[type="submit"] {
 }
 
 .error-cell {
-    color: #f87171; /* red-400 */
+    color: #f87171;
+    /* red-400 */
     font-style: normal;
 }
 

@@ -48,17 +48,16 @@ namespace Uniring.App.Controllers
         [HttpPost]
         public async Task<IActionResult> NewUser(RegisterRequest registerRequest)
         {
-            if (!ModelState.IsValid) return View(registerRequest);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _api.CreateNewAccountAsync(registerRequest);
 
             if (result)
             {
-                return RedirectToAction("Index", "Admin");
+                return Ok(new { success = true });
             }
 
-            ViewBag.Error = "ثبت ناموفق!";
-            return View();
+            return BadRequest(new { success = false, message = "ثبت ناموفق!" });
         }
 
         [HttpGet("admin-panel/users/{id}/edit")]
@@ -135,6 +134,21 @@ namespace Uniring.App.Controllers
         public async Task<IActionResult> DeleteUser(string id)
         {
             var ok = await _api.DeleteAccountAsync(id);
+            if (!ok) return BadRequest();
+            return Ok();
+        }
+
+        [HttpGet("api/rings")]
+        public async Task<IActionResult> GetRingsJson()
+        {
+            var rings = await _api.GetRingsAsync();
+            return Json(rings);
+        }
+
+        [HttpDelete("api/rings/{id}")]
+        public async Task<IActionResult> DeleteRing(string id)
+        {
+            var ok = await _api.DeleteRingAsync(id);
             if (!ok) return BadRequest();
             return Ok();
         }

@@ -9,11 +9,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // state for users list + pagination
     let allUsers = [];
+    let allRings = [];
     let currentUserPage = 1;
+    let currentRingPage = 1;
+    let currentView = 'users'; // 'users' or 'rings'
     const USERS_PAGE_SIZE = 10; // تعداد ردیف در هر صفحه (برای موبایل هم مناسب است)
     let currentFilterText = '';
 
     if (!btnUsers || !btnRings || !tableBody) return;
+
+    const toastContainer = document.getElementById("toast-container");
+
+    function showToast(message, type = "info") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span>${message}</span>`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.5s";
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
 
     // توابع کمکی
     function setTable(title, headers, rowsHtml) {
@@ -45,20 +62,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return rawPhone;
     }
 
-    function getFilteredUsers() {
-        if (!Array.isArray(allUsers) || allUsers.length === 0) return [];
-
+    function getFilteredData() {
         const term = currentFilterText.trim().toLowerCase();
-        if (!term) return allUsers;
-
-        return allUsers.filter(u => {
-            const name = (u.displayName || '').toString().toLowerCase();
-            return name.includes(term);
-        });
+        if (currentView === 'users') {
+            if (!Array.isArray(allUsers) || allUsers.length === 0) return [];
+            if (!term) return allUsers;
+            return allUsers.filter(u => {
+                const name = (u.displayName || '').toString().toLowerCase();
+                return name.includes(term);
+            });
+        } else {
+            if (!Array.isArray(allRings) || allRings.length === 0) return [];
+            if (!term) return allRings;
+            return allRings.filter(r => {
+                const name = (r.name || '').toString().toLowerCase();
+                return name.includes(term);
+            });
+        }
     }
 
     function renderUsersPage(pageNumber) {
-        const users = getFilteredUsers();
+        const users = getFilteredData();
 
         const headers = `
             <tr>
@@ -108,16 +132,70 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         setTable('لیست مشتریان', headers, rows);
+        renderPagination(currentUserPage, totalPages, totalItems, renderUsersPage);
+    }
 
-        // رندر کنترل‌های صفحه‌بندی
+    function renderRingsPage(pageNumber) {
+        const rings = getFilteredData();
+
+        const headers = `
+            <tr>
+                <th>نام</th>
+                <th>توضیحات</th>
+                <th>عملیات</th>
+            </tr>
+        `;
+
+        if (!Array.isArray(rings) || rings.length === 0) {
+            const msg = currentFilterText.trim()
+                ? 'هیچ انگشتری مطابق جست‌وجو یافت نشد.'
+                : 'انگشتری یافت نشد.';
+            showEmpty('لیست انگشترها', headers, msg);
+            return;
+        }
+
+        const totalItems = rings.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
+
+        currentRingPage = Math.min(Math.max(1, pageNumber), totalPages);
+
+        const start = (currentRingPage - 1) * USERS_PAGE_SIZE;
+        const end = start + USERS_PAGE_SIZE;
+        const pageItems = rings.slice(start, end);
+
+        let rows = '';
+        pageItems.forEach(r => {
+            const id = r.id || '';
+            const name = r.name || '—';
+            const desc = r.description || '—';
+
+            rows += `
+                <tr data-ring-id="${escapeHtml(id)}">
+                    <td data-field="name">${escapeHtml(name)}</td>
+                    <td data-field="description">${escapeHtml(desc)}</td>
+                    <td>
+                        <div class="row-actions" data-ring-id="${escapeHtml(id)}">
+                            <button type="button" class="btn-inline btn-primary" data-action="edit-ring">ویرایش</button>
+                            <button type="button" class="btn-inline btn-danger" data-action="delete-ring">حذف</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        setTable('لیست انگشترها', headers, rows);
+        renderPagination(currentRingPage, totalPages, totalItems, renderRingsPage);
+    }
+
+    function renderPagination(currentPage, totalPages, totalItems, renderFunc) {
         if (paginationContainer) {
-            const canPrev = currentUserPage > 1;
-            const canNext = currentUserPage < totalPages;
+            const canPrev = currentPage > 1;
+            const canNext = currentPage < totalPages;
 
             paginationContainer.innerHTML = `
                 <div class="pagination-inner">
                     <button type="button" class="pager-btn" data-page="prev" ${canPrev ? '' : 'disabled'}>قبلی</button>
-                    <span class="pager-info">صفحه ${currentUserPage} از ${totalPages}</span>
+                    <span class="pager-info">صفحه ${currentPage} از ${totalPages}</span>
                     <button type="button" class="pager-btn" data-page="next" ${canNext ? '' : 'disabled'}>بعدی</button>
                 </div>
             `;
@@ -127,17 +205,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (prevBtn) {
                 prevBtn.addEventListener('click', () => {
-                    if (currentUserPage > 1) {
-                        renderUsersPage(currentUserPage - 1);
+                    if (currentPage > 1) {
+                        renderFunc(currentPage - 1);
                     }
                 });
             }
 
             if (nextBtn) {
                 nextBtn.addEventListener('click', () => {
-                    const totalPages2 = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
-                    if (currentUserPage < totalPages2) {
-                        renderUsersPage(currentUserPage + 1);
+                    if (currentPage < totalPages) {
+                        renderFunc(currentPage + 1);
                     }
                 });
             }
@@ -148,24 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // بارگذاری لیست کاربران
     // ======================
     btnUsers.addEventListener('click', async () => {
+        currentView = 'users';
+        if (userSearchInput) userSearchInput.placeholder = "جست‌وجوی مشتری بر اساس نام...";
         try {
             const res = await fetch('/api/users');
             if (!res.ok) throw new Error('دریافت داده با خطا مواجه شد.');
 
             const users = await res.json();
-
-            if (!Array.isArray(users) || users.length === 0) {
-                const headers = `
-                    <tr>
-                        <th>نام نمایشی</th>
-                        <th>شماره تلفن</th>
-                        <th>عملیات</th>
-                    </tr>
-                `;
-                showEmpty('لیست مشتریان', headers);
-                return;
-            }
-
             allUsers = users;
             currentFilterText = userSearchInput ? userSearchInput.value || '' : '';
             renderUsersPage(1);
@@ -179,39 +245,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // بارگذاری لیست انگشترها
     // ======================
     btnRings.addEventListener('click', async () => {
-        const headers = `
-            <tr>
-                <th>نام</th>
-                <th>سریال</th>
-                <th>UID</th>
-                <th>توضیحات</th>
-            </tr>
-        `;
-
+        currentView = 'rings';
+        if (userSearchInput) userSearchInput.placeholder = "جست‌وجوی انگشتر بر اساس نام...";
         try {
             const res = await fetch('/api/rings');
             if (!res.ok) throw new Error('دریافت داده با خطا مواجه شد.');
 
             const rings = await res.json();
-
-            if (!Array.isArray(rings) || rings.length === 0) {
-                showEmpty('لیست انگشترها', headers);
-                return;
-            }
-
-            let rows = '';
-            rings.forEach(r => {
-                rows += `
-                    <tr>
-                        <td>${escapeHtml(r.name || '—')}</td>
-                        <td>${escapeHtml(r.serial || '—')}</td>
-                        <td>${escapeHtml(r.uid || '—')}</td>
-                        <td>${escapeHtml(r.description || '—')}</td>
-                    </tr>
-                `;
-            });
-
-            setTable('لیست انگشترها', headers, rows);
+            allRings = rings;
+            currentFilterText = userSearchInput ? userSearchInput.value || '' : '';
+            renderRingsPage(1);
         } catch (err) {
             console.error('Error loading rings:', err);
             showError('خطا در بارگذاری لیست انگشترها. لطفاً دوباره تلاش کنید.');
@@ -221,8 +264,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userSearchInput) {
         userSearchInput.addEventListener('input', () => {
             currentFilterText = userSearchInput.value || '';
-            if (!allUsers.length) return;
-            renderUsersPage(1);
+            if (currentView === 'users') {
+                if (!allUsers.length) return;
+                renderUsersPage(1);
+            } else {
+                if (!allRings.length) return;
+                renderRingsPage(1);
+            }
         });
     }
 
@@ -248,43 +296,56 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = btn.closest('tr');
         const container = btn.closest('.row-actions');
         const userId = container?.dataset.userId || row?.dataset.userId;
-
-        if (!userId) {
-            alert('شناسه مشتری نامعتبر است.');
-            return;
-        }
+        const ringId = container?.dataset.ringId || row?.dataset.ringId;
 
         if (action === 'delete') {
-            // حذف در مودال اختصاصی هندل می‌شود
-            openDeleteModal(userId);
+            if (!userId) return;
+            openDeleteModal(userId, 'user');
+        } else if (action === 'delete-ring') {
+            if (!ringId) return;
+            openDeleteModal(ringId, 'ring');
         } else if (action === 'edit') {
-            // ویرایش مشخصات در صفحه جداگانه
             window.location.href = `/admin-panel/users/${encodeURIComponent(userId)}/edit`;
+        } else if (action === 'edit-ring') {
+            showToast('ویرایش انگشتر هنوز پیاده‌سازی نشده است.', 'info');
         } else if (action === 'password') {
-            // ویرایش رمز عبور در صفحه جداگانه
             window.location.href = `/admin-panel/users/${encodeURIComponent(userId)}/change-password`;
         } else if (action === 'orders') {
-            alert('نمایش سفارشات برای این مشتری هنوز در بک‌اند پیاده‌سازی نشده است.');
+            showToast('نمایش سفارشات برای این مشتری هنوز در بک‌اند پیاده‌سازی نشده است.', 'info');
         }
     });
 
     // ======================
-    // مودال حذف کاربر
+    // مودال حذف
     // ======================
     const deleteModal = document.getElementById('deleteModal');
     const deleteModalConfirm = document.getElementById('deleteConfirmBtn');
     const deleteModalCancel = document.getElementById('deleteCancelBtn');
-    let deleteUserId = null;
+    const modalTitle = deleteModal?.querySelector('.modal-title');
+    const modalText = deleteModal?.querySelector('.modal-text');
+    let deleteTargetId = null;
+    let deleteTargetType = null; // 'user' or 'ring'
 
-    function openDeleteModal(userId) {
-        deleteUserId = userId;
+    function openDeleteModal(id, type) {
+        deleteTargetId = id;
+        deleteTargetType = type;
         if (!deleteModal) return;
+
+        if (type === 'user') {
+            if (modalTitle) modalTitle.textContent = 'حذف مشتری';
+            if (modalText) modalText.textContent = 'آیا از حذف این مشتری مطمئن هستید؟ این عمل قابل بازگشت نیست.';
+        } else {
+            if (modalTitle) modalTitle.textContent = 'حذف انگشتر';
+            if (modalText) modalText.textContent = 'آیا از حذف این انگشتر مطمئن هستید؟ این عمل قابل بازگشت نیست.';
+        }
+
         deleteModal.classList.add('is-open');
     }
 
     function closeDeleteModal() {
         if (!deleteModal) return;
-        deleteUserId = null;
+        deleteTargetId = null;
+        deleteTargetType = null;
         deleteModal.classList.remove('is-open');
     }
 
@@ -304,42 +365,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (deleteModalConfirm) {
         deleteModalConfirm.addEventListener('click', async () => {
-            if (!deleteUserId) {
+            if (!deleteTargetId) {
                 closeDeleteModal();
                 return;
             }
-            const id = deleteUserId;
+            const id = deleteTargetId;
+            const type = deleteTargetType;
+            const url = type === 'user' ? `/api/users/${encodeURIComponent(id)}` : `/api/rings/${encodeURIComponent(id)}`;
+
             try {
-                const res = await fetch(`/api/users/${encodeURIComponent(id)}`, {
+                const res = await fetch(url, {
                     method: 'DELETE'
                 });
 
                 if (!res.ok) throw new Error('Delete failed');
 
-                // حذف ردیف از جدول و بروزرسانی لیست داخلی
-                allUsers = allUsers.filter(u => u.id !== id);
-                if (allUsers.length === 0) {
-                    const headers = `
-                        <tr>
-                            <th>نام نمایشی</th>
-                            <th>شماره تلفن</th>
-                            <th>عملیات</th>
-                        </tr>
-                    `;
-                    showEmpty('لیست مشتریان', headers, 'مشتری‌ای یافت نشد.');
-                } else {
-                    // اگر صفحه فعلی بعد از حذف خالی شد، یک صفحه برگردیم
+                if (type === 'user') {
+                    allUsers = allUsers.filter(u => u.id !== id);
                     const maxPage = Math.max(1, Math.ceil(allUsers.length / USERS_PAGE_SIZE));
-                    if (currentUserPage > maxPage) {
-                        currentUserPage = maxPage;
-                    }
+                    if (currentUserPage > maxPage) currentUserPage = maxPage;
                     renderUsersPage(currentUserPage);
+                } else {
+                    allRings = allRings.filter(r => r.id !== id);
+                    const maxPage = Math.max(1, Math.ceil(allRings.length / USERS_PAGE_SIZE));
+                    if (currentRingPage > maxPage) currentRingPage = maxPage;
+                    renderRingsPage(currentRingPage);
                 }
 
                 closeDeleteModal();
+                showToast('با موفقیت حذف شد.', 'success');
             } catch (err) {
-                console.error('Error deleting user:', err);
-                alert('خطا در حذف مشتری. لطفاً دوباره تلاش کنید.');
+                console.error('Error deleting:', err);
+                showToast('خطا در حذف. لطفاً دوباره تلاش کنید.', 'error');
                 closeDeleteModal();
             }
         });

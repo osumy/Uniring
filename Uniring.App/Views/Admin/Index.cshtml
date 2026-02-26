@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/AdminPageStyle.css">
 </head>
 <body>
+    <div id="toast-container" class="toast-container"></div>
     <main class="container" role="main">
         <div class="topbar">
             <div style="flex:1; min-width:220px; text-align:right;">
@@ -30,7 +31,7 @@
                     <input id="userSearchInput"
                            class="card-search-input"
                            type="text"
-                           placeholder="جست‌وجوی مشتری بر اساس نام..." />
+                           placeholder="جست‌وجو..." />
                 </div>
             </div>
             <div class="table-wrap">
@@ -51,9 +52,9 @@
     <!-- Delete confirmation modal -->
     <div id="deleteModal" class="modal-backdrop">
         <div class="modal-dialog">
-            <h2 class="modal-title">حذف مشتری</h2>
+            <h2 class="modal-title">حذف</h2>
             <p class="modal-text">
-                آیا از حذف این مشتری مطمئن هستید؟ این عمل قابل بازگشت نیست.
+                آیا از حذف این مورد مطمئن هستید؟ این عمل قابل بازگشت نیست.
             </p>
             <div class="modal-actions">
                 <button type="button" id="deleteCancelBtn" class="modal-btn modal-btn-secondary">انصراف</button>

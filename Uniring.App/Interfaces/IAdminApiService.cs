@@ -17,9 +17,10 @@ namespace Uniring.App.Interfaces
         Task<bool> UpdateRingAsync();
 
         Task<bool> DeleteAccountAsync(string userId);
-        Task<bool> DeleteRingAsync();
+        Task<bool> DeleteRingAsync(string ringId);
 
         Task<List<LoginResponse>> GetUsersAsync();
+        Task<List<RingResponse>> GetRingsAsync();
 
         Task<LoginResponse?> GetUserByIdAsync(string userId);
         Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest requestModel);

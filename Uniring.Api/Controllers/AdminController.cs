@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Uniring.Application.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
+using Uniring.Domain.Entities;
+using Uniring.Infrastructure;
 
 namespace Uniring.Api.Controllers
 {
@@ -120,6 +123,17 @@ namespace Uniring.Api.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpDelete("rings/{id}")]
+        public async Task<ActionResult> DeleteRing(Guid id)
+        {
+            var ring = await _db.Rings.FindAsync(id);
+            if (ring == null) return NotFound();
+
+            _db.Rings.Remove(ring);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
 
     }

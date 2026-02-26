@@ -42,9 +42,20 @@ namespace Uniring.App.Services
             return res.IsSuccessStatusCode;
         }
 
-        public Task<bool> DeleteRingAsync()
+        public async Task<bool> DeleteRingAsync(string ringId)
         {
-            throw new NotImplementedException();
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.DeleteAsync($"Admin/rings/{ringId}");
+            return res.IsSuccessStatusCode;
+        }
+
+        public async Task<List<RingResponse>> GetRingsAsync()
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.GetAsync("Admin/rings");
+            if (!res.IsSuccessStatusCode) return new List<RingResponse>();
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<RingResponse>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<RingResponse>();
         }
 
         //public Task<AccountResponse?> GetAccountByPhoneNumberAsync(string PhoneNumber)

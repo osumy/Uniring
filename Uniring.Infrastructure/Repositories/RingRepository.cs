@@ -54,11 +54,6 @@ namespace Uniring.Infrastructure.Repositories
             return await _db.Rings.Include(r => r.Medias).ToListAsync();
         }
 
-        public async Task AddAsync(Ring ring)
-        {
-            await _db.Rings.AddAsync(ring);
-        }
-
         public async Task SaveChangesAsync()
         {
             await _db.SaveChangesAsync();

@@ -39,7 +39,7 @@ namespace Uniring.Api
             {
                 options.AddPolicy("FrontendPolicy", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7208") // allowed origin
+                    policy.WithOrigins("http://127.0.0.1:5000", "http://localhost:5000") // allowed origin
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
