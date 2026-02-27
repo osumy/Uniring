@@ -255,8 +255,8 @@
         let selectedUser = null;
 
         async function ensureRingsLoaded() {
-            if (ringsCache.length || !apiBaseUrl) return;
-            const res = await fetch(apiBaseUrl + 'Admin/rings');
+            if (ringsCache.length) return;
+            const res = await fetch('/api/rings');
             if (!res.ok) throw new Error('خطا در دریافت لیست انگشترها');
             ringsCache = await res.json();
         }
@@ -324,8 +324,7 @@
         });
 
         async function searchUsers(term) {
-            if (!apiBaseUrl) throw new Error('آدرس API تنظیم نشده است.');
-            const url = apiBaseUrl + 'Admin/users/search?term=' + encodeURIComponent(term || '') + '&includeGuests=true';
+            const url = '/api/users/search?term=' + encodeURIComponent(term || '') + '&includeGuests=true';
             const res = await fetch(url);
             if (!res.ok) throw new Error('خطا در جست‌وجوی کاربران');
             return await res.json();
@@ -390,11 +389,6 @@
         }, 250));
 
         submitBtn.addEventListener('click', async () => {
-            if (!apiBaseUrl) {
-                showToast('آدرس API تنظیم نشده است.', 'error');
-                return;
-            }
-
             // اگر انگشتر از لیست انتخاب نشده اما کاربر چیزی تایپ کرده، سعی کن خودت تشخیص بدهی
             if (!selectedRing && ringInput.value.trim()) {
                 try {
@@ -464,7 +458,7 @@
                     userId: selectedUser.id
                 };
 
-                const res = await fetch(apiBaseUrl + 'Admin/invoices', {
+                const res = await fetch('/api/invoices', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

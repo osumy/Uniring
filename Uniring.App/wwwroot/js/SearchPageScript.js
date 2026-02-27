@@ -1,4 +1,4 @@
-﻿// Translations for Persian (fa) and Arabic (ar)
+// Translations for Persian (fa) and Arabic (ar)
 const strings = {
     fa: {
         lang: "fa",
@@ -160,20 +160,13 @@ function renderProduct(product) {
 
     if (product.mediaIds && product.mediaIds.length > 0) {
         product.mediaIds.forEach(mediaId => {
-            const mediaUrl = `/Media/download/${mediaId}`;
+            const mediaUrl = `/api/Media/download/${mediaId}`;
             const mediaItemDiv = document.createElement('div');
             mediaItemDiv.className = 'media-item';
 
-            // Determine if it's an image or video based on extension (or content type from API if available)
-            // For simplicity, let's assume if it ends with mp4, webm, mov, mkv it's a video
-            // In a real app, you'd get content type from API
-            const isVideo = mediaUrl.match(/\.(mp4|webm|mov|mkv)$/i);
-
-            if (isVideo) {
-                mediaItemDiv.innerHTML = `<video controls src="${mediaUrl}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;"></video>`;
-            } else {
-                mediaItemDiv.innerHTML = `<img src="${mediaUrl}" alt="ring image" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">`;
-            }
+            // در حال حاضر نوع مدیا را از پسوند تشخیص نمی‌دهیم
+            // فرض را بر تصویر می‌گذاریم؛ اگر بعداً نیاز شد، می‌توان نوع را از API گرفت
+            mediaItemDiv.innerHTML = `<img src="${mediaUrl}" alt="ring image" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">`;
             mediaCarousel.appendChild(mediaItemDiv);
             mediaItems.push(mediaItemDiv);
         });
@@ -266,8 +259,8 @@ async function searchIdentifier() {
     btn.querySelector('span').textContent = document.documentElement.getAttribute('lang') === 'ar' ? 'جارٍ البحث...' : 'در حال جستجو...';
 
     try {
-        // Use relative URL; adjust base if your API is on a different host/port
-        const res = await fetch(`/api/ring/${encodeURIComponent(val)}`);
+        // Use correct API route for serial lookup
+        const res = await fetch(`/api/Ring/serial/${encodeURIComponent(val)}`);
 
         if (res.status === 404) {
             // not found

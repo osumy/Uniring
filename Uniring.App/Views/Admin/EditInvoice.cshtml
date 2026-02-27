@@ -246,12 +246,8 @@
         let selectedUser = null;
 
         async function loadInvoice() {
-            if (!apiBaseUrl) {
-                ringInfo.textContent = 'آدرس API تنظیم نشده است.';
-                return;
-            }
             try {
-                const res = await fetch(apiBaseUrl + 'Admin/invoices/' + encodeURIComponent(invoiceId));
+                const res = await fetch('/api/invoices/' + encodeURIComponent(invoiceId));
                 if (!res.ok) throw new Error('failed');
                 const inv = await res.json();
                 const serial = inv.ringSerial || 'نامشخص';
@@ -268,8 +264,7 @@
         loadInvoice();
 
         async function searchUsers(term) {
-            if (!apiBaseUrl) throw new Error('آدرس API تنظیم نشده است.');
-            const url = apiBaseUrl + 'Admin/users/search?term=' + encodeURIComponent(term || '') + '&includeGuests=true';
+            const url = '/api/users/search?term=' + encodeURIComponent(term || '') + '&includeGuests=true';
             const res = await fetch(url);
             if (!res.ok) throw new Error('خطا در جست‌وجوی کاربران');
             return await res.json();
@@ -344,10 +339,6 @@
                 showToast('لطفاً مشتری جدید را انتخاب کنید.', 'error');
                 return;
             }
-            if (!apiBaseUrl) {
-                showToast('آدرس API تنظیم نشده است.', 'error');
-                return;
-            }
 
             const confirmed = window.confirm('آیا از تغییر مالکیت این فاکتور مطمئن هستید؟');
             if (!confirmed) return;
@@ -361,7 +352,7 @@
                     userId: selectedUser.id
                 };
 
-                const res = await fetch(apiBaseUrl + 'Admin/invoices/' + encodeURIComponent(invoiceId) + '/owner', {
+                const res = await fetch('/api/invoices/' + encodeURIComponent(invoiceId) + '/owner', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'

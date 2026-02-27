@@ -147,6 +147,13 @@ namespace Uniring.App.Controllers
             return Json(users);
         }
 
+        [HttpGet("api/users/search")]
+        public async Task<IActionResult> SearchUsersJson(string term)
+        {
+            var users = await _api.SearchUsersAsync(term);
+            return Json(users);
+        }
+
         [HttpDelete("api/users/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
@@ -184,6 +191,36 @@ namespace Uniring.App.Controllers
             var ok = await _api.DeleteInvoiceAsync(guid);
             if (!ok) return BadRequest();
             return Ok();
+        }
+
+        [HttpGet("api/invoices/{id}")]
+        public async Task<IActionResult> GetInvoiceJson(string id)
+        {
+            if (!Guid.TryParse(id, out var guid)) return BadRequest();
+            var invoice = await _api.GetInvoiceByIdAsync(guid);
+            if (invoice == null) return NotFound();
+            return Json(invoice);
+        }
+
+        [HttpPost("api/invoices")]
+        public async Task<IActionResult> CreateInvoice([FromBody] InvoiceCreateRequest model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var invoice = await _api.CreateInvoiceAsync(model);
+            if (invoice == null) return BadRequest();
+            return Json(invoice);
+        }
+
+        [HttpPut("api/invoices/{id}/owner")]
+        public async Task<IActionResult> ChangeInvoiceOwner(string id, [FromBody] InvoiceUpdateRequest model)
+        {
+            if (!Guid.TryParse(id, out var guid)) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var invoice = await _api.ChangeInvoiceOwnerAsync(guid, model);
+            if (invoice == null) return BadRequest();
+            return Json(invoice);
         }
 
         [HttpPut("api/users/{id}")]
