@@ -390,17 +390,65 @@
         }, 250));
 
         submitBtn.addEventListener('click', async () => {
+            if (!apiBaseUrl) {
+                showToast('آدرس API تنظیم نشده است.', 'error');
+                return;
+            }
+
+            // اگر انگشتر از لیست انتخاب نشده اما کاربر چیزی تایپ کرده، سعی کن خودت تشخیص بدهی
+            if (!selectedRing && ringInput.value.trim()) {
+                try {
+                    await ensureRingsLoaded();
+                    const term = ringInput.value.trim().toLowerCase();
+                    const candidates = ringsCache.filter(r => (r.uid || '').toString().toLowerCase().includes(term));
+                    if (candidates.length === 1) {
+                        const ring = candidates[0];
+                        selectedRing = ring;
+                        ringInput.value = `${ring.uid || ''}`.trim();
+                        ringSelected.style.display = 'block';
+                        ringSelected.innerHTML = `<strong>انگشتر انتخاب‌شده:</strong> ${ring.name || 'بدون نام'} — سریال ${ring.serial || 'نامشخص'} — شناسه ${ring.uid || '—'}`;
+                    } else {
+                        showToast('لطفاً انگشتر را از لیست انتخاب کنید.', 'error');
+                        return;
+                    }
+                } catch (e) {
+                    console.error(e);
+                    showToast('خطا در تشخیص انگشتر. لطفاً دوباره تلاش کنید.', 'error');
+                    return;
+                }
+            }
+
+            // اگر مشتری انتخاب نشده ولی فقط یک نتیجه‌ی جست‌وجو وجود دارد، همان را انتخاب کن
+            if (!selectedUser && userInput.value.trim()) {
+                try {
+                    const results = await searchUsers(userInput.value || '');
+                    if (results.length === 1) {
+                        const u = results[0];
+                        const role = u.role || 'guest';
+                        selectedUser = { ...u, role };
+                        const phone = formatPhoneForDisplay(u.phoneNumber || '');
+                        const title = u.displayName || phone || 'بدون نام';
+                        userInput.value = `${title} (${phone || 'بدون شماره'})`.trim();
+                        userSelected.style.display = 'block';
+                        userSelected.innerHTML = `<strong>مشتری انتخاب‌شده:</strong> ${title} — ${phone || 'بدون شماره'}`;
+                        guestWarning.style.display = role === 'guest' ? 'block' : 'none';
+                    } else {
+                        showToast('لطفاً مشتری را از لیست انتخاب کنید.', 'error');
+                        return;
+                    }
+                } catch (e) {
+                    console.error(e);
+                    showToast('خطا در تشخیص مشتری. لطفاً دوباره تلاش کنید.', 'error');
+                    return;
+                }
+            }
+
             if (!selectedRing) {
                 showToast('لطفاً انگشتر را انتخاب کنید.', 'error');
                 return;
             }
             if (!selectedUser) {
                 showToast('لطفاً مشتری را انتخاب کنید.', 'error');
-                return;
-            }
-
-            if (!apiBaseUrl) {
-                showToast('آدرس API تنظیم نشده است.', 'error');
                 return;
             }
 
