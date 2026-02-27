@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Uniring.Application.Interfaces;
 using Uniring.Application.Services;
 
@@ -10,6 +10,7 @@ namespace Uniring.Application
         {
             services.AddScoped<IRingService, RingService>();
             services.AddScoped<IMediaService, MediaService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
 
             return services;
         }

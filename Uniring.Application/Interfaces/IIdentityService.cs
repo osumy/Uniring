@@ -13,6 +13,7 @@ namespace Uniring.Application.Interfaces
         Task SetLastPurchaseAsync(string userId, DateTime purchaseTime);
 
         Task<List<LoginResponse>> GetUsersInRoleAsync(string roleName);
+        Task<List<LoginResponse>> SearchUsersAsync(string term, bool includeGuests);
         Task<Result<LoginResponse>> GetByIdAsync(string id);
 
         Task<Result<bool>> DeleteUserAsync(string id);

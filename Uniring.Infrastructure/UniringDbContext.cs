@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PhoneNumbers;
@@ -15,6 +15,7 @@ namespace Uniring.Infrastructure
 
         public DbSet<Ring> Rings { get; set; }
         public DbSet<Media> Medias { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -53,6 +54,22 @@ namespace Uniring.Infrastructure
                 .WithOne(m => m.Ring)
                 .HasForeignKey(m => m.RingId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Invoice>()
+                .Property(i => i.Id)
+                .HasConversion<Guid>();
+
+            builder.Entity<Invoice>()
+                .HasOne(i => i.Ring)
+                .WithMany()
+                .HasForeignKey(i => i.RingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Invoice>()
+                .HasOne(i => i.User)
+                .WithMany()
+                .HasForeignKey(i => i.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

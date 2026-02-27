@@ -5,6 +5,7 @@ using NanoidDotNet;
 using Uniring.Application.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
+using Uniring.Contracts.Invoice;
 using Uniring.Domain.Entities;
 using Uniring.Infrastructure;
 
@@ -14,12 +15,14 @@ namespace Uniring.Api.Controllers
     {
         private readonly IIdentityService _identity;
         private readonly IRingService _ringService;
+        private readonly IInvoiceService _invoiceService;
         private readonly UniringDbContext _db;
 
-        public AdminController(IIdentityService identity, IRingService ringService, UniringDbContext db)
+        public AdminController(IIdentityService identity, IRingService ringService, IInvoiceService invoiceService, UniringDbContext db)
         {
             _identity = identity;
             _ringService = ringService;
+            _invoiceService = invoiceService;
             _db = db;
         }
 
@@ -36,6 +39,13 @@ namespace Uniring.Api.Controllers
         public async Task<ActionResult<List<LoginResponse>>> GetUsers()
         {
             var users = await _identity.GetUsersInRoleAsync("user"); // Only "user" role
+            return Ok(users);
+        }
+
+        [HttpGet("users/search")]
+        public async Task<ActionResult<List<LoginResponse>>> SearchUsers([FromQuery] string term, [FromQuery] bool includeGuests = true)
+        {
+            var users = await _identity.SearchUsersAsync(term, includeGuests);
             return Ok(users);
         }
 
@@ -79,6 +89,56 @@ namespace Uniring.Api.Controllers
             // For now, return empty or mock; adjust as needed
             var rings = await _ringService.GetRingsAsync();
             return Ok(rings);
+        }
+
+        [HttpGet("invoices/recent")]
+        public async Task<ActionResult<List<InvoiceResponse>>> GetRecentInvoices([FromQuery] int count = 50)
+        {
+            var invoices = await _invoiceService.GetRecentInvoicesAsync(count);
+            return Ok(invoices);
+        }
+
+        [HttpGet("invoices/{id:guid}")]
+        public async Task<ActionResult<InvoiceResponse>> GetInvoiceById(Guid id)
+        {
+            var invoice = await _invoiceService.GetByIdAsync(id);
+            if (invoice == null) return NotFound();
+            return Ok(invoice);
+        }
+
+        [HttpPost("invoices")]
+        public async Task<ActionResult<InvoiceResponse>> CreateInvoice([FromBody] InvoiceCreateRequest req)
+        {
+            if (req.RingId == Guid.Empty || req.UserId == Guid.Empty)
+                return BadRequest("RingId and UserId are required.");
+
+            var created = await _invoiceService.CreateAsync(req);
+
+            // Update last purchase timestamp
+            await _identity.SetLastPurchaseAsync(created.UserId.ToString(), created.CreatedAtUtc);
+
+            return Ok(created);
+        }
+
+        [HttpPut("invoices/{id:guid}/owner")]
+        public async Task<ActionResult<InvoiceResponse>> ChangeInvoiceOwner(Guid id, [FromBody] InvoiceUpdateRequest req)
+        {
+            if (req.Id == Guid.Empty)
+                req.Id = id;
+
+            if (req.Id != id)
+                return BadRequest("Id mismatch.");
+
+            var updated = await _invoiceService.UpdateOwnerAsync(req);
+            await _identity.SetLastPurchaseAsync(updated.UserId.ToString(), updated.CreatedAtUtc);
+            return Ok(updated);
+        }
+
+        [HttpDelete("invoices/{id:guid}")]
+        public async Task<ActionResult> DeleteInvoice(Guid id)
+        {
+            await _invoiceService.DeleteAsync(id);
+            return Ok();
         }
 
         [HttpPost("rings")]

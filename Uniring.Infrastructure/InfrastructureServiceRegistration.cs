@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +28,7 @@ namespace Uniring.Infrastructure
         {
             services.AddScoped<IRingRepository, RingRepository>();
             services.AddScoped<IMediaRepository, MediaRepository>();
+            services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
             return services;
         }

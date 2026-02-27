@@ -20,13 +20,17 @@
         <section class="actions-grid" aria-label="عملیات سریع">
             <a href="/admin-panel/new-user" class="action-btn bg-green" style="text-decoration: none;">ثبت مشتری جدید</a>
             <a href="/admin-panel/new-ring" class="action-btn bg-blue" style="text-decoration: none;">ثبت انگشتر جدید</a>
+            <a href="/admin-panel/new-invoice" class="action-btn bg-purple" id="action-new-invoice" style="text-decoration: none;">ثبت فاکتور جدید</a>
             <button class="action-btn bg-amber-dark" id="action-list-customers">مشتریان</button>
             <button class="action-btn bg-amber" id="action-list-rings">انگشترها</button>
+            <button class="action-btn" id="action-list-invoices" style="background: rgba(15,23,42,0.9); border: 1px solid rgba(148,163,184,0.35); color: var(--text-1);">
+                سفارشات اخیر
+            </button>
         </section>
 
         <section class="card-table" aria-label="نتایج دینامیک">
             <div class="card-head">
-                <h3 id="dynamicTableTitle">ثبت‌های اخیر</h3>
+                <h3 id="dynamicTableTitle">سفارشات اخیر</h3>
                 <div class="card-search">
                     <input id="userSearchInput"
                            class="card-search-input"

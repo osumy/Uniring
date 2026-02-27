@@ -158,8 +158,19 @@ namespace Uniring.Application.Services
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return;
+
             user.LastPurchaseAtUtc = purchaseTime.ToUniversalTime();
             await _userManager.UpdateAsync(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var hasUserRole = roles.Contains("user");
+            var hasGuestRole = roles.Contains("guest");
+
+            if (hasGuestRole && !hasUserRole)
+            {
+                await _userManager.AddToRoleAsync(user, "user");
+                await _userManager.RemoveFromRoleAsync(user, "guest");
+            }
         }
 
 
@@ -175,12 +186,49 @@ namespace Uniring.Application.Services
             {
                 if (await _userManager.IsInRoleAsync(user, roleName))
                 {
-                    users.Add( new LoginResponse { 
+                    users.Add(new LoginResponse
+                    {
                         Id = user.Id.ToString(),
                         PhoneNumber = user.PhoneNumber,
                         Role = roleName,
                         DisplayName = user.DisplayName,
-                        });
+                    });
+                }
+            }
+
+            return users;
+        }
+
+        public async Task<List<LoginResponse>> SearchUsersAsync(string term, bool includeGuests)
+        {
+            term = term?.Trim() ?? string.Empty;
+            var normalizedTerm = term.ToLowerInvariant();
+
+            var users = new List<LoginResponse>();
+            var allUsers = _userManager.Users.ToList();
+
+            foreach (var user in allUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "guest";
+
+                if (role != "user" && !(includeGuests && role == "guest"))
+                    continue;
+
+                var displayName = user.DisplayName ?? string.Empty;
+                var phone = user.PhoneNumber ?? string.Empty;
+
+                if (string.IsNullOrEmpty(normalizedTerm) ||
+                    displayName.ToLowerInvariant().Contains(normalizedTerm) ||
+                    phone.Contains(term, StringComparison.OrdinalIgnoreCase))
+                {
+                    users.Add(new LoginResponse
+                    {
+                        Id = user.Id.ToString(),
+                        PhoneNumber = user.PhoneNumber,
+                        Role = role,
+                        DisplayName = user.DisplayName,
+                    });
                 }
             }
 

@@ -1,5 +1,6 @@
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
+using Uniring.Contracts.Invoice;
 
 namespace Uniring.App.Interfaces
 {
@@ -21,6 +22,13 @@ namespace Uniring.App.Interfaces
 
         Task<List<LoginResponse>> GetUsersAsync();
         Task<List<RingResponse>> GetRingsAsync();
+
+        Task<List<LoginResponse>> SearchUsersAsync(string term);
+        Task<List<InvoiceResponse>> GetRecentInvoicesAsync(int count);
+        Task<InvoiceResponse?> GetInvoiceByIdAsync(Guid id);
+        Task<InvoiceResponse?> CreateInvoiceAsync(InvoiceCreateRequest requestModel);
+        Task<InvoiceResponse?> ChangeInvoiceOwnerAsync(Guid id, InvoiceUpdateRequest requestModel);
+        Task<bool> DeleteInvoiceAsync(Guid id);
 
         Task<LoginResponse?> GetUserByIdAsync(string userId);
         Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest requestModel);

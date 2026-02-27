@@ -1,22 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     const btnUsers = document.getElementById('action-list-customers');
     const btnRings = document.getElementById('action-list-rings');
+    const btnInvoices = document.getElementById('action-list-invoices');
     const tableTitle = document.getElementById('dynamicTableTitle');
     const tableHead = document.getElementById('dynamicTableHead');
     const tableBody = document.getElementById('dynamicTableBody');
     const paginationContainer = document.getElementById('paginationContainer');
     const userSearchInput = document.getElementById('userSearchInput');
 
-    // state for users list + pagination
+    // state for users / rings / invoices list + pagination
     let allUsers = [];
     let allRings = [];
+    let allInvoices = [];
     let currentUserPage = 1;
     let currentRingPage = 1;
-    let currentView = 'users'; // 'users' or 'rings'
+    let currentInvoicePage = 1;
+    let currentView = 'invoices'; // 'users' or 'rings' or 'invoices'
     const USERS_PAGE_SIZE = 10; // تعداد ردیف در هر صفحه (برای موبایل هم مناسب است)
     let currentFilterText = '';
 
-    if (!btnUsers || !btnRings || !tableBody) return;
+    if (!btnUsers || !btnRings || !btnInvoices || !tableBody) return;
 
     const toastContainer = document.getElementById("toast-container");
 
@@ -71,12 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const name = (u.displayName || '').toString().toLowerCase();
                 return name.includes(term);
             });
-        } else {
+        } else if (currentView === 'rings') {
             if (!Array.isArray(allRings) || allRings.length === 0) return [];
             if (!term) return allRings;
             return allRings.filter(r => {
                 const name = (r.name || '').toString().toLowerCase();
                 return name.includes(term);
+            });
+        } else {
+            if (!Array.isArray(allInvoices) || allInvoices.length === 0) return [];
+            if (!term) return allInvoices;
+            return allInvoices.filter(inv => {
+                const ringName = (inv.ringName || '').toString().toLowerCase();
+                const ringSerial = (inv.ringSerial || '').toString().toLowerCase();
+                const userName = (inv.userDisplayName || '').toString().toLowerCase();
+                const userPhone = (formatPhoneForDisplay(inv.userPhoneNumber || '') || '').toString().toLowerCase();
+                return ringName.includes(term) ||
+                    ringSerial.includes(term) ||
+                    userName.includes(term) ||
+                    userPhone.includes(term);
             });
         }
     }
@@ -193,6 +209,69 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPagination(currentRingPage, totalPages, totalItems, renderRingsPage);
     }
 
+    function renderInvoicesPage(pageNumber) {
+        const invoices = getFilteredData();
+
+        const headers = `
+            <tr>
+                <th>سریال انگشتر</th>
+                <th>نام انگشتر</th>
+                <th>مشتری</th>
+                <th>شماره مشتری</th>
+                <th>تاریخ ثبت</th>
+                <th>عملیات</th>
+            </tr>
+        `;
+
+        if (!Array.isArray(invoices) || invoices.length === 0) {
+            const msg = currentFilterText.trim()
+                ? 'هیچ سفارشی مطابق جست‌وجو یافت نشد.'
+                : 'سفارشی ثبت نشده است.';
+            showEmpty('سفارشات اخیر', headers, msg);
+            return;
+        }
+
+        const totalItems = invoices.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / USERS_PAGE_SIZE));
+
+        currentInvoicePage = Math.min(Math.max(1, pageNumber), totalPages);
+
+        const start = (currentInvoicePage - 1) * USERS_PAGE_SIZE;
+        const end = start + USERS_PAGE_SIZE;
+        const pageItems = invoices.slice(start, end);
+
+        let rows = '';
+        pageItems.forEach(inv => {
+            const id = inv.id || '';
+            const ringSerial = inv.ringSerial || '—';
+            const ringName = inv.ringName || '—';
+            const userName = inv.userDisplayName || '—';
+            const userPhone = formatPhoneForDisplay(inv.userPhoneNumber || '');
+            const createdAt = inv.createdAtUtc
+                ? new Date(inv.createdAtUtc).toLocaleString('fa-IR')
+                : '—';
+
+            rows += `
+                <tr data-invoice-id="${escapeHtml(id)}">
+                    <td>${escapeHtml(ringSerial)}</td>
+                    <td>${escapeHtml(ringName)}</td>
+                    <td>${escapeHtml(userName)}</td>
+                    <td>${escapeHtml(userPhone || '—')}</td>
+                    <td>${escapeHtml(createdAt)}</td>
+                    <td>
+                        <div class="row-actions" data-invoice-id="${escapeHtml(id)}">
+                            <button type="button" class="btn-inline btn-primary" data-action="edit-invoice">تغییر مالکیت</button>
+                            <button type="button" class="btn-inline btn-danger" data-action="delete-invoice">حذف</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        setTable('سفارشات اخیر', headers, rows);
+        renderPagination(currentInvoicePage, totalPages, totalItems, renderInvoicesPage);
+    }
+
     function renderPagination(currentPage, totalPages, totalItems, renderFunc) {
         if (paginationContainer) {
             const canPrev = currentPage > 1;
@@ -267,15 +346,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // ======================
+    // بارگذاری سفارشات اخیر (فاکتورها)
+    // ======================
+    btnInvoices.addEventListener('click', async () => {
+        currentView = 'invoices';
+        if (userSearchInput) userSearchInput.placeholder = "جست‌وجوی سفارشات بر اساس انگشتر یا مشتری...";
+        try {
+            const res = await fetch('/api/invoices/recent');
+            if (!res.ok) throw new Error('دریافت داده با خطا مواجه شد.');
+
+            const invoices = await res.json();
+            allInvoices = invoices;
+            currentFilterText = userSearchInput ? userSearchInput.value || '' : '';
+            renderInvoicesPage(1);
+        } catch (err) {
+            console.error('Error loading invoices:', err);
+            showError('خطا در بارگذاری سفارشات اخیر. لطفاً دوباره تلاش کنید.');
+        }
+    });
+
     if (userSearchInput) {
         userSearchInput.addEventListener('input', () => {
             currentFilterText = userSearchInput.value || '';
             if (currentView === 'users') {
                 if (!allUsers.length) return;
                 renderUsersPage(1);
-            } else {
+            } else if (currentView === 'rings') {
                 if (!allRings.length) return;
                 renderRingsPage(1);
+            } else {
+                if (!allInvoices.length) return;
+                renderInvoicesPage(1);
             }
         });
     }
@@ -293,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return text.replace(/[&<>"']/g, m => map[m]);
     }
 
-    // عملیات روی هر ردیف مشتری (حذف / ویرایش / رمز / سفارشات)
+    // عملیات روی هر ردیف مشتری / انگشتر / فاکتور
     tableBody.addEventListener('click', async (event) => {
         const btn = event.target.closest('.btn-inline');
         if (!btn) return;
@@ -303,6 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = btn.closest('.row-actions');
         const userId = container?.dataset.userId || row?.dataset.userId;
         const ringId = container?.dataset.ringId || row?.dataset.ringId;
+        const invoiceId = container?.dataset.invoiceId || row?.dataset.invoiceId;
 
         if (action === 'delete') {
             if (!userId) return;
@@ -310,10 +413,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (action === 'delete-ring') {
             if (!ringId) return;
             openDeleteModal(ringId, 'ring');
+        } else if (action === 'delete-invoice') {
+            if (!invoiceId) return;
+            openDeleteModal(invoiceId, 'invoice');
         } else if (action === 'edit') {
             window.location.href = `/admin-panel/users/${encodeURIComponent(userId)}/edit`;
         } else if (action === 'edit-ring') {
             showToast('ویرایش انگشتر هنوز پیاده‌سازی نشده است.', 'info');
+        } else if (action === 'edit-invoice') {
+            if (!invoiceId) return;
+            window.location.href = `/admin-panel/invoices/${encodeURIComponent(invoiceId)}/edit`;
         } else if (action === 'password') {
             window.location.href = `/admin-panel/users/${encodeURIComponent(userId)}/change-password`;
         } else if (action === 'orders') {
@@ -330,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitle = deleteModal?.querySelector('.modal-title');
     const modalText = deleteModal?.querySelector('.modal-text');
     let deleteTargetId = null;
-    let deleteTargetType = null; // 'user' or 'ring'
+    let deleteTargetType = null; // 'user' or 'ring' or 'invoice'
 
     function openDeleteModal(id, type) {
         deleteTargetId = id;
@@ -340,9 +449,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'user') {
             if (modalTitle) modalTitle.textContent = 'حذف مشتری';
             if (modalText) modalText.textContent = 'آیا از حذف این مشتری مطمئن هستید؟ این عمل قابل بازگشت نیست.';
-        } else {
+        } else if (type === 'ring') {
             if (modalTitle) modalTitle.textContent = 'حذف انگشتر';
             if (modalText) modalText.textContent = 'آیا از حذف این انگشتر مطمئن هستید؟ این عمل قابل بازگشت نیست.';
+        } else {
+            if (modalTitle) modalTitle.textContent = 'حذف فاکتور';
+            if (modalText) modalText.textContent = 'آیا از حذف این فاکتور مطمئن هستید؟ این عمل قابل بازگشت نیست.';
         }
 
         deleteModal.classList.add('is-open');
@@ -377,7 +489,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const id = deleteTargetId;
             const type = deleteTargetType;
-            const url = type === 'user' ? `/api/users/${encodeURIComponent(id)}` : `/api/rings/${encodeURIComponent(id)}`;
+            let url = '';
+            if (type === 'user') {
+                url = `/api/users/${encodeURIComponent(id)}`;
+            } else if (type === 'ring') {
+                url = `/api/rings/${encodeURIComponent(id)}`;
+            } else {
+                url = `/api/invoices/${encodeURIComponent(id)}`;
+            }
 
             try {
                 const res = await fetch(url, {
@@ -391,11 +510,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const maxPage = Math.max(1, Math.ceil(allUsers.length / USERS_PAGE_SIZE));
                     if (currentUserPage > maxPage) currentUserPage = maxPage;
                     renderUsersPage(currentUserPage);
-                } else {
+                } else if (type === 'ring') {
                     allRings = allRings.filter(r => r.id !== id);
                     const maxPage = Math.max(1, Math.ceil(allRings.length / USERS_PAGE_SIZE));
                     if (currentRingPage > maxPage) currentRingPage = maxPage;
                     renderRingsPage(currentRingPage);
+                } else {
+                    allInvoices = allInvoices.filter(inv => inv.id !== id);
+                    const maxPage = Math.max(1, Math.ceil(allInvoices.length / USERS_PAGE_SIZE));
+                    if (currentInvoicePage > maxPage) currentInvoicePage = maxPage;
+                    renderInvoicesPage(currentInvoicePage);
                 }
 
                 closeDeleteModal();
@@ -407,4 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // نمایش پیش‌فرض: سفارشات اخیر
+    btnInvoices.click();
 });

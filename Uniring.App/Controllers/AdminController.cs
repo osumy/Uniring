@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Uniring.App.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
+using Uniring.Contracts.Invoice;
 
 namespace Uniring.App.Controllers
 {
@@ -19,6 +20,22 @@ namespace Uniring.App.Controllers
         [Route("admin-panel")]
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [Route("admin-panel/new-invoice")]
+        [HttpGet]
+        public IActionResult NewInvoice()
+        {
+            ViewBag.ApiBaseUrl = _configuration["Api:BaseUrl"] ?? string.Empty;
+            return View();
+        }
+
+        [HttpGet("admin-panel/invoices/{id}/edit")]
+        public IActionResult EditInvoice(Guid id)
+        {
+            ViewBag.ApiBaseUrl = _configuration["Api:BaseUrl"] ?? string.Empty;
+            ViewBag.InvoiceId = id;
             return View();
         }
 
@@ -149,6 +166,22 @@ namespace Uniring.App.Controllers
         public async Task<IActionResult> DeleteRing(string id)
         {
             var ok = await _api.DeleteRingAsync(id);
+            if (!ok) return BadRequest();
+            return Ok();
+        }
+
+        [HttpGet("api/invoices/recent")]
+        public async Task<IActionResult> GetRecentInvoicesJson()
+        {
+            var invoices = await _api.GetRecentInvoicesAsync(100);
+            return Json(invoices);
+        }
+
+        [HttpDelete("api/invoices/{id}")]
+        public async Task<IActionResult> DeleteInvoice(string id)
+        {
+            if (!Guid.TryParse(id, out var guid)) return BadRequest();
+            var ok = await _api.DeleteInvoiceAsync(guid);
             if (!ok) return BadRequest();
             return Ok();
         }

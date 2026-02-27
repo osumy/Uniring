@@ -2,6 +2,7 @@ using System.Text.Json;
 using Uniring.App.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
+using Uniring.Contracts.Invoice;
 
 namespace Uniring.App.Services
 {
@@ -112,6 +113,58 @@ namespace Uniring.App.Services
         {
             var client = _httpFactory.CreateClient("Api");
             var res = await client.PostAsJsonAsync($"Admin/users/{userId}/change-password", requestModel);
+            return res.IsSuccessStatusCode;
+        }
+
+        public async Task<List<LoginResponse>> SearchUsersAsync(string term)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.GetAsync($"Admin/users/search?term={Uri.EscapeDataString(term ?? string.Empty)}&includeGuests=true");
+            if (!res.IsSuccessStatusCode) return new List<LoginResponse>();
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<LoginResponse>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<LoginResponse>();
+        }
+
+        public async Task<List<InvoiceResponse>> GetRecentInvoicesAsync(int count)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.GetAsync($"Admin/invoices/recent?count={count}");
+            if (!res.IsSuccessStatusCode) return new List<InvoiceResponse>();
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<InvoiceResponse>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<InvoiceResponse>();
+        }
+
+        public async Task<InvoiceResponse?> GetInvoiceByIdAsync(Guid id)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.GetAsync($"Admin/invoices/{id}");
+            if (!res.IsSuccessStatusCode) return null;
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<InvoiceResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<InvoiceResponse?> CreateInvoiceAsync(InvoiceCreateRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.PostAsJsonAsync("Admin/invoices", requestModel);
+            if (!res.IsSuccessStatusCode) return null;
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<InvoiceResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<InvoiceResponse?> ChangeInvoiceOwnerAsync(Guid id, InvoiceUpdateRequest requestModel)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.PutAsJsonAsync($"Admin/invoices/{id}/owner", requestModel);
+            if (!res.IsSuccessStatusCode) return null;
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<InvoiceResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<bool> DeleteInvoiceAsync(Guid id)
+        {
+            var client = _httpFactory.CreateClient("Api");
+            var res = await client.DeleteAsync($"Admin/invoices/{id}");
             return res.IsSuccessStatusCode;
         }
 
