@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Uniring.Infrastructure;
@@ -11,9 +12,11 @@ using Uniring.Infrastructure;
 namespace Uniring.Infrastructure.Migrations
 {
     [DbContext(typeof(UniringDbContext))]
-    partial class UniringDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260227105823_AddMediaOrder")]
+    partial class AddMediaOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -230,30 +233,6 @@ namespace Uniring.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Uniring.Domain.Entities.Invoice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("RingId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RingId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Invoices");
-                });
-
             modelBuilder.Entity("Uniring.Domain.Entities.Media", b =>
                 {
                     b.Property<Guid>("Id")
@@ -372,25 +351,6 @@ namespace Uniring.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Uniring.Domain.Entities.Invoice", b =>
-                {
-                    b.HasOne("Uniring.Domain.Entities.Ring", "Ring")
-                        .WithMany()
-                        .HasForeignKey("RingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Uniring.Domain.Entities.IdentityEntities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Ring");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Uniring.Domain.Entities.Media", b =>

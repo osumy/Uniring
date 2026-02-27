@@ -18,13 +18,33 @@ namespace Uniring.App.Controllers
             return View();
         }
 
-        [Route("/serial/{serial}")]
-        public async Task<IActionResult> Index(string serial)
+        [Route("/{identifier}")]
+        public async Task<IActionResult> Index(string identifier)
         {
-            var user = await _api.GetRingBySerialAsync(serial);
-            ViewBag.user = user;
+            // Try by Uid first
+            var ring = await _api.GetRingByUidAsync(identifier);
+            
+            // If not found, try by Serial
+            if (ring == null)
+            {
+                ring = await _api.GetRingBySerialAsync(identifier);
+            }
 
-            return Ok(user);
+            if (ring == null)
+            {
+                return View("Index"); // Show search page if not found
+            }
+
+            return View("Result", ring);
+        }
+
+        [HttpGet("api/Ring/{identifier}")]
+        public async Task<IActionResult> GetRingByIdentifier(string identifier)
+        {
+            var ring = await _api.GetRingByUidAsync(identifier);
+            if (ring == null) ring = await _api.GetRingBySerialAsync(identifier);
+
+            return ring == null ? NotFound() : Ok(ring);
         }
     }
 }

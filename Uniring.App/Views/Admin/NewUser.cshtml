@@ -10,9 +10,39 @@
           rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/NewUserStyle.css">
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toast {
+            background: #333;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease-out;
+        }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #2ecc71; }
+        @@keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
     <div class="form-container">
+        <div id="toast-container" class="toast-container"></div>
         <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
             <div class="step active" id="step1">۱</div>
@@ -143,6 +173,20 @@
         const scenes = document.querySelectorAll('.scene');
         const steps = document.querySelectorAll('.step');
         const progressBar = document.getElementById('progressBar');
+        const toastContainer = document.getElementById('toast-container');
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
         const passInput = document.getElementById('customer-password');
         const confirmPassInput = document.getElementById('customer-password-confirm');
         const matchError = document.getElementById('matchError');
@@ -173,7 +217,7 @@
                 document.getElementById('finalName').textContent = name;
                 showScene('scene2');
             } else {
-                alert('لطفاً نام کامل را وارد کنید');
+                showToast('لطفاً نام کامل را وارد کنید', 'error');
             }
         });
 
@@ -186,7 +230,7 @@
                 document.getElementById('finalPhone').textContent = phone;
                 showScene('scene3');
             } else {
-                alert('لطفاً یک شماره تلفن معتبر وارد کنید (مثلاً: 09123456789)');
+                showToast('لطفاً یک شماره تلفن معتبر وارد کنید (مثلاً: 09123456789)', 'error');
             }
         });
 
@@ -276,7 +320,7 @@
             const confirmPass = confirmPassInput.value;
             
             if (!pass || !confirmPass) {
-                alert('لطفاً هر دو فیلد رمز عبور را پر کنید');
+                showToast('لطفاً هر دو فیلد رمز عبور را پر کنید', 'error');
                 return;
             }
             
@@ -285,7 +329,7 @@
             }
             
             if (pass.length < 4) {
-                alert('رمز عبور باید حداقل 4 کاراکتر باشد');
+                showToast('رمز عبور باید حداقل 4 کاراکتر باشد', 'error');
                 return;
             }
             
@@ -299,15 +343,43 @@
         });
 
         // Scene 4: Submit
-        document.getElementById('submitBtn').addEventListener('click', () => {
-            // مقادیر را به فیلدهای مخفی منتقل کن
-            document.getElementById('hiddenName').value = formData.name;
-            document.getElementById('hiddenPhone').value = formData.phone;
-            document.getElementById('hiddenPassword').value = formData.password;
-            document.getElementById('hiddenPassword2').value = formData.password;
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'در حال ثبت...';
 
-            // فرم مخفی را submit کن
-            document.getElementById('hiddenForm').submit();
+            const payload = {
+                DisplayName: formData.name,
+                PhoneNumber: formData.phone,
+                Password: formData.password,
+                ConfirmPassword: formData.password
+            };
+
+            try {
+                const response = await fetch('/admin-panel/new-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(payload)
+                });
+
+                if (response.ok) {
+                    showToast('مشتری با موفقیت ثبت شد!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin-panel';
+                    }, 2000);
+                } else {
+                    showToast('خطا در ثبت مشتری. لطفاً دوباره تلاش کنید.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'ثبت مشتری جدید';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('خطای شبکه. لطفاً اتصال خود را بررسی کنید.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ثبت مشتری جدید';
+            }
         });
     </script>
     <form id="hiddenForm" asp-controller="Admin" asp-action="NewUser" method="post">

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Uniring.Application.Interfaces.Repositories;
 using Uniring.Domain.Entities;
 
@@ -44,6 +44,18 @@ namespace Uniring.Infrastructure.Repositories
             {
                 return false;
             }
+        }
+
+        public async Task<List<Media>> GetByIdsAsync(IEnumerable<Guid> ids)
+        {
+            return await _db.Medias
+                .Where(m => ids.Contains(m.Id))
+                .ToListAsync();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _db.SaveChangesAsync();
         }
     }
 }

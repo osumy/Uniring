@@ -39,7 +39,7 @@ namespace Uniring.Api
             {
                 options.AddPolicy("FrontendPolicy", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7208") // allowed origin
+                    policy.WithOrigins("http://127.0.0.1:5000", "http://localhost:5000") // allowed origin
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
@@ -104,11 +104,12 @@ namespace Uniring.Api
             //    return TypedResults.Ok();
             //});
 
-            //app.UseCors("open");
             // AFTER building the app, BEFORE running it
-            //using var DBscope = app.Services.CreateScope();
-            //var dbContext = DBscope.ServiceProvider.GetRequiredService<UniringDbContext>();
-            //dbContext.Database.Migrate(); // Applies pending migrations
+            using (var DBscope = app.Services.CreateScope())
+            {
+                var dbContext = DBscope.ServiceProvider.GetRequiredService<UniringDbContext>();
+                await dbContext.Database.MigrateAsync(); // Applies pending migrations
+            }
 
             // Seed roles
             using (var scope = app.Services.CreateScope())

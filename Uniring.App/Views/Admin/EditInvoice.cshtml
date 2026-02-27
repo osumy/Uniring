@@ -1,0 +1,381 @@
+@{
+    Layout = null;
+    var apiBaseUrl = (string)(ViewBag.ApiBaseUrl ?? string.Empty);
+    var invoiceId = (Guid)(ViewBag.InvoiceId ?? Guid.Empty);
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تغییر مالکیت فاکتور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;700&family=Vazirmatn:wght@300;400;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/css/NewRingStyle.css">
+    <style>
+        body {
+            background: radial-gradient(circle at top, #111827, #020617);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .form-container {
+            max-width: 520px;
+            width: 100%;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .scene {
+            background: rgba(15, 23, 42, 0.96);
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+            padding-bottom: 28px;
+        }
+
+        .read-only-field {
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px dashed rgba(148, 163, 184, 0.6);
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .read-only-field strong {
+            color: #e5e7eb;
+        }
+
+        .pill-input {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .pill-input input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+            font-family: "Tajawal", "Vazirmatn", Tahoma, Arial, sans-serif;
+        }
+
+        .pill-input input::placeholder {
+            color: #6b7280;
+        }
+
+        .pill-input input:focus {
+            outline: none;
+            border-color: #4b9cff;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+        }
+
+        .suggestions {
+            position: absolute;
+            right: 0;
+            left: 0;
+            top: 110%;
+            background: #020617;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            z-index: 30;
+            max-height: 260px;
+            overflow: auto;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background: rgba(37, 99, 235, 0.3);
+        }
+
+        .suggestion-main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .suggestion-title {
+            color: #e5e7eb;
+            font-weight: 600;
+        }
+
+        .suggestion-sub {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .badge-role {
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            color: #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .badge-guest {
+            border-color: #facc15;
+            color: #facc15;
+        }
+
+        .warning-text {
+            font-size: 0.8rem;
+            color: #facc15;
+            margin-top: 4px;
+        }
+
+        .btn-group {
+            margin-top: 32px;
+            padding-top: 12px;
+        }
+
+        a.btn.btn-prev {
+            text-decoration: none;
+            background: rgba(15, 23, 42, 0.85);
+            color: #e5e7eb;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+        }
+
+        a.btn.btn-prev:hover {
+            background: rgba(30, 64, 175, 0.85);
+            color: #e5e7eb;
+        }
+
+        .btn.btn-next {
+            background: #22c55e;
+            color: #022c22;
+        }
+
+        .btn.btn-next:hover {
+            background: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div id="toast-container" class="toast-container"></div>
+        <div class="scene active" id="scene-edit-invoice">
+            <h1>تغییر مالکیت فاکتور</h1>
+            <p class="subtitle">فقط می‌توانید مالک (مشتری) این فاکتور را عوض کنید.</p>
+
+            <div class="input-group">
+                <label>انگشتر فاکتور</label>
+                <div id="ring-info" class="read-only-field">
+                    در حال بارگذاری...
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="user-search">انتخاب مشتری جدید</label>
+                <div class="pill-input">
+                    <input id="user-search"
+                           type="text"
+                           placeholder="نام یا شماره مشتری را جست‌وجو کنید..."
+                           autocomplete="off" />
+                    <div id="user-suggestions" class="suggestions" style="display:none;"></div>
+                </div>
+                <div id="user-selected" class="read-only-field" style="display:none;"></div>
+                <div id="guest-warning" class="warning-text" style="display:none;">
+                    این مشتری در حال حاضر مهمان است؛ با ثبت تغییر، نقش او به «کاربر» تغییر خواهد کرد.
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="/admin-panel" class="btn btn-prev">بازگشت به پنل</a>
+                <button class="btn btn-next" id="submit-change">تغییر مالکیت</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiBaseUrl = '@apiBaseUrl';
+        const invoiceId = '@invoiceId';
+
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        function debounce(fn, delay) {
+            let t;
+            return (...args) => {
+                clearTimeout(t);
+                t = setTimeout(() => fn(...args), delay);
+            };
+        }
+
+        function formatPhoneForDisplay(rawPhone) {
+            if (typeof rawPhone !== 'string' || !rawPhone) return '';
+            if (rawPhone.startsWith('+98') && rawPhone.length >= 4) {
+                return '0' + rawPhone.substring(3);
+            }
+            return rawPhone;
+        }
+
+        const ringInfo = document.getElementById('ring-info');
+        const userInput = document.getElementById('user-search');
+        const userSuggestions = document.getElementById('user-suggestions');
+        const userSelected = document.getElementById('user-selected');
+        const guestWarning = document.getElementById('guest-warning');
+        const submitBtn = document.getElementById('submit-change');
+
+        let selectedUser = null;
+
+        async function loadInvoice() {
+            try {
+                const res = await fetch('/api/invoices/' + encodeURIComponent(invoiceId));
+                if (!res.ok) throw new Error('failed');
+                const inv = await res.json();
+                const serial = inv.ringSerial || 'نامشخص';
+                const name = inv.ringName || 'بدون نام';
+                const userName = inv.userDisplayName || '—';
+                const userPhone = formatPhoneForDisplay(inv.userPhoneNumber || '');
+                ringInfo.innerHTML = `<strong>انگشتر:</strong> ${name} — سریال ${serial}<br/><strong>مالک فعلی:</strong> ${userName} ${userPhone ? '— ' + userPhone : ''}`;
+            } catch (e) {
+                console.error(e);
+                ringInfo.textContent = 'خطا در بارگذاری اطلاعات فاکتور.';
+            }
+        }
+
+        loadInvoice();
+
+        async function searchUsers(term) {
+            const url = '/api/users/search?term=' + encodeURIComponent(term || '') + '&includeGuests=true';
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('خطا در جست‌وجوی کاربران');
+            return await res.json();
+        }
+
+        function renderUserSuggestions(items) {
+            if (!items.length) {
+                userSuggestions.style.display = 'none';
+                userSuggestions.innerHTML = '';
+                return;
+            }
+
+            const firstFive = items.slice(0, 5);
+            userSuggestions.innerHTML = firstFive.map(u => {
+                const role = u.role || 'guest';
+                const phone = formatPhoneForDisplay(u.phoneNumber || '');
+                const title = u.displayName || phone || 'بدون نام';
+                return `
+                    <div class="suggestion-item" data-id="${u.id}" data-role="${role}">
+                        <div class="suggestion-main">
+                            <span class="suggestion-title">${title}</span>
+                            <span class="suggestion-sub">${phone || 'بدون شماره'}</span>
+                        </div>
+                        <span class="badge-role ${role === 'guest' ? 'badge-guest' : ''}">
+                            ${role === 'guest' ? 'مهمان' : 'کاربر'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+            userSuggestions.style.display = 'block';
+
+            userSuggestions.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.getAttribute('data-id');
+                    const role = item.getAttribute('data-role') || 'guest';
+                    const user = firstFive.find(x => x.id === id);
+                    if (!user) return;
+                    selectedUser = { ...user, role };
+                    userInput.value = `${user.displayName || ''} (${formatPhoneForDisplay(user.phoneNumber || '')})`.trim();
+                    userSelected.style.display = 'block';
+                    userSelected.innerHTML = `<strong>مشتری جدید:</strong> ${user.displayName || 'بدون نام'} — ${formatPhoneForDisplay(user.phoneNumber || '') || 'بدون شماره'}`;
+                    guestWarning.style.display = role === 'guest' ? 'block' : 'none';
+                    userSuggestions.style.display = 'none';
+                });
+            });
+        }
+
+        userInput.addEventListener('input', debounce(async () => {
+            const term = userInput.value || '';
+            if (!term.trim()) {
+                userSuggestions.style.display = 'none';
+                userSuggestions.innerHTML = '';
+                return;
+            }
+            try {
+                const results = await searchUsers(term);
+                renderUserSuggestions(results);
+            } catch (e) {
+                console.error(e);
+                showToast('خطا در جست‌وجوی کاربران.', 'error');
+            }
+        }, 250));
+
+        document.addEventListener('click', (e) => {
+            if (!userSuggestions.contains(e.target) && e.target !== userInput) {
+                userSuggestions.style.display = 'none';
+            }
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            if (!selectedUser) {
+                showToast('لطفاً مشتری جدید را انتخاب کنید.', 'error');
+                return;
+            }
+
+            const confirmed = window.confirm('آیا از تغییر مالکیت این فاکتور مطمئن هستید؟');
+            if (!confirmed) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'در حال ثبت...';
+
+            try {
+                const payload = {
+                    id: invoiceId,
+                    userId: selectedUser.id
+                };
+
+                const res = await fetch('/api/invoices/' + encodeURIComponent(invoiceId) + '/owner', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    throw new Error('تغییر مالکیت ناموفق بود.');
+                }
+
+                showToast('مالکیت با موفقیت تغییر کرد.', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin-panel';
+                }, 1500);
+            } catch (err) {
+                console.error(err);
+                showToast('خطا در تغییر مالکیت. لطفاً دوباره تلاش کنید.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'تغییر مالکیت';
+            }
+        });
+    </script>
+</body>
+</html>
+

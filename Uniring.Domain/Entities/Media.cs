@@ -19,5 +19,7 @@ namespace Uniring.Domain.Entities
 
         public Guid? RingId { get; set; }
         public Ring? Ring { get; set; }
+
+        public int Order { get; set; }
     }
 }

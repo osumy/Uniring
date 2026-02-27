@@ -39,6 +39,10 @@ namespace Uniring.Api.Controllers
 
             return Ok(res.Data);
         }
+
+
+        [HttpGet("status")]
+        public IActionResult GetAuthStatus() => Ok(new { IsLoggedIn = false });
     }
 
 }

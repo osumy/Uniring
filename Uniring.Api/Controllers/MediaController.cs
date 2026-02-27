@@ -16,7 +16,8 @@ namespace Uniring.Api.Controllers
 
 
         [HttpPost("upload")]
-        public async Task<ActionResult> UploadFile(MediaRequest media)
+        [DisableRequestSizeLimit] // Allow large files
+        public async Task<ActionResult> UploadFile([FromForm] MediaRequest media)
         {
             if (media?.file == null)
                 return BadRequest("No file provided.");
@@ -27,7 +28,7 @@ namespace Uniring.Api.Controllers
 
             var res = await _mediaService.SaveFileAsync(media);
             if (!res.IsSuccess)
-                return StatusCode(500, "Failed to save file.");
+                return StatusCode(500, res.ErrorMessage); // Return specific error message
 
             return Ok(res.Data);
         }
@@ -48,7 +49,7 @@ namespace Uniring.Api.Controllers
                 return NotFound();
             }
 
-            return File(stream, media.ContentType, media.OriginalFileName, enableRangeProcessing: true);
+            return File(stream, media.ContentType, enableRangeProcessing: true);
         }
 
         [HttpDelete("delete/{id}")]
@@ -59,6 +60,17 @@ namespace Uniring.Api.Controllers
                 return NotFound();
 
             return Ok();
+        }
+
+        [HttpGet("type/{id}")]
+        public async Task<ActionResult<string>> GetMediaTypeById(Guid id)
+        {
+            var media = await _mediaService.GetMetadataAsync(id);
+
+            if (media == null)
+                return NotFound();
+
+            return Ok(media.ContentType);
         }
     }
 }

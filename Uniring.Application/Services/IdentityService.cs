@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Data;
@@ -158,8 +158,19 @@ namespace Uniring.Application.Services
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return;
+
             user.LastPurchaseAtUtc = purchaseTime.ToUniversalTime();
             await _userManager.UpdateAsync(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var hasUserRole = roles.Contains("user");
+            var hasGuestRole = roles.Contains("guest");
+
+            if (hasGuestRole && !hasUserRole)
+            {
+                await _userManager.AddToRoleAsync(user, "user");
+                await _userManager.RemoveFromRoleAsync(user, "guest");
+            }
         }
 
 
@@ -175,12 +186,49 @@ namespace Uniring.Application.Services
             {
                 if (await _userManager.IsInRoleAsync(user, roleName))
                 {
-                    users.Add( new LoginResponse { 
+                    users.Add(new LoginResponse
+                    {
                         Id = user.Id.ToString(),
                         PhoneNumber = user.PhoneNumber,
                         Role = roleName,
                         DisplayName = user.DisplayName,
-                        });
+                    });
+                }
+            }
+
+            return users;
+        }
+
+        public async Task<List<LoginResponse>> SearchUsersAsync(string term, bool includeGuests)
+        {
+            term = term?.Trim() ?? string.Empty;
+            var normalizedTerm = term.ToLowerInvariant();
+
+            var users = new List<LoginResponse>();
+            var allUsers = _userManager.Users.ToList();
+
+            foreach (var user in allUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "guest";
+
+                if (role != "user" && !(includeGuests && role == "guest"))
+                    continue;
+
+                var displayName = user.DisplayName ?? string.Empty;
+                var phone = user.PhoneNumber ?? string.Empty;
+
+                if (string.IsNullOrEmpty(normalizedTerm) ||
+                    displayName.ToLowerInvariant().Contains(normalizedTerm) ||
+                    phone.Contains(term, StringComparison.OrdinalIgnoreCase))
+                {
+                    users.Add(new LoginResponse
+                    {
+                        Id = user.Id.ToString(),
+                        PhoneNumber = user.PhoneNumber,
+                        Role = role,
+                        DisplayName = user.DisplayName,
+                    });
                 }
             }
 
@@ -210,6 +258,91 @@ namespace Uniring.Application.Services
                 Role = userRole,
                 DisplayName = user.DisplayName,
             });
+        }
+
+        public async Task<Result<bool>> DeleteUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<bool>.Error("User not found.");
+            }
+
+            var res = await _userManager.DeleteAsync(user);
+            if (!res.Succeeded)
+            {
+                return Result<bool>.Error("Delete failed.");
+            }
+
+            return Result<bool>.Success(true);
+        }
+
+        public async Task<Result<LoginResponse>> UpdateUserAsync(string id, UpdateUserRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<LoginResponse>.Error("User not found.");
+            }
+
+            var normalizedPhone = PhoneNumberNormalizer.ToE164(request.PhoneNumber);
+            if (string.IsNullOrWhiteSpace(normalizedPhone))
+                return Result<LoginResponse>.Error("Wrong PhoneNumber.");
+
+            var existing = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == normalizedPhone && u.Id != user.Id);
+            if (existing != null)
+                return Result<LoginResponse>.Error("PhoneNumber already in use.");
+
+            user.DisplayName = request.DisplayName;
+            user.PhoneNumber = normalizedPhone;
+            user.UserName = normalizedPhone;
+
+            var res = await _userManager.UpdateAsync(user);
+            if (!res.Succeeded)
+                return Result<LoginResponse>.Error("Update failed.");
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? "user";
+
+            return Result<LoginResponse>.Success(new LoginResponse
+            {
+                Id = user.Id.ToString(),
+                DisplayName = user.DisplayName,
+                PhoneNumber = user.PhoneNumber!,
+                Role = role
+            });
+        }
+
+        public async Task<Result<bool>> ChangePasswordAsync(string id, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Result<bool>.Error("User not found.");
+            }
+
+            // در سناریوی ادمین، پسورد قبلی را نمی‌گیریم و فقط ریست می‌کنیم
+            // اگر کاربر قبلاً پسورد دارد، ابتدا آن را حذف می‌کنیم
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            IdentityResult res;
+
+            if (hasPassword)
+            {
+                var removeRes = await _userManager.RemovePasswordAsync(user);
+                if (!removeRes.Succeeded)
+                {
+                    return Result<bool>.Error("Could not remove existing password.");
+                }
+            }
+
+            res = await _userManager.AddPasswordAsync(user, newPassword);
+            if (!res.Succeeded)
+            {
+                return Result<bool>.Error("Could not set new password.");
+            }
+
+            return Result<bool>.Success(true);
         }
 
         //    // JWT creation helper

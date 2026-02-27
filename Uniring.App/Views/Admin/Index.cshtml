@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/AdminPageStyle.css">
 </head>
 <body>
+    <div id="toast-container" class="toast-container"></div>
     <main class="container" role="main">
         <div class="topbar">
             <div style="flex:1; min-width:220px; text-align:right;">
@@ -19,13 +20,23 @@
         <section class="actions-grid" aria-label="عملیات سریع">
             <a href="/admin-panel/new-user" class="action-btn bg-green" style="text-decoration: none;">ثبت مشتری جدید</a>
             <a href="/admin-panel/new-ring" class="action-btn bg-blue" style="text-decoration: none;">ثبت انگشتر جدید</a>
+            <a href="/admin-panel/new-invoice" class="action-btn bg-purple" id="action-new-invoice" style="text-decoration: none;">ثبت فاکتور جدید</a>
             <button class="action-btn bg-amber-dark" id="action-list-customers">مشتریان</button>
             <button class="action-btn bg-amber" id="action-list-rings">انگشترها</button>
+            <button class="action-btn" id="action-list-invoices" style="background: rgba(15,23,42,0.9); border: 1px solid rgba(148,163,184,0.35); color: var(--text-1);">
+                سفارشات اخیر
+            </button>
         </section>
 
         <section class="card-table" aria-label="نتایج دینامیک">
             <div class="card-head">
-                <h3 id="dynamicTableTitle">ثبت‌های اخیر</h3>
+                <h3 id="dynamicTableTitle">سفارشات اخیر</h3>
+                <div class="card-search">
+                    <input id="userSearchInput"
+                           class="card-search-input"
+                           type="text"
+                           placeholder="جست‌وجو..." />
+                </div>
             </div>
             <div class="table-wrap">
                 <table>
@@ -38,8 +49,23 @@
                     </tbody>
                 </table>
             </div>
+            <div id="paginationContainer" class="pagination-container"></div>
         </section>
     </main>
+
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal-backdrop">
+        <div class="modal-dialog">
+            <h2 class="modal-title">حذف</h2>
+            <p class="modal-text">
+                آیا از حذف این مورد مطمئن هستید؟ این عمل قابل بازگشت نیست.
+            </p>
+            <div class="modal-actions">
+                <button type="button" id="deleteCancelBtn" class="modal-btn modal-btn-secondary">انصراف</button>
+                <button type="button" id="deleteConfirmBtn" class="modal-btn modal-btn-danger">حذف</button>
+            </div>
+        </div>
+    </div>
 
     <script src="~/js/AdminPageScript.js"></script>
 </body>

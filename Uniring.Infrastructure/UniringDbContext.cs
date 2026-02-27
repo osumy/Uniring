@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PhoneNumbers;
@@ -15,21 +15,25 @@ namespace Uniring.Infrastructure
 
         public DbSet<Ring> Rings { get; set; }
         public DbSet<Media> Medias { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Seed Data
-            builder.Entity<Ring>().HasData( new Ring
-            {
-                Uid = "UID", Name = "انگشتر عقیق", Serial = "R2732874204", Id = Guid.NewGuid()
-            });
-
             // Unique index on PhoneNumber to prevent duplicate phone registrations.
             // Note: ensure phone normalization before storing (E.164).
             builder.Entity<ApplicationUser>()
                 .HasIndex(u => u.PhoneNumber)
+                .IsUnique();
+
+            // Unique indexes for Ring Uid and Serial
+            builder.Entity<Ring>()
+                .HasIndex(r => r.Uid)
+                .IsUnique();
+
+            builder.Entity<Ring>()
+                .HasIndex(r => r.Serial)
                 .IsUnique();
 
             // Fix potential comparer issues for value types
@@ -51,10 +55,21 @@ namespace Uniring.Infrastructure
                 .HasForeignKey(m => m.RingId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            //// Optional: Ensure Ring.Uid is unique (if needed)
-            //builder.Entity<Ring>()
-            //    .HasIndex(r => r.Uid)
-            //    .IsUnique();
+            builder.Entity<Invoice>()
+                .Property(i => i.Id)
+                .HasConversion<Guid>();
+
+            builder.Entity<Invoice>()
+                .HasOne(i => i.Ring)
+                .WithMany()
+                .HasForeignKey(i => i.RingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Invoice>()
+                .HasOne(i => i.User)
+                .WithMany()
+                .HasForeignKey(i => i.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
