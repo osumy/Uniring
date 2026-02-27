@@ -1,306 +1,110 @@
-// Translations for Persian (fa) and Arabic (ar)
-const strings = {
-    fa: {
-        lang: "fa",
-        dir: "rtl",
-        title: "تأیید اصالت انگشتر",
-        subtitle: "شماره سریال انگشتر خود را وارد کنید تا اصالت و اطلاعات مالکیت را بررسی کنید.",
-        lookup: "جستجوی شماره سریال",
-        placeholder: "شماره سریال انگشتر را وارد کنید (مثلاً: SH-26217-nQ8f)",
-        btn: "جستجو",
-        help: "در یافتن انگشتر خود مشکل دارید؟ برای کمک با تیم پشتیبانی تماس بگیرید."
-    },
-    ar: {
-        lang: "ar",
-        dir: "rtl",
-        title: "التحقق من خاتم",
-        subtitle: "أدخل الرقم التسلسلي للخاتم للتحقق من الأصالة ومعرفة بيانات الملكية",
-        lookup: "بحث الرقم التسلسلي",
-        placeholder: "أدخل الرقم التسلسلي للخاتم (مثال: RNG-001-2024)",
-        btn: "بحث",
-        help: "هل تواجه مشكلة في العثور على خاتمك؟ اتصل بفريق الدعم للحصول على المساعدة."
-    }
-};
+@model Uniring.Contracts.Ring.RingResponse
 
-// Elements
-const page = document.getElementById('page');
-const title = document.getElementById('title');
-const subtitle = document.getElementById('subtitle');
-const lookup = document.getElementById('lookup-label');
-const input = document.getElementById('serial');
-const btnText = document.getElementById('btn-text');
-const help = document.getElementById('help');
-const langBtns = document.querySelectorAll('.lang-btn');
+@{
+    Layout = null; // برای جلوگیری از تداخل استایل‌ها
+}
 
-// Set language content
-// Replace existing setLang with this enhanced version
-function setLang(langKey) {
-    const s = strings[langKey] || strings.fa;
-    // set dir on document element
-    document.documentElement.setAttribute('dir', s.dir);
-    document.documentElement.setAttribute('lang', s.lang === 'fa' ? 'fa' : 'ar');
+< !doctype html >
+    <html lang="fa" dir="rtl">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>اطلاعات انگشتر - @Model.Serial</title>
+            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;700&family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
+                <link href="~/css/SearchPageStyle.css" rel="stylesheet" />
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                </head>
+                <body>
+                    <div class="lang-switch" aria-hidden="false" role="toolbar" aria-label="language switch">
+                        <div class="lang-group-right">
+                            <button class="lang-btn active" data-lang="fa">فارسی</button>
+                            <button class="lang-btn" data-lang="ar">العربية</button>
+                        </div>
+                        <div class="login-group-left">
+                            <a href="/login"><button class="login-btn">ورود</button></a>
+                        </div>
+                    </div>
 
-    // update top-level texts
-    title.textContent = s.title;
-    subtitle.textContent = s.subtitle;
-    lookup.textContent = s.lookup;
-    input.placeholder = s.placeholder;
-    btnText.textContent = s.btn;
-    help.textContent = s.help;
+                    <main class="page" id="page">
+                        <div class="logo-circle" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM10 15a5 5 0 110-10 5 5 0 010 10z" />
+                            </svg>
+                        </div>
 
-    // update result (Not Found) texts
-    document.getElementById('nf-title').textContent = s.notFoundTitle || (s.lang === 'ar' ? 'لم يتم العثور' : 'یافت نشد');
-    document.getElementById('nf-message').textContent = s.notFoundMessage || (s.lang === 'ar'
-        ? 'الرقم التسلسلي غير موجود في نظامنا. يرجى التحقق أو الاتصال بالدعم.'
-        : 'شماره سریال مورد نظر در سیستم ما پیدا نشد. لطفا دوباره بررسی کنید یا با پشتیبانی تماس بگیرید.');
-    document.getElementById('nf-btn').textContent = s.tryAgain || (s.lang === 'ar' ? 'حاول مرة أخرى' : 'بررسی دوباره');
+                        <h1 id="title">اطلاعات انگشتر</h1>
+                        <p class="lead" id="subtitle">اطلاعات اصالت و مالکیت انگشتر</p>
 
-    // update product card static texts
-    document.getElementById('prod-title').textContent = s.productTitle || (s.lang === 'ar' ? 'معلومات الخاتم' : 'اطلاعات انگشتر');
-    document.getElementById('prod-verify').textContent = s.verifyText || (s.lang === 'ar' ? 'تم التحقق من أصالة هذا الخاتم بواسطة المتجر' : 'اصالت این انگشتر توسط فروشگاه تایید می شود');
-    document.getElementById('prod-btn').textContent = s.backBtn || (s.lang === 'ar' ? 'رجوع' : 'بازگشت');
+                        <section id="result-product" class="card" aria-live="polite">
+                            <div class="card-content">
+                                <div class="badge">
+                                    <span class="crown" aria-hidden="true">💍</span>
+                                    <span id="prod-title">اطلاعات انگشتر</span>
+                                </div>
 
-    // update the dt labels in product details
-    const dtUid = document.getElementById('prod-dt-uid');
-    const dtSerial = document.getElementById('prod-dt-serial');
+                                <div class="product-grid" style="gap:22px;align-items:center;margin-top:6px; display: flex; flex-direction: column;">
 
-    if (dtUid) dtUid.textContent = s.labelUid || (s.lang === 'ar' ? 'معرف فريد' : 'شناسه یکتا (Uid)');
-    if (dtSerial) dtSerial.textContent = s.labelSerial || (s.lang === 'ar' ? 'الرقم التسلسلي' : 'شماره سریال');
+                                    <div class="prod-image-wrap" style="position: relative; width: 100%; max-width: 400px; height: 350px; overflow: hidden; border-radius: 8px;">
+                                        <div id="mediaCarousel" class="media-carousel" style="display: flex; height: 100%; width: 100%; transition: transform 0.3s ease-in-out;">
+                                            @if (Model.MediaIds != null && Model.MediaIds.Any())
+                                            {
+                                                foreach(var mediaId in Model.MediaIds)
+                                            {
+                                                <div class="media-item" style="flex: 0 0 100%; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+                                                    <img src="http://127.0.0.1:5001/api/Media/download/@mediaId"
+                                                        style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
+                                                </div>
+                                            }
+                            }
+                                        </div>
+                        
+                        @if (Model.MediaIds != null && Model.MediaIds.Count > 1)
+                                        {
+                            <button class="carousel-btn prev" id="carouselPrev" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); z-index: 10; background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer;">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button class="carousel-btn next" id="carouselNext" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); z-index: 10; background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer;">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                                        }
+                                    </div>
 
-    // update active state on language buttons
-    langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === langKey));
+                                    <div class="prod-info" style="text-align: right; direction: rtl; width: 100%; max-width: 400px; padding: 0 15px;">
+                                        <h2 id="prod-name" style="margin:0 0 8px;font-size:26px; color:white;">@Model.Name</h2>
+                                        <p id="prod-desc" style="color:#b3b3b3;margin:0 0 12px;">@Model.Description</p>
 
-    // switch font: Vazirmatn for Persian prefer, Tajawal for Arabic
-    if (langKey === 'ar') {
-        document.body.style.fontFamily = '"Tajawal","Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, Arial';
-    } else {
-        document.body.style.fontFamily = '"Vazirmatn","Tajawal", system-ui, -apple-system, "Segoe UI", Roboto, Arial';
-    }
+                                        <dl style="text-align:right;margin:12px 0;color:#b3b3b3;">
+                                            <dt style="font-weight:700; color:white;">شماره سریال</dt>
+                                            <dd id="prod-serial" style="margin:6px 0 10px; font-family: monospace;">@Model.Serial</dd>
+                                        </dl>
 
-    // If a product is already rendered, re-localize its dynamic parts (purchase date formatting)
-    // Example: if result-product is visible and product data fields are present, re-format them:
-    const prodSectionVisible = document.getElementById('result-product').style.display !== 'none';
-    if (prodSectionVisible) {
-        // reformat purchase date if present
-        const purchaseText = document.getElementById('prod-purchase').getAttribute('data-iso');
-        if (purchaseText) {
-            const dt = new Date(purchaseText);
-            const locale = document.documentElement.getAttribute('lang') === 'ar' ? 'ar-EG' : 'fa-IR';
-            document.getElementById('prod-purchase').textContent = isNaN(dt) ? '' : dt.toLocaleString(locale);
+                                        <p id="prod-verify" style="margin-top:12px;color:#cbe6d9;font-weight:700;">
+                                            اصالت این انگشتر توسط فروشگاه تایید می شود.
+                                        </p>
+
+                                        <div style="margin-top:18px;">
+                                            <a href="/">
+                                                <button class="btn">
+                                                    <span id="rtn-btn">بازگشت</span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+
+                    <script src="~/js/SearchPageScript.js"></script>
+                    <script>
+        // حالا که DOM بارگذاری شد، کاروسل باید با همان JS اصلی کار کند
+                        // اگر لازم بود، اینجا فقط منطق RTL را کمی تنظیم کنید
+                        const carousel = document.getElementById('mediaCarousel');
+                        const mediaItems = document.querySelectorAll('.media-item');
+        if (mediaItems.length > 0) {
+                            // فقط اولین تصویر در ابتدا نشان داده شود
+                            carousel.style.transform = `translateX(0%)`;
         }
-    }
-
-    input.focus();
-}
-
-
-// attach events to language buttons
-langBtns.forEach(btn => {
-    btn.addEventListener('click', () => setLang(btn.dataset.lang));
-});
-
-// emulate a search action
-function searchSerial() {
-    const val = input.value.trim();
-    if (!val) {
-        // small shake animation to indicate required
-        input.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }], { duration: 300 });
-        return;
-    }
-    // For the demo just show an alert localized
-    const cur = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'fa';
-    const msg = cur === 'ar' ? `جارٍ البحث عن: ${val}` : `در حال جستجو: ${val}`;
-    alert(msg);
-}
-
-// initialize default
-setLang('fa');
-
-// Utility: hide all result sections and show only the one we want
-function hideResults() {
-    document.getElementById('result-notfound').style.display = 'none';
-    document.getElementById('result-product').style.display = 'none';
-    // restore card visibility (if you want to hide card when showing result, comment the next line)
-    document.querySelector('section.card').style.display = 'none';
-}
-
-// Render Not Found
-function renderNotFound() {
-    hideResults();
-    // populate localized messages
-    const cur = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'fa';
-    document.getElementById('nf-title').textContent = cur === 'ar' ? 'لم يتم العثور' : 'یافت نشد';
-    document.getElementById('nf-message').textContent = cur === 'ar'
-        ? 'الرقم التسلسلي غير موجود في نظامنا. يرجى التحقق أو الاتصال بالدعم.'
-        : 'شماره سریال مورد نظر در سیستم ما پیدا نشد. لطفا دوباره بررسی کنید یا با پشتیبانی تماس بگیرید.';
-    document.getElementById('nf-btn').textContent = cur === 'ar' ? 'حاول مرة أخرى' : 'بررسی دوباره';
-
-    document.getElementById('result-notfound').style.display = 'block';
-    window.scrollTo({ top: document.getElementById('result-notfound').offsetTop - 20, behavior: 'smooth' });
-}
-
-// Render Product
-// product = { imageUrl, name, description, purchaseISO, serial }
-let currentMediaIndex = 0;
-let mediaItems = [];
-
-function renderProduct(product) {
-    hideResults();
-
-    // Fill fields
-    document.getElementById('prod-name').textContent = product.name || '';
-    document.getElementById('prod-desc').textContent = product.description || '';
-    document.getElementById('prod-uid').textContent = product.uid || '';
-    document.getElementById('prod-serial').textContent = product.serial || '';
-
-    // Populate media carousel
-    const mediaCarousel = document.getElementById('mediaCarousel');
-    mediaCarousel.innerHTML = ''; // Clear previous media
-    mediaItems = [];
-
-    if (product.mediaIds && product.mediaIds.length > 0) {
-        product.mediaIds.forEach(mediaId => {
-            const mediaUrl = `/api/Media/download/${mediaId}`;
-            const mediaItemDiv = document.createElement('div');
-            mediaItemDiv.className = 'media-item';
-
-            // در حال حاضر نوع مدیا را از پسوند تشخیص نمی‌دهیم
-            // فرض را بر تصویر می‌گذاریم؛ اگر بعداً نیاز شد، می‌توان نوع را از API گرفت
-            mediaItemDiv.innerHTML = `<img src="${mediaUrl}" alt="ring image" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">`;
-            mediaCarousel.appendChild(mediaItemDiv);
-            mediaItems.push(mediaItemDiv);
-        });
-
-        // Show/hide carousel buttons
-        if (mediaItems.length > 1) {
-            document.getElementById('carouselPrev').style.display = 'flex';
-            document.getElementById('carouselNext').style.display = 'flex';
-        } else {
-            document.getElementById('carouselPrev').style.display = 'none';
-            document.getElementById('carouselNext').style.display = 'none';
-        }
-        showMedia(0);
-    } else {
-        // No media, show a placeholder
-        mediaCarousel.innerHTML =
-            `<div class="media-item">
-                <img src="https://via.placeholder.com/800x600.png?text=No+Image" alt="No image available" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-            </div>`;
-        document.getElementById('carouselPrev').style.display = 'none';
-        document.getElementById('carouselNext').style.display = 'none';
-    }
-
-    // Check login status and display prompt
-    const loginPrompt = document.getElementById('login-prompt');
-    // This is a placeholder for actual login check. 
-    // In a real application, you would check for an authentication cookie or token.
-    const isLoggedIn = false; // Replace with actual login check
-
-    if (!isLoggedIn) {
-        loginPrompt.style.display = 'block';
-        const loginLink = loginPrompt.querySelector('a');
-        const currentLang = document.documentElement.getAttribute('lang');
-        if (currentLang === 'ar') {
-            loginLink.href = '/Account/LoginAr'; // Assuming Arabic login page
-        } else {
-            loginLink.href = '/Account/Login'; // Default Persian/English login page
-        }
-    } else {
-        loginPrompt.style.display = 'none';
-    }
-
-    // verification sentence localized
-    const cur = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'fa';
-    document.getElementById('prod-verify').textContent = cur === 'ar'
-        ? 'تم التحقق من أصالة هذا الخاتم بواسطة المتجر.'
-        : 'اصالت این انگشتر توسط فروشگاه تایید می شود.';
-
-    document.getElementById('prod-btn').textContent = cur === 'ar' ? 'رجوع' : 'بازگشت';
-
-    // show product section
-    document.getElementById('result-product').style.display = 'block';
-    window.scrollTo({ top: document.getElementById('result-product').offsetTop - 20, behavior: 'smooth' });
-}
-
-function showMedia(index) {
-    if (mediaItems.length === 0) return;
-    currentMediaIndex = (index + mediaItems.length) % mediaItems.length;
-    const carousel = document.getElementById('mediaCarousel');
-    carousel.style.transform = `translateX(-${currentMediaIndex * 100}%)`;
-}
-
-document.getElementById('carouselPrev').addEventListener('click', () => {
-    showMedia(currentMediaIndex - 1);
-});
-
-document.getElementById('carouselNext').addEventListener('click', () => {
-    showMedia(currentMediaIndex + 1);
-});
-
-/* Replace your current searchSerial() body with this logic or call this from it.
-   Example logic: call your backend; if 404 -> renderNotFound(); else renderProduct(json)
-*/
-// Replace existing searchSerial() with this async implementation
-async function searchIdentifier() {
-    const val = input.value.trim();
-    if (!val) {
-        input.animate(
-            [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }],
-            { duration: 300 }
-        );
-        return;
-    }
-
-    // Show a quick loading state on the button (optional)
-    const btn = document.querySelector('.search-row .btn');
-    const oldBtnText = btn.querySelector('span').textContent;
-    btn.disabled = true;
-    btn.style.opacity = '0.8';
-    btn.querySelector('span').textContent = document.documentElement.getAttribute('lang') === 'ar' ? 'جارٍ البحث...' : 'در حال جستجو...';
-
-    try {
-        // Use correct API route for serial lookup
-        const res = await fetch(`/api/Ring/serial/${encodeURIComponent(val)}`);
-
-        if (res.status === 404) {
-            // not found
-            renderNotFound();
-            return;
-        }
-
-        if (!res.ok) {
-            // other server error
-            console.error('Server error', res.status);
-            renderNotFound();
-            return;
-        }
-
-        // parse JSON
-        const data = await res.json();
-        // Example of expected JSON:
-        // {"uid":"UID","name":"انگشتر عقیق","serial":"R2732874204","description":null}
-
-        // Map server JSON to the product object expected by renderProduct()
-        const product = {
-            name: data.name || '',
-            description: data.description || '',
-            uid: data.uid || '',
-            serial: data.serial || '',
-            mediaIds: data.mediaIds || []
-        };
-
-        // render the product
-        const isLoggedIn = document.cookie.split(';').some((item) => item.trim().startsWith('authToken=')); // Check for login cookie
-        renderProduct(product, isLoggedIn);
-
-    } catch (err) {
-        console.error('Network or parsing error', err);
-        renderNotFound();
-    } finally {
-        // restore button state
-        btn.disabled = false;
-        btn.style.opacity = '';
-        btn.querySelector('span').textContent = oldBtnText;
-    }
-}
-
+                    </script>
+                </body>
+            </html>

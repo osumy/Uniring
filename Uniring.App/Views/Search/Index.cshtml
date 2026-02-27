@@ -43,7 +43,7 @@
                 <span id="lookup-label">جستجوی شماره سریال یا Uid</span>
             </div>
 
-            <form class="search-row" onsubmit="event.preventDefault(); searchIdentifier();" aria-label="identifier lookup form">
+            <form id="searchForm" class="search-row" aria-label="identifier lookup form">
                 <input id="serial" class="input" type="text" inputmode="text" autocomplete="off"
                        placeholder="مثلاً: SH-26227-8fXe یا 8fXe"
                        aria-label="ring identifier input">
@@ -56,6 +56,13 @@
                     <span id="btn-text">جستجو</span>
                 </button>
             </form>
+            <script>
+                document.getElementById('searchForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const identifier = document.getElementById('serial').value;
+                    window.location.href = '/' + encodeURIComponent(identifier);
+                });
+            </script>
 
             <p class="help" id="help">در یافتن انگشتر خود مشکل دارید؟ برای کمک با تیم پشتیبانی تماس بگیرید.</p>
         </section>
@@ -82,6 +89,8 @@
 
     <!-- Result: Product Found -->
     <section id="result-product" class="card" style="display:none;" aria-live="polite">
+        <div class="card-content">
+            <div style="margin-top:95px;"></div>
         <div class="badge">
             <span class="crown" aria-hidden="true">💍</span>
             <span id="prod-title">اطلاعات انگشتر</span>
@@ -101,9 +110,6 @@
                 <p id="prod-desc" style="color:var(--muted);margin:0 0 12px;"></p>
 
                 <dl style="text-align:right;margin:12px 0;color:var(--muted);">
-                    <dt id="prod-dt-uid" style="font-weight:700;">شناسه یکتا (Uid)</dt>
-                    <dd id="prod-uid" style="margin:6px 0 10px;"></dd>
-
                     <dt id="prod-dt-serial" style="font-weight:700;">شماره سریال</dt>
                     <dd id="prod-serial" style="margin:6px 0 10px;"></dd>
                 </dl>
@@ -114,17 +120,24 @@
 
                 <div id="login-prompt" style="display:none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; border: 1px dashed var(--accent);">
                     <p id="login-text" style="color: var(--white); font-weight: 600; margin-bottom: 10px;">جهت بررسی مالکیت انگشتر ابتدا وارد سایت شوید.</p>
-                    <a href="/login"><button class="btn">ورود</button></a>
+                    <a href="/">
+                        <button class="btn" onclick="window.location.href = document.documentElement.getAttribute('lang') === 'ar' ? '/Account/LoginAr' : '/Account/Login';">
+                            <!-- login icon -->
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+                            <span id="prod-btn">ورود به سایت</span>
+                        </button>
+                    </a>
                 </div>
 
-        <div style="margin-top:18px;">
-                    <button class="btn" onclick="window.location.href = document.documentElement.getAttribute('lang') === 'ar' ? '/Account/LoginAr' : '/Account/Login';">
-                        <!-- login icon -->
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
-                        <span id="prod-btn">ورود به سایت</span>
-                    </button>
+                <div style="margin-top:18px;">
+                    <a href="/">
+                        <button class="btn">
+                            <span id="rtn-btn">بازگشت</span>
+                        </button>
+                    </a>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 
@@ -140,5 +153,4 @@
         });
     </script>
 </body>
-
 </html>

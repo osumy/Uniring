@@ -182,21 +182,20 @@ namespace Uniring.Api.Controllers
             await _db.Rings.AddAsync(ring);
             await _db.SaveChangesAsync();
 
-            if (req.MediaIds is { Count: > 0 })
+            if (req.Media is { Count: > 0 })
             {
                 var medias = await _db.Medias
-                    .Where(m => req.MediaIds.Contains(m.Id))
+                    .Where(m => req.Media.Select(mo => mo.MediaId).Contains(m.Id))
                     .ToListAsync();
 
-                // Preserve order based on req.MediaIds
-                for (int i = 0; i < req.MediaIds.Count; i++)
+                // Preserve order based on req.Media
+                foreach (var mediaOrderDto in req.Media)
                 {
-                    var mediaId = req.MediaIds[i];
-                    var media = medias.FirstOrDefault(m => m.Id == mediaId);
+                    var media = medias.FirstOrDefault(m => m.Id == mediaOrderDto.MediaId);
                     if (media != null)
                     {
                         media.RingId = ring.Id;
-                        media.Order = i;
+                        media.Order = mediaOrderDto.Order;
                     }
                 }
 
@@ -210,7 +209,7 @@ namespace Uniring.Api.Controllers
                 Name = ring.Name,
                 Serial = ring.Serial,
                 Description = ring.Description,
-                MediaIds = req.MediaIds ?? new List<Guid>()
+                MediaIds = req.Media.Select(m => m.MediaId).ToList()
             };
 
             return Ok(response);
@@ -222,6 +221,30 @@ namespace Uniring.Api.Controllers
             var ring = await _db.Rings.FindAsync(id);
             if (ring == null) return NotFound();
 
+            // Get all media associated with this ring
+            var medias = await _db.Medias.Where(m => m.RingId == id).ToListAsync();
+            
+            // Delete physical files
+            foreach (var media in medias)
+            {
+                try
+                {
+                    // Delete the physical file from Media folder
+                    if (System.IO.File.Exists(media.Path))
+                    {
+                        System.IO.File.Delete(media.Path);
+                    }
+                }
+                catch
+                {
+                    // Log error or handle file deletion failure
+                }
+            }
+
+            // Remove media records from database
+            _db.Medias.RemoveRange(medias);
+            
+            // Remove the ring itself
             _db.Rings.Remove(ring);
             await _db.SaveChangesAsync();
             return Ok();

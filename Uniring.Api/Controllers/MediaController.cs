@@ -49,7 +49,7 @@ namespace Uniring.Api.Controllers
                 return NotFound();
             }
 
-            return File(stream, media.ContentType, media.OriginalFileName, enableRangeProcessing: true);
+            return File(stream, media.ContentType, enableRangeProcessing: true);
         }
 
         [HttpDelete("delete/{id}")]
@@ -60,6 +60,17 @@ namespace Uniring.Api.Controllers
                 return NotFound();
 
             return Ok();
+        }
+
+        [HttpGet("type/{id}")]
+        public async Task<ActionResult<string>> GetMediaTypeById(Guid id)
+        {
+            var media = await _mediaService.GetMetadataAsync(id);
+
+            if (media == null)
+                return NotFound();
+
+            return Ok(media.ContentType);
         }
     }
 }

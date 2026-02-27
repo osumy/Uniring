@@ -10,6 +10,7 @@
           rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/NewRingStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         .toast-container {
             position: fixed;
@@ -56,6 +57,21 @@
         }
         .file-item.success .file-progress-bar {
             background: #2ecc71;
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #e0e6ff !important;
+        }
+        .file-item {
+            cursor: grab;
+        }
+        .file-item:active {
+            cursor: grabbing;
+        }
+        .drag-handle {
+            color: #ccc;
+            margin-left: 10px;
+            cursor: grab;
         }
     </style>
 
@@ -105,6 +121,10 @@
             
             <div class="file-list" id="fileList" style="display: none;">
                 <!-- Files will be added here dynamically -->
+            </div>
+            <div class="drag-drop-indicator" id="dragDropIndicator" style="display: none;">
+                <i class="fas fa-grip-vertical"></i>
+                <span>برای تغییر ترتیب، فایل را روی دیگری بکشید</span>
             </div>
             
             <div class="progress-container-media" id="globalProgressContainer" style="display: none; margin-top: 20px;">
@@ -184,6 +204,27 @@
         const steps = document.querySelectorAll('.step');
         const progressBar = document.getElementById('progressBar');
         const toastContainer = document.getElementById('toast-container');
+
+        // Initialize SortableJS
+        const sortable = new Sortable(document.getElementById('fileList'), {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            handle: '.drag-handle',
+            onEnd: function () {
+                // Reorder formData.media based on the new DOM order
+                const newOrder = [];
+                const items = document.getElementById('fileList').querySelectorAll('.file-item');
+                items.forEach(item => {
+                    const localId = item.dataset.localId;
+                    const mediaItem = formData.media.find(m => m.localId === localId);
+                    if (mediaItem) {
+                        newOrder.push(mediaItem);
+                    }
+                });
+                formData.media = newOrder;
+                updateThumbnail();
+            }
+        });
 
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
@@ -307,7 +348,10 @@
                 fileItem.dataset.localId = localId;
                 fileItem.innerHTML = `
                     <div class="file-main">
-                        <span class="file-name">${file.name}</span>
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                            <span class="file-name">${file.name}</span>
+                        </div>
                         <span class="file-meta">${isVideo ? 'ویدیو' : 'عکس'} • ${formatBytes(file.size)}</span>
                     </div>
                     <div class="file-actions">
@@ -318,6 +362,9 @@
                     </div>
                 `;
                 fileList.style.display = "block"; // Show file list when first file is added
+                if (formData.media.length > 1) {
+                    document.getElementById('dragDropIndicator').style.display = 'flex';
+                }
                 fileList.appendChild(fileItem);
 
                 const removeBtn = fileItem.querySelector('.file-remove');
@@ -327,6 +374,9 @@
                     fileItem.remove();
                     if (formData.media.length === 0) {
                         fileList.style.display = "none"; // Hide file list if no files remain
+                    }
+                    if (formData.media.length <= 1) {
+                        document.getElementById('dragDropIndicator').style.display = 'none';
                     }
                     updateNextButtonState();
                     updateThumbnail();
@@ -471,13 +521,13 @@
 
             const mediaIds = formData.media
                 .filter(m => m.uploaded && m.mediaId)
-                .map(m => m.mediaId);
+                .map((m, index) => ({ MediaId: m.mediaId, Order: index }));
 
             const payload = {
                 Name: formData.name,
                 Description: formData.description || null,
                 OwnerPhoneNumber: null,
-                MediaIds: mediaIds
+                Media: mediaIds
             };
 
             const res = await fetch(apiBaseUrl + 'Admin/rings', {
@@ -501,11 +551,11 @@
                 return;
             }
             
-            const uploadedMediaIds = formData.media
+            const uploadedMedia = formData.media
                 .filter(m => m.uploaded && m.mediaId)
-                .map(m => m.mediaId);
+                .map((m, index) => ({ MediaId: m.mediaId, Order: index }));
 
-            if (uploadedMediaIds.length === 0) {
+            if (uploadedMedia.length === 0) {
                 showToast('حداقل یک مدیا برای انگشتر آپلود کنید.', 'error');
                 showScene('scene2');
                 return;

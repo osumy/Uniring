@@ -35,11 +35,10 @@ namespace Uniring.App.Controllers
                 return View("Index"); // Show search page if not found
             }
 
-            ViewBag.Ring = ring;
-            return View("Index");
+            return View("Result", ring);
         }
 
-        [HttpGet("api/ring/{identifier}")]
+        [HttpGet("api/Ring/{identifier}")]
         public async Task<IActionResult> GetRingByIdentifier(string identifier)
         {
             var ring = await _api.GetRingByUidAsync(identifier);
