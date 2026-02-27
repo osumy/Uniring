@@ -104,11 +104,12 @@ namespace Uniring.Api
             //    return TypedResults.Ok();
             //});
 
-            //app.UseCors("open");
             // AFTER building the app, BEFORE running it
-            //using var DBscope = app.Services.CreateScope();
-            //var dbContext = DBscope.ServiceProvider.GetRequiredService<UniringDbContext>();
-            //dbContext.Database.Migrate(); // Applies pending migrations
+            using (var DBscope = app.Services.CreateScope())
+            {
+                var dbContext = DBscope.ServiceProvider.GetRequiredService<UniringDbContext>();
+                await dbContext.Database.MigrateAsync(); // Applies pending migrations
+            }
 
             // Seed roles
             using (var scope = app.Services.CreateScope())

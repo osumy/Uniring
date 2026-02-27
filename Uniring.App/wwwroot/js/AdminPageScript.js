@@ -140,8 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const headers = `
             <tr>
+                <th>شناسه یکتا (Uid)</th>
                 <th>نام</th>
                 <th>توضیحات</th>
+                <th>سریال</th>
                 <th>عملیات</th>
             </tr>
         `;
@@ -166,13 +168,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let rows = '';
         pageItems.forEach(r => {
             const id = r.id || '';
+            const uid = r.uid || '—';
             const name = r.name || '—';
             const desc = r.description || '—';
+            const serial = r.serial || '—';
 
             rows += `
                 <tr data-ring-id="${escapeHtml(id)}">
+                    <td data-field="uid">${escapeHtml(uid)}</td>
                     <td data-field="name">${escapeHtml(name)}</td>
                     <td data-field="description">${escapeHtml(desc)}</td>
+                    <td data-field="serial">${escapeHtml(serial)}</td>
                     <td>
                         <div class="row-actions" data-ring-id="${escapeHtml(id)}">
                             <button type="button" class="btn-inline btn-primary" data-action="edit-ring">ویرایش</button>

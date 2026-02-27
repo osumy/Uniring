@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NanoidDotNet;
 using Uniring.Application.Interfaces;
 using Uniring.Contracts.Auth;
 using Uniring.Contracts.Ring;
@@ -86,12 +87,35 @@ namespace Uniring.Api.Controllers
             if (string.IsNullOrWhiteSpace(req.Name))
                 return BadRequest("Name is required.");
 
+            string uid;
+            string serial;
+            bool isUnique = false;
+            int retryCount = 0;
+
+            do
+            {
+                uid = Nanoid.Generate("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 4);
+                var now = DateTime.UtcNow;
+                serial = $"SH-{now:yy}{now.DayOfYear:D3}-{uid}";
+
+                // Check uniqueness in DB
+                var exists = await _db.Rings.AnyAsync(r => r.Uid == uid || r.Serial == serial);
+                if (!exists)
+                {
+                    isUnique = true;
+                }
+                retryCount++;
+            } while (!isUnique && retryCount < 10);
+
+            if (!isUnique)
+                return StatusCode(500, "Failed to generate a unique ID for the ring.");
+
             var ring = new Ring
             {
                 Id = Guid.NewGuid(),
-                Uid = $"RNG-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..6].ToUpper()}",
+                Uid = uid,
                 Name = req.Name.Trim(),
-                Serial = Guid.NewGuid().ToString("N"),
+                Serial = serial,
                 Description = req.Description?.Trim()
             };
 
@@ -104,9 +128,16 @@ namespace Uniring.Api.Controllers
                     .Where(m => req.MediaIds.Contains(m.Id))
                     .ToListAsync();
 
-                foreach (var media in medias)
+                // Preserve order based on req.MediaIds
+                for (int i = 0; i < req.MediaIds.Count; i++)
                 {
-                    media.RingId = ring.Id;
+                    var mediaId = req.MediaIds[i];
+                    var media = medias.FirstOrDefault(m => m.Id == mediaId);
+                    if (media != null)
+                    {
+                        media.RingId = ring.Id;
+                        media.Order = i;
+                    }
                 }
 
                 await _db.SaveChangesAsync();

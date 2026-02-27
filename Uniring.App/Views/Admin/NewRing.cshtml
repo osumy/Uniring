@@ -132,7 +132,7 @@
             </div>
             
             <div class="ring-preview">
-                <div class="preview-image">
+                <div class="preview-image" id="previewImageContainer">
                     <i class="fas fa-image"></i>
                 </div>
                 <div class="preview-text">
@@ -156,7 +156,7 @@
             <p class="subtitle">قبل از ارسال، جزئیات انگشتر را بررسی کنید.</p>
             
             <div class="ring-preview">
-                <div class="preview-image">
+                <div class="preview-image" id="finalImageContainer">
                     <i class="fas fa-diamond"></i>
                 </div>
                 <div class="preview-text">
@@ -256,6 +256,22 @@
 
         let localMediaCounter = 0;
 
+        function updateThumbnail() {
+            const firstImage = formData.media.find(m => !m.isVideo);
+            const previewContainer = document.getElementById('previewImageContainer');
+            const finalContainer = document.getElementById('finalImageContainer');
+
+            if (firstImage && firstImage.file) {
+                const url = URL.createObjectURL(firstImage.file);
+                const imgHtml = `<img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">`;
+                previewContainer.innerHTML = imgHtml;
+                finalContainer.innerHTML = imgHtml;
+            } else {
+                previewContainer.innerHTML = '<i class="fas fa-image"></i>';
+                finalContainer.innerHTML = '<i class="fas fa-diamond"></i>';
+            }
+        }
+
         function addFiles(files) {
             if (!files || !files.length) return;
 
@@ -313,10 +329,13 @@
                         fileList.style.display = "none"; // Hide file list if no files remain
                     }
                     updateNextButtonState();
+                    updateThumbnail();
                 });
 
                 // Start upload immediately
-                uploadSingleMedia(mediaItem);
+                uploadSingleMedia(mediaItem).then(() => {
+                    updateThumbnail();
+                });
             });
         }
 
