@@ -14,14 +14,27 @@
     <style>
         body {
             background: radial-gradient(circle at top, #1f2933, #020617);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
         }
 
         .form-container {
             max-width: 520px;
+            width: 100%;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
         }
 
         .scene {
             background: rgba(15, 23, 42, 0.96);
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+            padding-bottom: 28px;
         }
 
         .pill-input {
@@ -125,6 +138,32 @@
             color: #facc15;
             margin-top: 4px;
         }
+
+        .btn-group {
+            margin-top: 32px;
+            padding-top: 12px;
+        }
+
+        a.btn.btn-prev {
+            text-decoration: none;
+            background: rgba(15, 23, 42, 0.85);
+            color: #e5e7eb;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+        }
+
+        a.btn.btn-prev:hover {
+            background: rgba(30, 64, 175, 0.85);
+            color: #e5e7eb;
+        }
+
+        .btn.btn-next {
+            background: #22c55e;
+            color: #022c22;
+        }
+
+        .btn.btn-next:hover {
+            background: #16a34a;
+        }
     </style>
 </head>
 <body>
@@ -135,11 +174,11 @@
             <p class="subtitle">انگشتر و مشتری را انتخاب کنید تا فاکتور ثبت شود.</p>
 
             <div class="input-group">
-                <label for="ring-search">انتخاب انگشتر</label>
+                <label for="ring-search">انتخاب انگشتر (بر اساس شناسه یکتا)</label>
                 <div class="pill-input">
                     <input id="ring-search"
                            type="text"
-                           placeholder="جست‌وجو بر اساس نام یا سریال انگشتر..."
+                           placeholder="چهار رقم شناسه یکتا انگشتر را وارد کنید..."
                            autocomplete="off" />
                     <div id="ring-suggestions" class="suggestions" style="display:none;"></div>
                 </div>
@@ -158,13 +197,6 @@
                 <div id="user-selected" class="read-only-field" style="display:none;"></div>
                 <div id="guest-warning" class="warning-text" style="display:none;">
                     این مشتری در حال حاضر مهمان است؛ با ثبت فاکتور، نقش او به «کاربر» تغییر خواهد کرد.
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>تاریخ و زمان</label>
-                <div class="read-only-field">
-                    <span id="invoice-datetime-label">در لحظه ثبت، بر اساس ساعت سرور ذخیره می‌شود.</span>
                 </div>
             </div>
 
@@ -231,16 +263,15 @@
 
         function renderRingSuggestions(term) {
             const normalized = term.trim().toLowerCase();
-            if (!normalized || !ringsCache.length) {
+            if (!normalized || normalized.length < 2 || !ringsCache.length) {
                 ringSuggestions.style.display = 'none';
                 ringSuggestions.innerHTML = '';
                 return;
             }
 
             const matches = ringsCache.filter(r => {
-                const name = (r.name || '').toString().toLowerCase();
-                const serial = (r.serial || '').toString().toLowerCase();
-                return name.includes(normalized) || serial.includes(normalized);
+                const uid = (r.uid || '').toString().toLowerCase();
+                return uid.includes(normalized);
             }).slice(0, 5);
 
             if (!matches.length) {
@@ -252,8 +283,8 @@
             ringSuggestions.innerHTML = matches.map(r => `
                 <div class="suggestion-item" data-id="${r.id}">
                     <div class="suggestion-main">
-                        <span class="suggestion-title">${r.name || 'بدون نام'}</span>
-                        <span class="suggestion-sub">سریال: ${r.serial || 'نامشخص'}</span>
+                        <span class="suggestion-title">شناسه: ${r.uid || '—'}</span>
+                        <span class="suggestion-sub">انگشتر: ${r.name || 'بدون نام'} — سریال ${r.serial || 'نامشخص'}</span>
                     </div>
                 </div>
             `).join('');
@@ -265,9 +296,9 @@
                     const ring = ringsCache.find(x => x.id === id);
                     if (!ring) return;
                     selectedRing = ring;
-                    ringInput.value = `${ring.name || ''} (${ring.serial || ''})`.trim();
+                    ringInput.value = `${ring.uid || ''}`.trim();
                     ringSelected.style.display = 'block';
-                    ringSelected.innerHTML = `<strong>انگشتر انتخاب‌شده:</strong> ${ring.name || 'بدون نام'} — سریال ${ring.serial || 'نامشخص'}`;
+                    ringSelected.innerHTML = `<strong>انگشتر انتخاب‌شده:</strong> ${ring.name || 'بدون نام'} — سریال ${ring.serial || 'نامشخص'} — شناسه ${ring.uid || '—'}`;
                     ringSuggestions.style.display = 'none';
                 });
             });
@@ -311,10 +342,11 @@
             userSuggestions.innerHTML = firstFive.map(u => {
                 const role = u.role || 'guest';
                 const phone = formatPhoneForDisplay(u.phoneNumber || '');
+                const title = u.displayName || phone || 'بدون نام';
                 return `
                     <div class="suggestion-item" data-id="${u.id}" data-role="${role}">
                         <div class="suggestion-main">
-                            <span class="suggestion-title">${u.displayName || 'بدون نام'}</span>
+                            <span class="suggestion-title">${title}</span>
                             <span class="suggestion-sub">${phone || 'بدون شماره'}</span>
                         </div>
                         <span class="badge-role ${role === 'guest' ? 'badge-guest' : ''}">
