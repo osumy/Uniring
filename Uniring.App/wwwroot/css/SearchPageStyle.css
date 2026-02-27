@@ -53,11 +53,11 @@ body {
     box-shadow: 0 10px 30px rgba(11, 15, 20, 0.6);
 }
 
-    .logo-circle svg {
-        width: 28px;
-        height: 28px;
-        fill: #0f1720
-    }
+.logo-circle svg {
+    width: 28px;
+    height: 28px;
+    fill: #0f1720
+}
 
 h1 {
     margin: 18px 0 6px;
@@ -95,17 +95,17 @@ h1 {
     font-size: 22px;
 }
 
-    .badge .crown {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px;
-        background: linear-gradient(180deg, #f5d27f, #d6a13b);
-        display: inline-grid;
-        place-items: center;
-        color: #0f1720;
-        font-weight: 700;
-        box-shadow: 0 6px 18px rgba(12, 10, 15, 0.4);
-    }
+.badge .crown {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #f5d27f, #d6a13b);
+    display: inline-grid;
+    place-items: center;
+    color: #0f1720;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(12, 10, 15, 0.4);
+}
 
 /* input row */
 .search-row {
@@ -129,9 +129,9 @@ h1 {
     box-shadow: inset 0 -2px 12px rgba(3, 7, 11, 0.35);
 }
 
-    .input::placeholder {
-        color: rgba(255, 255, 255, 0.25)
-    }
+.input::placeholder {
+    color: rgba(255, 255, 255, 0.25)
+}
 
 .btn {
     background: linear-gradient(180deg, var(--accent), #b86120);
@@ -148,15 +148,15 @@ h1 {
     transition: transform .13s ease, box-shadow .13s ease;
 }
 
-    .btn:hover {
-        transform: translateY(-2px)
-    }
+.btn:hover {
+    transform: translateY(-2px)
+}
 
-    .btn svg {
-        width: 18px;
-        height: 18px;
-        filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25))
-    }
+.btn svg {
+    width: 18px;
+    height: 18px;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25))
+}
 
 .help {
     color: var(--muted);
@@ -170,10 +170,12 @@ h1 {
     top: 22px;
     left: 0;
     right: 0;
-    padding: 0 22px; /* keeps the 22px inset on both sides */
+    padding: 0 22px;
+    /* keeps the 22px inset on both sides */
     display: flex;
     align-items: center;
-    justify-content: space-between; /* push groups to opposite sides */
+    justify-content: space-between;
+    /* push groups to opposite sides */
     gap: 10px;
     z-index: 40;
 }
@@ -213,15 +215,16 @@ h1 {
     font-weight: 600;
 }
 
-    .lang-btn.active {
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--white);
-        border-color: rgba(255, 255, 255, 0.09);
-    }
+.lang-btn.active {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--white);
+    border-color: rgba(255, 255, 255, 0.09);
+}
 
-    .lang-btn:hover, .login-btn:hover {
-        background: rgba(255, 255, 255, 0.04);
-    }
+.lang-btn:hover,
+.login-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
 
 .login-btn {
     background: transparent;
@@ -281,22 +284,71 @@ h1 {
 .prod-image-wrap {
     flex: 0 0 320px;
     max-width: 320px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.02));
     border-radius: 12px;
     padding: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255,255,255,0.03);
-    box-shadow: 0 8px 24px rgba(3,7,11,0.45);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 8px 24px rgba(3, 7, 11, 0.45);
+    position: relative;
+    overflow: hidden;
 }
 
-    .prod-image-wrap img {
-        max-width: 100%;
-        max-height: 320px;
-        object-fit: contain;
-        border-radius: 8px;
-    }
+.media-carousel {
+    width: 100%;
+    height: 320px;
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.media-item {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media-item img,
+.media-item video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-btn.prev {
+    right: 10px;
+}
+
+.carousel-btn.next {
+    left: 10px;
+}
 
 /* info column expands */
 .prod-info {
@@ -323,6 +375,7 @@ h1 {
 }
 
 
-button, input {
+button,
+input {
     font-family: "Vazirmatn", "Tajawal", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial !important;
 }

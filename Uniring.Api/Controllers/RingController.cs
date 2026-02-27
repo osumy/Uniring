@@ -20,6 +20,11 @@ namespace Uniring.Api.Controllers
         {
             var result = await _ringService.GetRingByUidAsync(ringRequest.uid!);
 
+            if (result == null)
+            {
+                return NotFound();
+            }
+
             return Ok(result);
         }
 
@@ -27,6 +32,11 @@ namespace Uniring.Api.Controllers
         public async Task<ActionResult<RingResponse?>> GetRingBySerial([FromRoute] RingRequest ringRequest)
         {
             var result = await _ringService.GetRingBySerialAsync(ringRequest.serial!);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
 
             return Ok(result);
         }

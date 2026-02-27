@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Uniring.App.Interfaces;
@@ -27,6 +28,24 @@ namespace Uniring.App.Services
             var json = await result.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<RingResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
+
+
+        //public async Task<Result<RingResponse>> GetRingByUidAsync(string uid)
+        //{
+        //    var client = _httpFactory.CreateClient("Api");
+        //    var result = await client.GetAsync($"Ring/uid/{uid}");
+
+        //    if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+        //        return Result<RingResponse>.Success(null); // واقعاً پیدا نشد
+
+        //    if (!result.IsSuccessStatusCode)
+        //        return Result<RingResponse>.Error($"API Error: {result.StatusCode}");
+
+        //    var json = await result.Content.ReadAsStringAsync();
+        //    var data = JsonSerializer.Deserialize<RingResponse>(json);
+
+        //    return Result<RingResponse>.Success(data);
+        //}
 
         public async Task<RingResponse?> GetRingByUidAsync(string uid)
         {

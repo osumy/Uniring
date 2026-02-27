@@ -61,10 +61,10 @@ function setLang(langKey) {
     document.getElementById('prod-btn').textContent = s.backBtn || (s.lang === 'ar' ? 'رجوع' : 'بازگشت');
 
     // update the dt labels in product details
-    const dtPurchase = document.getElementById('prod-dt-purchase');
+    const dtUid = document.getElementById('prod-dt-uid');
     const dtSerial = document.getElementById('prod-dt-serial');
 
-    if (dtPurchase) dtPurchase.textContent = s.labelPurchase || (s.lang === 'ar' ? 'تاريخ الشراء' : 'تاریخ خرید');
+    if (dtUid) dtUid.textContent = s.labelUid || (s.lang === 'ar' ? 'معرف فريد' : 'شناسه یکتا (Uid)');
     if (dtSerial) dtSerial.textContent = s.labelSerial || (s.lang === 'ar' ? 'الرقم التسلسلي' : 'شماره سریال');
 
     // update active state on language buttons
@@ -141,25 +141,83 @@ function renderNotFound() {
 
 // Render Product
 // product = { imageUrl, name, description, purchaseISO, serial }
+let currentMediaIndex = 0;
+let mediaItems = [];
+
 function renderProduct(product) {
     hideResults();
 
     // Fill fields
-    document.getElementById('prod-image').src = product.imageUrl || '';
-    document.getElementById('prod-image').alt = product.name || 'ring image';
-
     document.getElementById('prod-name').textContent = product.name || '';
     document.getElementById('prod-desc').textContent = product.description || '';
-
-    // Format datetime — simple localized formatting
-    const dt = product.purchaseISO ? new Date(product.purchaseISO) : null;
-    const cur = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'fa';
-    const locale = cur === 'ar' ? 'ar-EG' : 'fa-IR';
-    document.getElementById('prod-purchase').textContent = dt ? dt.toLocaleString(locale) : '';
-
+    document.getElementById('prod-uid').textContent = product.uid || '';
     document.getElementById('prod-serial').textContent = product.serial || '';
 
+    // Populate media carousel
+    const mediaCarousel = document.getElementById('mediaCarousel');
+    mediaCarousel.innerHTML = ''; // Clear previous media
+    mediaItems = [];
+
+    if (product.mediaIds && product.mediaIds.length > 0) {
+        product.mediaIds.forEach(mediaId => {
+            const mediaUrl = `/Media/download/${mediaId}`;
+            const mediaItemDiv = document.createElement('div');
+            mediaItemDiv.className = 'media-item';
+
+            // Determine if it's an image or video based on extension (or content type from API if available)
+            // For simplicity, let's assume if it ends with mp4, webm, mov, mkv it's a video
+            // In a real app, you'd get content type from API
+            const isVideo = mediaUrl.match(/\.(mp4|webm|mov|mkv)$/i);
+
+            if (isVideo) {
+                mediaItemDiv.innerHTML = `<video controls src="${mediaUrl}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;"></video>`;
+            } else {
+                mediaItemDiv.innerHTML = `<img src="${mediaUrl}" alt="ring image" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">`;
+            }
+            mediaCarousel.appendChild(mediaItemDiv);
+            mediaItems.push(mediaItemDiv);
+        });
+
+        // Show/hide carousel buttons
+        if (mediaItems.length > 1) {
+            document.getElementById('carouselPrev').style.display = 'flex';
+            document.getElementById('carouselNext').style.display = 'flex';
+        } else {
+            document.getElementById('carouselPrev').style.display = 'none';
+            document.getElementById('carouselNext').style.display = 'none';
+        }
+        showMedia(0);
+    } else {
+        // No media, show a placeholder
+        mediaCarousel.innerHTML =
+            `<div class="media-item">
+                <img src="https://via.placeholder.com/800x600.png?text=No+Image" alt="No image available" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+            </div>`;
+        document.getElementById('carouselPrev').style.display = 'none';
+        document.getElementById('carouselNext').style.display = 'none';
+    }
+
+    // Check login status and display prompt
+    const loginPrompt = document.getElementById('login-prompt');
+    // This is a placeholder for actual login check. 
+    // In a real application, you would check for an authentication cookie or token.
+    const isLoggedIn = false; // Replace with actual login check
+
+    if (!isLoggedIn) {
+        loginPrompt.style.display = 'block';
+        const loginLink = loginPrompt.querySelector('a');
+        const currentLang = document.documentElement.getAttribute('lang');
+        if (currentLang === 'ar') {
+            loginLink.href = '/Account/LoginAr'; // Assuming Arabic login page
+        } else {
+            loginLink.href = '/Account/Login'; // Default Persian/English login page
+        }
+    } else {
+        loginPrompt.style.display = 'none';
+    }
+
     // verification sentence localized
+    const cur = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'fa';
     document.getElementById('prod-verify').textContent = cur === 'ar'
         ? 'تم التحقق من أصالة هذا الخاتم بواسطة المتجر.'
         : 'اصالت این انگشتر توسط فروشگاه تایید می شود.';
@@ -171,11 +229,26 @@ function renderProduct(product) {
     window.scrollTo({ top: document.getElementById('result-product').offsetTop - 20, behavior: 'smooth' });
 }
 
+function showMedia(index) {
+    if (mediaItems.length === 0) return;
+    currentMediaIndex = (index + mediaItems.length) % mediaItems.length;
+    const carousel = document.getElementById('mediaCarousel');
+    carousel.style.transform = `translateX(-${currentMediaIndex * 100}%)`;
+}
+
+document.getElementById('carouselPrev').addEventListener('click', () => {
+    showMedia(currentMediaIndex - 1);
+});
+
+document.getElementById('carouselNext').addEventListener('click', () => {
+    showMedia(currentMediaIndex + 1);
+});
+
 /* Replace your current searchSerial() body with this logic or call this from it.
    Example logic: call your backend; if 404 -> renderNotFound(); else renderProduct(json)
 */
 // Replace existing searchSerial() with this async implementation
-async function searchSerial() {
+async function searchIdentifier() {
     const val = input.value.trim();
     if (!val) {
         input.animate(
@@ -186,7 +259,7 @@ async function searchSerial() {
     }
 
     // Show a quick loading state on the button (optional)
-    const btn = document.querySelector('.btn');
+    const btn = document.querySelector('.search-row .btn');
     const oldBtnText = btn.querySelector('span').textContent;
     btn.disabled = true;
     btn.style.opacity = '0.8';
@@ -194,7 +267,7 @@ async function searchSerial() {
 
     try {
         // Use relative URL; adjust base if your API is on a different host/port
-        const res = await fetch(`/serial/${encodeURIComponent(val)}`, { method: 'GET' });
+        const res = await fetch(`/api/ring/${encodeURIComponent(val)}`);
 
         if (res.status === 404) {
             // not found
@@ -216,18 +289,16 @@ async function searchSerial() {
 
         // Map server JSON to the product object expected by renderProduct()
         const product = {
-            imageUrl: data.imageUrl || data.image || 'https://via.placeholder.com/800x600.png?text=Ring+Image', // if server provides imageUrl use it
             name: data.name || '',
             description: data.description || '',
-
-            // server didn't send purchase date in your example — keep null or map if available
-            purchaseISO: data.purchaseISO || data.purchaseDate || null,
-
-            serial: data.serial || data.uid || val,
+            uid: data.uid || '',
+            serial: data.serial || '',
+            mediaIds: data.mediaIds || []
         };
 
         // render the product
-        renderProduct(product);
+        const isLoggedIn = document.cookie.split(';').some((item) => item.trim().startsWith('authToken=')); // Check for login cookie
+        renderProduct(product, isLoggedIn);
 
     } catch (err) {
         console.error('Network or parsing error', err);

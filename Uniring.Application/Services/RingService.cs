@@ -171,7 +171,7 @@ namespace Uniring.Application.Services
                 Name = result.Name,
                 Id = result.Id,
                 Description = result.Description,
-                MediaIds = result.Medias.Select(m => m.Id).ToList()
+                MediaIds = result.Medias.OrderBy(m => m.Order).Select(m => m.Id).ToList()
             };
 
             return response;
@@ -193,7 +193,7 @@ namespace Uniring.Application.Services
                 Name = result.Name,
                 Id = result.Id,
                 Description = result.Description,
-                MediaIds = result.Medias.Select(m => m.Id).ToList()
+                MediaIds = result.Medias.OrderBy(m => m.Order).Select(m => m.Id).ToList()
             };
 
             return response;
